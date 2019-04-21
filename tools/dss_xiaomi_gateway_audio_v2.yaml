@@ -1,0 +1,155 @@
+group:
+  Xiaomi Gateway:
+    - input_number.dss_xg_loop_delay
+    - script.dss_xg_play_sel_sound
+    - input_boolean.dss_xg_mute_gateway_sounds
+    - script.dss_xg_play_sel_sound_loop
+    - script.dss_xg_play_sel_sound_single
+    - input_number.dss_xg_gateway_volume
+    - input_select.dss_xg_gateway_sound
+
+### Input boolean to mute gateway sound ###
+input_boolean:
+  dss_xg_mute_gateway_sounds:
+    name: Mute
+    icon: mdi:volume-off
+### Scripts to play gateway sounds ###
+script:
+  dss_xg_play_sel_sound:
+    alias: "Loop Play Sound"
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        state: 'off'
+      - service: xiaomi_aqara.play_ringtone
+        data_template:
+          gw_mac: !secret xiaomi_gateway1_mac
+          ringtone_id: "{{ states.input_select.dss_xg_gateway_sound.state.split('-')[0] }}"
+          ringtone_vol: "{{ states.input_number.dss_xg_gateway_volume.state|int }}"
+      - delay: '00:00:{{ states.input_number.dss_xg_loop_delay.state | int }}'
+      - service: script.dss_xg_play_sel_sound_loop
+
+  dss_xg_play_sel_sound_loop:
+    alias: "Play selected sound in Loop"
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        state: 'off'
+      - delay: '00:00:{{ states.input_number.dss_xg_loop_delay.state | int }}'
+      - service: script.dss_xg_play_sel_sound
+
+  dss_xg_play_sel_sound_single:
+    alias: "Single Play Sound"
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        state: 'off'
+      - service: xiaomi_aqara.play_ringtone
+        data_template:
+          gw_mac: !secret xiaomi_gateway1_mac
+          ringtone_id: "{{ states.input_select.dss_xg_gateway_sound.state.split('-')[0] }}"
+          ringtone_vol: "{{ states.input_number.dss_xg_gateway_volume.state|int }}"
+
+### Input slider to control gateway volume ###
+input_number:
+  dss_xg_gateway_volume:
+    name: Volume
+    initial: 10
+    min: 0
+    max: 100
+    step: 2
+    icon: mdi:volume-high
+
+### Input slider to control loop delay ###
+  dss_xg_loop_delay:
+    name: "Loop Delay"
+    initial: 1
+    min: 0
+    max: 15
+    step: 1
+    icon: mdi:loop
+
+### Input select to select sound to play ###
+input_select:
+  dss_xg_gateway_sound:
+    name: Ringtone
+    #le varie suonerie sono definite nel secrets.yaml. vedi nota alla fine del file
+    options: !secret dss_gateway1_options_elenco_suonerie
+    icon: mdi:music-note
+    
+# # # Questo è l'elenco delle suonerie da inserire sempre nel file secrets.yaml.
+# dss_gateway1_options_elenco_suonerie: [
+#"0 - Police car 1", 
+# "1 - Police car 2", 
+# "2 - Accident", 
+# "3 - Countdown", 
+# "4 - Ghost", 
+# "5 - Sniper rifle", 
+# "6 - Battle", 
+# "7 - Air raid",
+# "8 - Bark",
+# "10 - Doorbell",
+# "11 - Knock at a door",
+# "12 - Amuse",
+# "13 - Alarm clock",
+# "20 - MiMix",
+# "21 - Enthusiastic",
+# "22 - GuitarClassic",
+# "23 - IceWorldPiano",
+# "24 - LeisureTime",
+# "25 - ChildHood",
+# "26 - MorningStreamLiet",
+# "27 - MusicBox",
+# "28 - Orange",
+# "29 - Thinker",
+# "10001 - sound",
+# "10002 - sound",
+# "10003 - sound",
+# "10004 - sound",
+# "10005 - sound",
+# "10006 - sound",
+# "10007 - sound",
+# "10008 - sound",
+# "10009 - sound",
+# "10010 - sound",
+# "10011 - sound",
+# "10012 - sound",
+# "10013 - sound",
+# "10014 - sound",
+# "10015 - sound",
+# "10016 - sound",
+# "10017 - sound",
+# "10018 - sound",
+# "10019 - sound",
+# "10020 - sound",
+# "10021 - sound",
+# "10022 - sound",
+# "10023 - sound",
+# "10024 - sound",
+# "10025 - sound",
+# "10026 - sound",
+# "10027 - sound",
+# "10028 - sound",
+# "10029 - sound",
+# "10030 - sound",
+# "10031 - sound",
+# "10032 - sound",
+# "10033 - sound",
+# "10034 - sound",
+# "10035 - sound",
+# "10036 - sound",
+# "10037 - sound",
+# "10038 - sound",
+# "10039 - sound",
+# "10040 - sound",
+# "10041 - sound",
+# "10042 - sound",
+# "10043 - sound",
+# "10044 - sound",
+# "10045 - sound",
+# "10046 - sound",
+# "10047 - sound",
+# "10048 - sound",
+# "10049 - sound",
+# "10050 - sound"
+#]

@@ -1,0 +1,81 @@
+homeassistant: 
+  customize:
+    binary_sensor.chromecast_cucina_ping:
+      hidden: true
+    binary_sensor.chromecast_letto_ping:
+      hidden: true
+
+smartir:
+
+binary_sensor:
+  - name: chromecast_cucina_ping 
+    platform: ping
+    host: !secret chromecast_cucina_ip
+    count: 2
+    scan_interval: 50
+    
+  - name: chromecast_letto_ping 
+    platform: ping
+    host: !secret chromecast_letto_ip
+    count: 2
+    scan_interval: 50
+
+media_player:
+  - platform: smartir
+    name: TV Cucina SmartIR
+    unique_id: tv_cucina_smartir
+    device_code: 1060
+    controller_send_service: switch.broadlink_send_packet_192_168_1_156
+    power_sensor: binary_sensor.chromecast_cucina_ping
+    
+  - platform: smartir
+    name: TV Letto SmartIR
+    unique_id: tv_letto_smartir
+    device_code: 1060
+    controller_send_service: switch.broadlink_send_packet_192_168_1_129
+    power_sensor: binary_sensor.chromecast_letto_ping
+    
+
+climate:
+  - platform: smartir
+    name: 'Fujitsu Cucina'
+    unique_id: fujitsu_cucina
+    device_code: 3482
+    controller_send_service: switch.broadlink_send_packet_192_168_1_156
+    temperature_sensor: !secret entity_temperature_cucina
+    humidity_sensor: !secret entity_humidity_cucina
+    power_sensor: !secret entity_sensore_fujitsu_cucina
+
+  - platform: smartir
+    name: 'Fujitsu Letto'
+    unique_id: fujitsu_letto
+    device_code: 3482
+    controller_send_service: switch.broadlink_send_packet_192_168_1_129
+    temperature_sensor: !secret entity_temperature_letto
+    humidity_sensor: !secret entity_humidity_letto
+    power_sensor: !secret entity_sensore_fujitsu_letto
+
+switch:
+  - platform: broadlink
+    friendly_name: Broadlink Switch Cucina
+    host: !secret broadlink_rm_cucina_ip
+    mac: !secret broadlink_rm_cucina_mac
+    type: rm
+    # timeout: 30
+    # switches:
+      # learner_cucina:
+        # friendly_name: "Learner Cucina"
+        # command_on: ''
+        # command_off: ''
+    
+  - platform: broadlink
+    friendly_name: Broadlink Switch Letto
+    host: !secret broadlink_rm_letto_ip
+    mac: !secret broadlink_rm_letto_mac
+    type: rm
+    # timeout: 30
+    # switches:
+      # learner_letto:
+        # friendly_name: "Learner Letto"
+        # command_on: ''
+        # command_off: ''

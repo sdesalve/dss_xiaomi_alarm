@@ -1,0 +1,31 @@
+homeassistant: 
+  customize:
+    camera.dahua_camera_ingresso:
+      friendly_name: "Cam Ingresso"
+    camera.dahua_camera_fronte:
+      friendly_name: "Cam Fronte"
+    camera.dahua_camera_cancello_giardino:
+      friendly_name: "Cam Cancello Giardino"
+
+camera:
+  - name: dahua_camera_ingresso
+    platform: generic
+    username: !secret dss_dahua_camera_ingresso_user
+    password: !secret dss_dahua_camera_ingresso_password
+    authentication: 'digest'
+    still_image_url: !secret dss_dahua_camera_ingresso_cam_snapshot
+    verify_ssl: false
+    stream_source: !secret dss_dahua_camera_ingresso_cam_rtsp_url
+
+  - name: dahua_camera_fronte
+    platform: generic
+    username: !secret dss_dahua_camera_fronte_user
+    password: !secret dss_dahua_camera_fronte_password
+    authentication: 'digest'
+    still_image_url: !secret dss_dahua_camera_fronte_cam_snapshot
+    stream_source: !secret dss_dahua_camera_fronte_cam_rtsp_url
+    verify_ssl: false
+    
+  - name: dahua_camera_cancello_giardino
+    platform: ffmpeg
+    input: !secret dss_dahua_camera_cancello_giardino_cam_rtsp_url

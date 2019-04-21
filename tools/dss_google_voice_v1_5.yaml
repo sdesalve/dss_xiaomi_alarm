@@ -1,0 +1,493 @@
+### developed by SDeSalve ###
+
+### v1.5
+### aggiunto switch per riproduzione video su chromecast
+
+### v1.4
+### aggiunti altri 2 utenti tracciati ed i rispettivi saluti
+### aggiunto switch per controllo luci. grazie del suggerimento ad @Ago1980
+
+
+### v1.3
+### corretto bug che causava il seguente errore :
+    # File "/usr/local/lib/python3.6/site-packages/jinja2/sandbox.py", line 427, in call
+    # return __context.call(__obj, *args, **kwargs)
+    # TypeError: __call__() takes 2 positional arguments but 3 were given
+
+
+### v1.2
+### aggiunta gestione degli infissi aperti
+
+
+homeassistant: 
+  customize:
+    input_boolean.dss_voice_switch_controlla_infissi_aperti:
+      hidden: true
+    input_boolean.dss_voice_switch_controlla_luci_accese:
+      hidden: true
+    input_boolean.dss_voice_switch_mostra_videocitofono:
+      hidden: true
+    input_boolean.dss_voice_switch_mostra_dtv:
+      hidden: true
+
+# ATTENZIONE: per personalizzare le immagini dei singoli dispositivi tracciati, bisogna intervenire nel file know_devices.yaml ed aggiungere la key picture come mostrato sotto.
+# galaxy_s6:
+  # hide_if_away: false
+  # icon:
+  # mac: xx:xx:xx:xx:xx:xx
+  # name: Galaxy S6 IP
+  # picture: !secret url_immagine_profilo
+  # track: true
+
+switch:
+  - platform: template
+    switches:
+      # questo switch sarà visibile da google assistant. Gli ho dato il nickname "stato_infissi"
+      # dicendo ehi google, accendi stato infissi viene acceso e quindi eseguito lo script che elenca le finestre aperte.
+      # Io ho aggiunto una scorciatoia a Google Assistant: dico "Ehy Google, quali infissi sono aperti?" oppure "Ehy Google, quali finestre sono aperte?" ed è come se dicessi "accendi stato_infissi"
+      # info sulle scorciatoie: http://www.androidworld.it/2018/03/21/google-assistant-scorciatoie-541516/
+      ok_google_stato_infissi:
+        friendly_name: "OK Google, quali infissi sono aperti"
+        value_template: "{{ states.input_boolean.dss_voice_switch_controlla_infissi_aperti.state == 'on' }}"
+        icon_template: mdi:google-home
+        turn_on:
+          service: script.turn_on
+          data:
+            entity_id: script.dss_voice_script_stato_finestre
+        turn_off:
+          service: script.turn_off
+          data:
+            entity_id: script.dss_voice_script_stato_finestre
+      ok_google_stato_luci:
+        friendly_name: "OK Google, quali luci sono accese"
+        value_template: "{{ states.input_boolean.dss_voice_switch_controlla_luci_accese.state == 'on' }}"
+        icon_template: mdi:google-home
+        turn_on:
+          service: script.turn_on
+          data:
+            entity_id: script.dss_voice_script_stato_luci
+        turn_off:
+          service: script.turn_off
+          data:
+            entity_id: script.dss_voice_script_stato_luci
+      ok_google_mostra_videocitofono:
+        friendly_name: "OK Google, mostra videocitofono"
+        value_template: "{{ states.input_boolean.dss_voice_switch_mostra_videocitofono.state == 'on' }}"
+        icon_template: mdi:google-home
+        turn_on:
+          - service: script.dss_voice_script_mostra_videocitofono
+        turn_off:
+          - service: script.dss_voice_script_mostra_dtv
+          - service: script.turn_off
+            data:
+              entity_id: script.dss_voice_script_mostra_videocitofono
+
+      ok_google_mostra_dtv:
+        friendly_name: "OK Google, mostra DTV"
+        value_template: "{{ states.input_boolean.dss_voice_switch_mostra_dtv.state == 'on' }}"
+        icon_template: mdi:google-home
+        turn_on:
+          - service: script.dss_voice_script_mostra_dtv
+        turn_off:
+          - service: script.turn_off
+            data:
+              entity_id: script.dss_voice_script_mostra_dtv
+
+input_boolean:
+  dss_voice_switch_controlla_infissi_aperti:
+    name: Fake Switch
+    icon: mdi:toggle-switch-off
+    initial: off
+
+  dss_voice_switch_controlla_luci_accese:
+    name: Fake Switch
+    icon: mdi:toggle-switch-off
+    initial: off
+
+  dss_voice_switch_mostra_videocitofono:
+    name: Fake Switch
+    icon: mdi:toggle-switch-off
+    initial: off
+
+  dss_voice_switch_mostra_dtv:
+    name: Fake Switch
+    icon: mdi:toggle-switch-off
+    initial: off
+
+  dss_voice_user1_appena_entrato:
+    name: "User1 appena rientrato"
+    icon: mdi:volume-off
+  dss_voice_user2_appena_entrato:
+    name: "User2 appena rientrata"
+    icon: mdi:volume-off
+  dss_voice_user3_appena_entrato:
+    name: "User3 appena rientrato"
+    icon: mdi:volume-off
+  dss_voice_user4_appena_entrato:
+    name: "User4 appena rientrato"
+    icon: mdi:volume-off
+    
+input_text:
+  dss_voice_testo_da_riprodurre:
+    name: "Testo TTS"
+    initial: "Scrivi qui il testo..."
+
+group:
+  dss_voice_package:
+    name: "Messaggi vocali"
+    view: yes
+    entities:
+      - group.dss_voice_automazioni
+      - group.dss_dispositivi_tracciati
+     
+#qui si possono inserire altri gruppi, anche definiti in altri package... tipo quello del sensore allagamento
+   
+### commento questi gruppi dato che li ho già nell'altro mio package dell'allarme
+  # dss_dispositivi_tracciati:
+    # name: "Dispositivi Tracciati"
+    # entities:
+      # - group.dss_dispositivi_user1
+      # - group.dss_dispositivi_user2
+# # comunque si possono inserire anche dispositivi singoli.
+      # # - device_tracker.redmi 
+      # # - device_tracker.00xxxxxx840
+
+# #questo è un gruppo di device_tracker. ne ho personalizzato l'immagine nella sezione customize
+  # dss_dispositivi_user1:
+    # name: "Dispositivi di Salvatore"
+    # entities:
+      # - device_tracker.redmi_bt
+      # - device_tracker.redmi_ip
+
+# #questo è un gruppo di device_tracker. ne ho personalizzato l'immagine nella sezione customize
+  # dss_dispositivi_user2:
+    # name: "Dispositivi di Valeria"
+    # entities:
+      # - device_tracker.galaxy_s6_bt
+      # - device_tracker.galaxy_s6_ip
+
+  dss_voice_automazioni:
+    name: "Automazioni Voce"
+    control: hidden
+    icon: mdi:settings
+    entities:
+      - input_text.dss_voice_testo_da_riprodurre
+      - script.dss_voice_riproduci_testo
+      - automation.dss_voice_riproduzione_automatica_del_testo
+      - automation.dss_voice_benvenuto_user1
+      - automation.dss_voice_appena_rientrato_user1
+      - automation.dss_voice_benvenuta_user2
+      - automation.dss_voice_appena_rientrata_user2
+      - automation.dss_voice_benvenuti_ad_entrambi
+      # - sensor.hline_1
+      - automation.dss_voice_benvenuta_user3
+      - automation.dss_voice_appena_rientrata_user3
+      - automation.dss_voice_benvenuta_user4
+      - automation.dss_voice_appena_rientrata_user4
+      # - sensor.hline_2
+      - switch.ok_google_stato_infissi
+      - script.dss_voice_script_stato_finestre
+      - switch.ok_google_stato_luci
+      - script.dss_voice_script_stato_luci
+      - switch.ok_google_mostra_videocitofono
+      - script.dss_voice_script_mostra_videocitofono
+      - switch.ok_google_mostra_dtv
+      - script.dss_voice_script_mostra_dtv
+
+script:
+  dss_voice_riproduci_testo:
+    alias: "Riproduci il testo"
+    sequence:
+    - service: script.dss_voice_riproduci_messaggio
+      data_template:
+        message: >-
+          {{ states('input_text.dss_voice_testo_da_riprodurre') }}
+
+  dss_voice_riproduci_messaggio:
+    sequence:
+    - service: tts.google_say
+      entity_id: media_player.ingresso
+      data_template:
+        language: it
+        message: "{{ message }}"
+
+  dss_voice_script_stato_finestre:
+    alias: "Controlla infissi aperti"
+    sequence:
+    - service: script.dss_voice_riproduci_messaggio
+      data_template:
+        message: >-
+          {% macro controllo_porte() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.name }} aperta...
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_porte() }}
+    - service: script.turn_off
+      entity_id: script.dss_voice_script_stato_finestre
+    - condition: template
+      value_template: >
+        {% macro controllo_porte() %}
+        {% set domains = ['binary_sensor'] %}
+        {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
+        {% for domain in domains -%}
+        {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+        {{ item.name }} aperta...
+        {% endfor %}
+        {%- endfor %}
+        {% endmacro %}
+        {{ controllo_porte() | trim == "" }}
+    - service: script.dss_voice_riproduci_messaggio
+      data:
+        message: "Tutti gli infissi sono chiusi"
+
+  dss_voice_script_stato_luci:
+    alias: "Controlla Luci accese"
+    sequence:
+    - service: script.dss_voice_riproduci_messaggio
+      data_template:
+        message: >-
+          {% macro controllo_luci() %}
+          {% set domains = ['light'] %}
+          {% set exclusions = ['Luce da ignorare'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on')) -%}
+          {{ item.name }} accesa...
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_luci() }}
+    - service: script.turn_off
+      entity_id: script.dss_voice_script_stato_luci
+    - condition: template
+      value_template: >
+        {% macro controllo_luci() %}
+        {% set domains = ['light'] %}
+        {% set exclusions = ['Luce da ignorare'] %}
+        {% for domain in domains -%}
+        {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on')) -%}
+        {{ item.name }} accesa...
+        {% endfor %}
+        {%- endfor %}
+        {% endmacro %}
+        {{ controllo_luci() | trim == "" }}
+    - service: script.dss_voice_riproduci_messaggio
+      data:
+        message: "Tutte le luci sono spente"
+
+  dss_voice_script_mostra_videocitofono:
+    alias: "Mostra Videocitofono"
+    sequence:
+      - service: switch.broadlink_send_packet_192_168_1_156
+        data:
+          packet:
+            - "JgBGAJKVETkRORE5ERQQFRAVERQQFRE5ETkROREUERQRFBEUERQRORAVERUPOxAVDzsQOhA6EBUQOhA6EBUQOhAVEBUPFhAADQUAAA=="
+      - service: camera.play_stream
+        data:
+          entity_id: camera.dahua_vto2101e_p
+          media_player: media_player.cucina
+      - delay: '00:01:00'
+      - service: switch.broadlink_send_packet_192_168_1_156
+        data:
+          packet:
+            - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
+      - service: media_player.media_stop
+        data:
+          entity_id: media_player.cucina
+
+  dss_voice_script_mostra_dtv:
+    alias: "Mostra DTV"
+    sequence:
+      - service: switch.broadlink_send_packet_192_168_1_156
+        data:
+          packet:
+            - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
+      - service: media_player.media_stop
+        data:
+          entity_id: media_player.cucina
+
+
+automation:
+  - alias: "DSS VOICE Riproduzione automatica del testo"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: input_text.dss_voice_testo_da_riprodurre
+    action:
+      - service: script.dss_voice_riproduci_messaggio
+        data_template:
+          message: >-
+            {{ states('input_text.dss_voice_testo_da_riprodurre') }}
+
+  - alias: "DSS VOICE Benvenuto user1"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: !secret entity_sensore_portoncino
+        to: 'on'
+    condition:
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+        state: 'on'
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+        state: 'off'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+      - service: script.dss_voice_riproduci_messaggio
+        data_template:
+          message: >-
+            {{ [
+            "Bentornato Salvatore... " ,
+            "Ciao Salvatore... " 
+            ] |random }}
+          
+  - alias: "DSS VOICE Benvenuta user2"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: !secret entity_sensore_portoncino
+        to: 'on'
+    condition:
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+        state: 'on'
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+        state: 'off'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+      - service: script.dss_voice_riproduci_messaggio
+        data_template:
+          message: >-
+            {{ [
+            "Bentornata Valeria... " ,
+            "Ciao Valeria, Ciao Samuel... Ben tornati a casa! " ,
+            "Bentornata a casa!  " ,
+            "Ciao Samuel... Dove sei stato di bello? " 
+            ] | random }}
+
+  - alias: "DSS VOICE Benvenuta user3"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: !secret entity_sensore_portoncino
+        to: 'on'
+    condition:
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user3_appena_entrato
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user3_appena_entrato
+      - service: script.dss_voice_riproduci_messaggio
+        data_template:
+          message: "Ciao Nonna Sarina!"
+
+  - alias: "DSS VOICE Benvenuta user4"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: !secret entity_sensore_portoncino
+        to: 'on'
+    condition:
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user4_appena_entrato
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user4_appena_entrato
+      - service: script.dss_voice_riproduci_messaggio
+        data_template:
+          message: "Ciao Nonna Gina!"
+
+  - alias: "DSS VOICE Appena rientrato user1"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_user1
+        to: 'home'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+      - delay: "00:03:00"
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+
+  - alias: "DSS VOICE Appena rientrata user2"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_user2
+        to: 'home'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+      - delay: "00:03:00"
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+
+  - alias: "DSS VOICE Appena rientrata user3"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_user3
+        to: 'home'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dss_voice_user3_appena_entrato
+      - delay: "00:03:00"
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user3_appena_entrato
+
+  - alias: "DSS VOICE Appena rientrata user4"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_user4
+        to: 'home'
+    action:
+      - service: input_boolean.turn_on
+        entity_id: input_boolean.dss_voice_user4_appena_entrato
+      - delay: "00:03:00"
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user4_appena_entrato
+
+  - alias: "DSS VOICE Benvenuti ad entrambi"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: !secret entity_sensore_portoncino
+        to: 'on'
+    condition:
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+        state: 'on'
+      - condition: state 
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user1_appena_entrato
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.dss_voice_user2_appena_entrato
+      - service: script.dss_voice_riproduci_messaggio
+        data: 
+          message: "Bentornati a casa... "
+

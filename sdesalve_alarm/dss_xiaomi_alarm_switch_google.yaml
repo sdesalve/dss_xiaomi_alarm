@@ -1,0 +1,45 @@
+switch:
+  ### Switch per attivare l'allarme HOME con Google Assistant
+  ## nella configurazione di Google Assistant nel tuo configuration.yaml DEVI esporre ANCHE gli switch come vedi qui sotto
+  # google_assistant:
+    # project_id: ..............
+    # client_id: ..............
+    # access_token: ..............
+    # api_key: ..............
+    # exposed_domains:
+      # - light
+      # - switch  <------ questo è importante per esporre lo switch a Google Assistant e poter accendere l'allarme
+  
+  - platform: template
+    switches:
+      ok_google_attiva_allarme:
+        friendly_name: "Allarme"
+        value_template: '{% if is_state("alarm_control_panel.home_alarm", "disarmed") %}off{% else %}on{% endif %}'
+        icon_template: mdi:google-home
+        turn_on:
+          service: alarm_control_panel.alarm_arm_home
+          data:
+            entity_id: alarm_control_panel.home_alarm
+        turn_off:
+          service: alarm_control_panel.alarm_disarm
+          data:
+            entity_id: alarm_control_panel.home_alarm
+            
+  - platform: template
+    switches:
+      ok_google_mo_torno:
+        friendly_name: "Sospendi attivazione automatica"
+        value_template: '{% if is_state("input_boolean.dss_sospesa_attivazione_automatica", "on") %}on{% else %}off{% endif %}'
+        icon_template: mdi:google-home
+        turn_on:
+          - service: input_boolean.turn_on
+            data:
+              entity_id: input_boolean.dss_sospesa_attivazione_automatica
+          # - service: script.dss_voice_riproduci_messaggio_tts
+            # data:
+              # message: "Ok, a dopo"
+        turn_off:
+          service: input_boolean.turn_off
+          data:
+            entity_id: input_boolean.dss_sospesa_attivazione_automatica
+            

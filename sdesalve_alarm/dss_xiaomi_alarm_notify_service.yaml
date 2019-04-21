@@ -1,0 +1,196 @@
+homeassistant: 
+  customize:
+    script.dss_alarm_script_invia_notifiche:
+      hidden: true
+
+script:
+  dss_alarm_script_invia_notifiche:
+    sequence:
+      - service: notify.notifiche_telegram
+        data_template:
+          message: "{{ message }}"
+      # - service: notify.notifiche_html5
+        # data_template:
+          # message: "{{ message }}"
+          
+group:
+  dss_notifiche_allarme:
+    name: "Notifiche Telegram"
+    control: hidden
+    icon: mdi:message-alert
+    entities:
+      - automation.notifica_allarme_armato_in_modalita_away
+      - automation.notifica_allarme_armato_in_modalita_home
+      - automation.notifica_allarme_disarmato
+      - automation.notifica_che_qualcuno_e_rientrato
+      - automation.notifica_che_gli_utenti_sono_usciti
+      
+automation:
+  - alias: "Invia notifica se innescato"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'triggered'
+    action:
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template:
+          message: >-
+           ALLARME Intrusione!
+           
+           {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+
+  ### Sending a notification when the alarm is Arm###
+  - alias: "NOTIFICA Allarme armato in modalità AWAY"
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_away'
+    action:
+### questi sono i componenti che mandano le notifiche - controlla i nomi dei propri servizi di notifica ###
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template:
+          message: >-
+            ATTIVATO Allarme - AWAY Mode.
+            {% macro controllo_sensori() %}
+            {% set domains = ['binary_sensor'] %}
+            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            
+            * {{ item.entity_id }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_infissi = controllo_sensori() %}
+            {% if elenco_infissi |trim == "" %}
+            
+            Tutti gli infissi sono chiusi
+            {% else %}
+            
+            ATTENZIONE: i seguenti infissi sono rimasti aperti:
+
+            {{ elenco_infissi }}
+            {% endif %}
+
+      - service: script.dss_light_flash_cancel
+      - service: script.dss_light_flash_cancel_away
+
+      ### Sending a notification when the alarm is Arm###
+  - alias: "NOTIFICA Allarme armato in modalità HOME"
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_home'
+    action:
+### questi sono i componenti che mandano le notifiche - controlla i nomi dei propri servizi di notifica ###
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template:
+          message: >-
+            ATTIVATO Allarme - HOME Mode.
+            {% macro controllo_sensori() %}
+            {% set domains = ['binary_sensor'] %}
+            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            
+            * {{ item.entity_id }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_infissi = controllo_sensori() %}
+            {% if elenco_infissi |trim == "" %}
+            
+            Tutti gli infissi sono chiusi
+            {% else %}
+            
+            ATTENZIONE: i seguenti infissi sono rimasti aperti:
+
+            {{ elenco_infissi }}
+            {% endif %}
+
+      - service: script.dss_light_flash_cancel
+      - service: script.dss_light_flash_cancel_away
+
+  ### Sending a notification when the alarm is Arm###
+  - alias: "NOTIFICA Allarme disarmato"
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      - service: script.dss_alarm_script_invia_notifiche
+        data:
+          message: "DISATTIVATO Allarme!"
+          
+  - alias: "NOTIFICA che qualcuno è rientrato"
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: [group.dss_dispositivi_user1, group.dss_dispositivi_user2]
+        # entity_id: [group.dss_dispositivi_user1, group.dss_dispositivi_user2, group.dss_dispositivi_user3, group.dss_dispositivi_user4]
+        from: 'not_home'
+        to: 'home'
+        for:
+          seconds: 10
+## da notare che le condizioni sono 2 ed uso l'operatore OR. SOLO UNA delle due condizioni può essere vera, il trigger infatti è in contrasto e funziona perché ho solo 2 gruppi tracciati
+    condition:
+      - condition: template
+        value_template: >-
+          {{ is_state('group.dss_dispositivi_user1', 'not_home') or is_state('group.dss_dispositivi_user2', 'not_home') }}
+# ### se hai più di 2 gruppi di dispositivi INVECE devi usare questo sistema:
+    # condition:
+      # condition: or
+      # conditions:
+        # - condition: template
+          # value_template: >-
+            # {{ is_state('group.dss_dispositivi_user1', 'home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') and is_state('group.dss_dispositivi_user4', 'not_home') }}
+        # - condition: template
+          # value_template: >-
+            # {{ is_state('group.dss_dispositivi_user2', 'home') and is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') and is_state('group.dss_dispositivi_user4', 'not_home') }}
+        # - condition: template
+          # value_template: >-
+            # {{ is_state('group.dss_dispositivi_user3', 'home') and is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user4', 'not_home') }}
+        # - condition: template
+          # value_template: >-
+            # {{ is_state('group.dss_dispositivi_user4', 'home') and is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') }}
+    action:
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template: 
+          message: >-
+            {{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }} è rientrato/a nella casa!
+            {% if is_state('input_boolean.dss_sospesa_attivazione_automatica', 'on') %}
+            
+            Ripristinata l'attivazione automatica dell'allarme...
+            {% endif %}
+
+  - alias: "NOTIFICA che gli utenti sono usciti"
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: [group.dss_dispositivi_user1, group.dss_dispositivi_user2]
+        # entity_id: [group.dss_dispositivi_user1, group.dss_dispositivi_user2, group.dss_dispositivi_user3, group.dss_dispositivi_user4]
+        from: 'home'
+        to: 'not_home'
+        for:
+          minutes: 1
+    condition:
+      - condition: template
+        value_template: >-
+          {{ is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') }}
+        # value_template: >-
+          # {{ is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') and is_state('group.dss_dispositivi_user4', 'not_home') }}
+    action:
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template :
+          message: >-
+            {{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }} ha abbandonato la casa!
+            {% if is_state('input_boolean.dss_sospesa_attivazione_automatica', 'on') %}
+            
+            Sospesa l'attivazione automatica dell'allarme...
+            {% endif %}
+

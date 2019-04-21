@@ -1,0 +1,92 @@
+homeassistant: 
+  customize:
+    group.dss_dispositivi_user1:
+      entity_picture: !secret url_immagine_profilo_user1 
+    group.dss_dispositivi_user2:
+      entity_picture: !secret url_immagine_profilo_user2
+    device_tracker.pocophone_salvatore_ip:
+      entity_picture: !secret url_immagine_profilo_user1
+    device_tracker.pocophone_salvatore_bt:
+      entity_picture: !secret url_immagine_profilo_user1
+    device_tracker.redmi_note_6_pro_vale_ip:
+      entity_picture: !secret url_immagine_profilo_user2  
+    device_tracker.redmi_note_6_pro_vale_bt:
+      entity_picture: !secret url_immagine_profilo_user2  
+    sensor.tracker_Nut_salvatore:
+      entity_picture: !secret url_immagine_profilo_user1
+    sensor.tracker_Nut_valeria:
+      entity_picture: !secret url_immagine_profilo_user2
+
+group:
+### Elenco dei Dispositivi Tracciati - inserite qui i dispositivi che fanno attivare/disattivare l'allarme in automatico ###
+### io uso NMAP https://www.home-assistant.io/components/device_tracker.nmap_tracker/ ###
+### e BLUETOOTH https://www.home-assistant.io/components/device_tracker.bluetooth_tracker/ ###
+### Ho aggiunto anche un tracker BTLE con un ESP32. qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
+
+#questo è un gruppo di gruppi. Dato che traccio sia tramite bluetooth_tracker che tramite nmap_tracker i miei cellulari mi dava fastidio vedere 4 dispositivi.
+#così è immediato capire chi è in casa anche se viene tracciato con più metodi
+  dss_dispositivi_tracciati:
+    name: "Dispositivi Tracciati"
+    control: hidden
+    entities:
+      - group.dss_dispositivi_user1
+      - group.dss_dispositivi_user2
+      # - group.dss_dispositivi_user3
+      # - group.dss_dispositivi_user4
+      # comunque si possono inserire anche dispositivi singoli.
+      # - device_tracker.redmi 
+      # - device_tracker.00xxxxxx840
+
+  dss_dispositivi_user1:
+    name: !secret nome_gruppo_dispositivi_utente1
+    control: hidden
+    entities: !secret elenco_dispositivi_tracciati_user1
+
+  dss_dispositivi_user2:
+    name: !secret nome_gruppo_dispositivi_utente2
+    control: hidden
+    entities: !secret elenco_dispositivi_tracciati_user2
+
+  # dss_dispositivi_user3:
+    # name: !secret nome_gruppo_dispositivi_utente3
+    # control: hidden
+    # entities: !secret elenco_dispositivi_tracciati_user3
+
+  # dss_dispositivi_user4:
+    # name: !secret nome_gruppo_dispositivi_utente4
+    # control: hidden
+    # entities: !secret elenco_dispositivi_tracciati_user4
+
+### questi sono i sensori che vengono aggiornati tramite MQTT con un ESP32 e servono a rilevare le presenze con Bluetooth LowEnergy
+### se non usi quel sistema.... puoi rimuovere questa parte
+### qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
+
+sensor:    
+  - platform: mqtt
+    name: !secret nome_dispositivo_Nut_tracker_user1
+    state_topic: !secret topic_dispositivo_Nut_tracker_user1
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 180
+    value_template: >-
+      {% if value == 'ON' %}
+        home
+      {% elif value == 'OFF' %}
+        away
+      {% else %}
+        offline
+      {% endif %}
+
+  - platform: mqtt
+    name: !secret nome_dispositivo_Nut_tracker_user2
+    state_topic: !secret topic_dispositivo_Nut_tracker_user2
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 180
+    value_template: >-
+      {% if value == 'ON' %}
+        home
+      {% elif value == 'OFF' %}
+        away
+      {% else %}
+        offline
+      {% endif %}
+

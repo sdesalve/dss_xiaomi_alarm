@@ -1,0 +1,287 @@
+homeassistant: 
+  customize:
+    script.dss_voice_riproduci_messaggio_tts:
+      hidden: true
+    script.dss_voice_riproduci_messaggio:
+      hidden: true
+group:
+  dss_avvisi_tts:
+    name: "Avvisi TTS Allarme"
+    control: hidden
+    icon: mdi:settings
+    entities:
+      - automation.avviso_tts_allarme_disarmato
+      - automation.avviso_tts_allarme_home_attivato
+      - automation.avviso_tts_allarme_away_attivato
+      - automation.avviso_tts_allarme_in_attivazione
+      - automation.avviso_tts_allarme_in_innesco
+      - automation.avviso_tts_allarme_innescato
+
+script:
+  ### v10.2 aggiunte notifiche TTS Amazon Alexa: 
+  
+  #queste le modifiche da fare allo script scaricabile da https://github.com/walthowd/ha-alexa-tts
+  # LANGUAGE="it-IT"
+  # AMAZON='amazon.it'
+  # ALEXA='alexa.amazon.it'
+
+  ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
+  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
+  
+  #ho aggiunto Google Assistant Web Server per le notifiche TTS
+  # per info https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274
+  # se preferisci usare il classico TTS, inverti i service commentati nello scrip tui sotto
+
+  dss_voice_riproduci_messaggio_tts:
+    sequence:
+      # - service: script.dss_voice_riproduci_messaggio
+        # data_template:
+          # message: "{{ message }}"
+      # - service: notify.notifiche_tts
+        # data_template:
+          # message: "{{ message }}"
+      - service: notify.alexa_echo
+        data_template:
+          message: "{{ message }}"
+
+### ATTENZIONE: se usato, è richiesto anche lo script seguente. Nel caso tu non utilizzassi il mio package google_voice, devi decommentare il seguente script:
+  # dss_voice_riproduci_messaggio:
+    # sequence:
+    # - service: tts.google_say
+      # entity_id: media_player.ingresso
+      # data_template:
+        # language: it
+        # message: "{{ message }}"
+
+automation:
+  - alias: "Avviso TTS Allarme disarmato"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Allarme disattivato..."
+
+  - alias: "Avviso TTS Allarme HOME attivato"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_home'
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Allarme perimetrale attivo."
+
+  - alias: "Avviso TTS Allarme AWAY attivato"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_away'
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Allarme attivo."
+
+  - alias: "Avviso TTS Allarme in attivazione"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        from: 'disarmed'
+        to: 'pending'
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Attivazione in corso..."
+
+  - alias: "Avviso TTS Allarme in innesco"
+    initial_state: true
+    trigger:
+      #inutile l'avviso che sta per scattare l'allarme in caso di allarme HOME. Inizia a suonare subito!
+      # - platform: state
+        # entity_id: alarm_control_panel.home_alarm
+        # from: 'armed_home'
+        # to: 'pending'
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        from: 'armed_away'
+        to: 'pending'
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away1
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home1
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Sta per scattare l'Allarme"
+
+  - alias: "Avviso TTS Allarme innescato"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'triggered'
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Attenzione, allarme intrusione!... Attenzione, allarme intrusione!... Attenzione, allarme intrusione!... "
+
+### questo script controlla gli infissi aperti all'atto dell'attivazione e li comunica
+  - alias: "Elenca infissi aperti su click pulsanti HOME"
+    initial_state: false
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim != "" }}
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data_template:
+          message: >-
+            I seguenti infissi risultano aperti...
+            {% macro controllo_sensori() %}
+            {% set domains = ['binary_sensor'] %}
+            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            {{ item.entity_id }}{% if not loop.last or true %}... {% endif %}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {{ controllo_sensori() }}
+
+  - alias: "Elenca infissi aperti su click pulsanti AWAY"
+    initial_state: false
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: single
+          entity_id: !secret entity_pulsante_attiva_allarme_away1
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim != "" }}
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data_template:
+          message: >-
+            I seguenti infissi risultano aperti...
+            {% macro controllo_sensori() %}
+            {% set domains = ['binary_sensor'] %}
+            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            {{ item.entity_id }}{% if not loop.last or true %}... {% endif %}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {{ controllo_sensori() }}
+
+  - alias: "Conferma infissi chiusi su doppio click pulsante ingresso"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_away1
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim == "" }}
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Infissi chiusi... Attivo allarme..."
+      - delay:
+          seconds: 5
+      - service: alarm_control_panel.alarm_arm_away
+        data:
+          entity_id: alarm_control_panel.home_alarm     
+
+  - alias: "Conferma infissi chiusi su doppio click pulsanti comodino"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim == "" }}
+    action:
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Infissi chiusi... Attivo allarme perimetrale..."
+      - delay:
+          seconds: 5
+      - service: alarm_control_panel.alarm_arm_home
+        data:
+          entity_id: alarm_control_panel.home_alarm     

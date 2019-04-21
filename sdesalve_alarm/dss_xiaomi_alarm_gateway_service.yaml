@@ -1,0 +1,116 @@
+homeassistant: 
+  customize:
+    script.dss_alarm_gateway_service_play_triggered_sound_day:
+      hidden: true
+    script.dss_alarm_gateway_service_play_pending_sound_day:
+      hidden: true
+    script.dss_alarm_gateway_service_play_disarmed_sound_day:
+      hidden: true
+    script.dss_alarm_gateway_service_play_triggered_sound_night:
+      hidden: true
+    script.dss_alarm_gateway_service_play_pending_sound_night:
+      hidden: true
+    script.dss_alarm_gateway_service_play_disarmed_sound_night:
+      hidden: true
+    script.dss_alarm_gateway_service_light_flash:
+      hidden: true
+    script.dss_alarm_gateway_service_light_flash_away:
+      hidden: true
+    script.dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_away:
+      hidden: true
+    script.dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_home:
+      hidden: true
+    script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_away:
+      hidden: true
+    script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home:
+      hidden: true
+    script.dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_away:
+      hidden: true
+    script.dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_home:
+      hidden: true
+    script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away:
+      hidden: true
+    script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home:
+      hidden: true
+
+script:
+  dss_alarm_gateway_service_play_triggered_sound_day:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_triggered_sound_day
+      # - service: script.dss_alarm_gateway2_play_triggered_sound_day
+
+  dss_alarm_gateway_service_play_pending_sound_day:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_pending_sound_day
+      # - service: script.dss_alarm_gateway2_play_pending_sound_day
+
+  dss_alarm_gateway_service_play_disarmed_sound_day:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_disarmed_sound_day
+      # - service: script.dss_alarm_gateway2_play_disarmed_sound_day
+
+  dss_alarm_gateway_service_play_triggered_sound_night:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_triggered_sound_night
+      # - service: script.dss_alarm_gateway2_play_triggered_sound_night
+
+  dss_alarm_gateway_service_play_pending_sound_night:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_pending_sound_night
+      # - service: script.dss_alarm_gateway2_play_pending_sound_night
+
+  dss_alarm_gateway_service_play_disarmed_sound_night:
+    sequence:
+      - service: script.dss_alarm_gateway1_play_disarmed_sound_night
+      # - service: script.dss_alarm_gateway2_play_disarmed_sound_night
+
+  dss_alarm_gateway_service_light_flash:
+    sequence:
+      - service: script.dss_alarm_gateway1_light_flash
+      # - service: script.dss_alarm_gateway2_light_flash
+
+  dss_alarm_gateway_service_light_flash_away:
+    sequence:
+      - service: script.dss_alarm_gateway1_light_flash_away
+      # - service: script.dss_alarm_gateway2_light_flash_away
+
+  dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_away:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_giorno_riproduci_promemoria_allarme_away
+      # - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_away
+
+  dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_home:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_giorno_riproduci_promemoria_allarme_home
+      # - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_home
+
+  dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_away:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_giorno_sensore_innesco_ritardato_allarme_away
+      # - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_away
+
+  dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_home:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_giorno_sensore_innesco_ritardato_allarme_home
+      # - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_home
+
+  dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_away:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_notte_riproduci_promemoria_allarme_away
+      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_away
+
+  dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_notte_riproduci_promemoria_allarme_home
+      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home
+
+  dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_notte_sensore_innesco_ritardato_allarme_away
+      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away
+
+  dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home:
+    sequence:
+      - service: script.dss_alarm_gateway1_script_notte_sensore_innesco_ritardato_allarme_home
+      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home
+

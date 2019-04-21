@@ -1,0 +1,1234 @@
+### v 10.7 del 20/04/2019
+### aggiunti sensori ritardati e input_number per impostare il ritardo dal triggering all'innesco
+###     entity_sensore_innesco_ritardato_allarme_away1: binary_sensor.door_window_sensor_xxxxxxxxxx
+###     entity_sensore_innesco_ritardato_allarme_home1: []
+### rimosso delay innesco allarme in modalità AWAY
+
+### cambiati da nomi a entity_id dei sensori da ignorare negli avvisi TTS
+###     dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx]
+###     dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx, binary_sensor.motion_sensor_yyyyyyyyyyyyyy]
+
+### v 10.6 del 19/04/2019
+### spostato controlli e script legati al Gateway Xiaomi in file esterno... Possibile duplicare il file dss_xiaomi_alarm_gateway1.yaml nel caso siano presenti più gateway
+### Ulteriori News in arrivo...
+
+### v 10.5 del 18/04/2019
+### aggiunto switch esposto a google per sospendere l'attivazione automatica
+### rinominate variabili per permettere la più semplice integrazione di 2 Gateway (da dss_gateway_xxxxx a dss_gateway1_xxxxx)
+### spostati i nomi dei sensori da ignorare negli avvisi TTS dal file dell'allarme al secrets 
+###     dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: ['Sensore_MOD']
+###     dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: ['Sensore_MOD', 'Portoncino Ingresso']
+
+### v 10.4 del 21/02/2019
+### Pulizia di vecchie entity nei gruppi
+### sistemati entity volume negli esempi per il 2° gateway
+### Aggiunto promemoria allarme attivo anche in modalità home (vedi entity entity_sensore_promemoria_allarme_attivato_home1)
+
+### 10.3
+### cambiato script dss_alarm_script_ferma_riproduzione_suono e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
+### aggiunto codice di esempio per poter usare 2 gateway per la riproduzione dei suoni
+### creati script dss_alarm_script_accendi_light_gateways e dss_alarm_script_spegni_light_gateways. Spostata la gestione della luce del gateay nel file dss_xiaomi_alarm_light_service.yaml
+
+### 10.2 
+### - splittato file in diversi file per semplificarne la personalizzazione e l'aggiornamento.
+###   non dovrebbe più essere necessario modificare questo file
+### - Cambiato frasi TTS
+
+### 10.1
+### sistemati esempi di stringhe da inserire nel secrets.yaml
+
+### 10.0
+### diviso il file allarme dagli utenti e aggiunto elenco degli infissi che innescano l'allarme nel secrets.yaml
+
+### 9.4
+### sistemate automazioni allarme attivato ed elenco infissi aperti
+
+### 9.3
+### rinominati gli eventi dei pulsanti XIAOMI per nuova versione di HASSIO
+###    https://github.com/home-assistant/home-assistant/pull/17354
+
+### 9.2
+### Rimosso Google Assistant Webserver
+  ### prima del messaggio riproduceva "Broadcast from mionome"
+  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
+
+### Aggiunto elenco infissi aperti alle notifiche di attivazione allarme
+
+### 9.1
+### bug fix
+
+### 9.0
+### corretto bug che non faceva riprodurre i suoni di allarme giorno/notte
+### ripristinati suoni del gateway su disattivazione, promemoria apertura porta e altri
+### se volume di qualsiasi suono = 0 non viene riprodotto
+### aggiunte TTS per ogni cambio stato dell'allarme
+
+### rinominato Switch di attivazione allarme in "Allarme"
+### consiglio di escludere da Google Assistant gli switch "Allarme diurno attivato" e "Allarme nottuno attivato" aggiungendo alla configurazione di Google Assistant le seguenti righe:
+
+  # entity_config:
+    # switch.dss_alarm_giorno_attivo:
+      # expose: false
+   # switch.dss_alarm_notte_attivo:
+      # expose: false
+
+### 8.4
+### rimosse le select delle suonerie
+### rimossa la differenziazione delle suonerie HOME/AWAY per le modalità GIORNO/NOTTE
+
+### 8.3
+### Corretti value template di dss_alarm_giorno_attivo e dss_alarm_notte_attivo. Grazie a @alesoft73 per la segnalazione!
+### Cambiato dss_alarm_giorno_attivo e dss_alarm_notte_attivo da binary_sensor a switch. Ora non solo indicano lo stato dell'allarme, ma spegnendoli si disattiva l'allarme. Accendendoli si attiva l'allarme in modalità home.
+
+### 8.2
+### 1) aggiornato il sistema di inserimento:
+       # DOPPIO CLICK su pulsante
+         # SE FINESTRE APERTE
+            # AVVISO TTS: "Attenzione finestre aperte, clicca per conoscere quali.
+                        #  L'allarme verrà inserito tra 30 secondi"
+         # SE FINESTRE CHIUSE
+            # AVVISO TTS: "Attivazione allarme in corso..."
+###    2) inserite le linee orizzontali. Info su https://t.me/HomeAssistant
+
+### 8.1
+### bugfix
+### integrato Google Assistant Web Server
+### qui la guida: https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274
+### ATTENZIONE: Va aggiunto il servizio notify nel configuration.yaml dopo aver configurato l'add-on Google Webserver
+### notify:
+  ### - name: notifiche_tts
+    ### platform: rest
+    ### resource: http://[IP-del-RASPBERRY]:5000/broadcast_message
+
+### 8.0
+### 1) sistemato lampeggio verde su disattivato
+### 2) aggiornato il sistema di inserimento:
+       # DOPPIO CLICK su pulsante
+         # SE FINESTRE APERTE
+            # AVVISO TTS: "Attenzione finestre aperte, clicca per conoscere quali.
+                        #  Fai doppio click per inserire comunque l'allarme"
+            # BLOCCO INSERIMENTO (SE NON FAI DOPPIO CLICK ENTRO 30 SECONDI)
+         # SE FINESTRE CHIUSE
+            # AVVISO TTS: "Attivazione allarme in corso..."
+### 3) rimpiazzate alcune suonerie con TTS
+### 4) rimesse select per le suonerie (definite nel secrets) ed impostate quella di default con "initial"
+### 5) nascosti alcuni script dalla default view
+
+### 7.4 bugfix
+### 7.3 bugfix
+
+### 7.2 
+# -1 Flash Verde quando spegni l'allarme.
+# -2 Single Click Pulsante Ingresso, Elenco infissi Aperti dal Google Home, e se non ci fossero, riproduci "Tutti gli infissi sono chiusi"
+# -3 Modifica la riproduzione "Attenzione, ci sono alcuni infissi aperti" aggiungendo "Klikka una volta per sapere quali" .
+# -4 Possibilità di scegliere suoneria per Modalità Home e Away.
+### grazie a Mr Jay (Ingrid) @mr_ingrid per i suggerimenti
+
+### 7.1 ............... saltata
+
+### 7.0 rimosse suonerie da secrets....##
+### per rimettere la possibilità di scegliere le suonerie basta inserire al posto dell'unica option questo codice:
+### options: !secret dss_gateway1_options_elenco_suonerie
+
+### 6.9
+### modificato messaggio vocale infissi chiusi in attivazione ed aggiunte le esclusioni
+
+### 6.8 
+### inserito controllo infissi aperti all'attivazione away e notifica tramite google mini
+
+### 6.7
+### fix lampeggiante in allarme attivato away
+
+### 6.6
+### ristemate le icone, i gruppi e nascoste le automazioni e gli script che non devono essere disattivati dall'utente.
+
+### 6.5
+### cambiati nomi notifiche
+
+### 6.4
+### correzione bug lampeggio su away
+
+### 6.3
+### - disattivato recorder
+### - fermato suoni e lampeggiante dopo passaggio da TRIGGERED ad ARMED
+
+### 6.2
+### - aggiunto lampeggio 0.2s on e 30s off in caso di attivazione in modalità AWAY se "Lampeggia quando Allarme in modalità AWAY" è ON
+
+###scarica questo package ed installalo vedi https://www.home-assistant.io/docs/configuration/packages/#create-a-packages-folder
+### supporto su https://t.me/HomeAssistant ###
+
+### developed by SDeSalve ###
+
+homeassistant: 
+  customize:
+  #personalizzo l'immagine del gruppo di dispositivi e dei dispositivi tracciati
+    binary_sensor.dss_mode_giorno:
+      # icon: mdi:theme-light-dark
+      hidden: true
+    binary_sensor.dss_people_home:
+      # icon: mdi:radar
+      hidden: true
+    input_boolean.dss_sospesa_attivazione_automatica:
+      hidden: true
+    input_boolean.dss_mute_gateway_sounds:
+      hidden: true
+    input_boolean.dss_necessaria_forzatura_attivazione:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away:
+      hidden: true
+    script.dss_procedura_attivazione_infissi_aperti:
+      hidden: true
+    script.dss_procedura_avvisa_attivazione_annullata:
+      hidden: true
+    script.dss_procedura_reset_attivazione_rimandata:
+      hidden: true
+    script.dss_play_pending_sound_day:
+      hidden: true
+    script.dss_play_triggered_sound_day:
+      hidden: true
+    script.dss_play_disarmed_sound_day:
+      hidden: true
+    script.dss_play_triggered_sound_night:
+      hidden: true
+    script.dss_play_pending_sound_night:
+      hidden: true
+    script.dss_play_disarmed_sound_night:
+      hidden: true
+    script.dss_triggered_sound_cancel:
+      hidden: true
+    script.dss_light_flash:
+      hidden: true
+    script.dss_light_flash_loop:
+      hidden: true
+    script.dss_light_flash_cancel:
+      hidden: true
+    script.dss_light_flash_away:
+      hidden: true
+    script.dss_light_flash_loop_away:
+      hidden: true
+    script.dss_light_flash_cancel_away:
+      hidden: true
+    script.dss_light_flash_disarmed:
+      hidden: true
+    script.dss_light_flash_loop_disarmed:
+      hidden: true
+    script.dss_light_flash_cancel_disarmed:
+      hidden: true
+
+alarm_control_panel:
+  - platform: manual
+    name: "Home Alarm"
+    pending_time: 0
+    disarmed:
+      trigger_time: 0
+    armed_home:
+      pending_time: 10
+      #nessun ritardo prima di far scattare l'allarme in caso di allarme HOME. Meglio che suoni subito!
+      delay_time: 0
+    armed_away:
+      pending_time: 30
+      #ritardo prima di far scattare l'allarme in caso di allarme AWAY. 
+      delay_time: 0
+
+input_number:
+  dss_delay_innesco_sensori_ritardati:
+    name: "Ritardo innesco allarme sensori ritardati"
+    icon: mdi:timer-sand
+    min: 0
+    max: 10
+    step: 1
+    unit_of_measurement: sec.
+    
+  dss_delay_riproduzione_suono_welcome:
+    name: "Ritardo ripr. 'Promemoria'"
+    icon: mdi:timer-sand
+    min: 3
+    max: 10
+    step: 1
+    unit_of_measurement: sec.
+
+
+input_boolean:
+  dss_sospesa_attivazione_automatica:
+    name: "Sospendi attivazione automatica"
+    icon: mdi:pause-circle
+
+  dss_mute_gateway_sounds:
+    name: "Silenzia allarme / Spegni lampeggiante"
+    icon: mdi:volume-off
+
+  dss_lights_on_away_mode:
+    name: "Lampeggia ROSSO quando Allarme in modalità AWAY"
+    icon: mdi:alarm-light
+    initial: on
+    
+  dss_lights_on_disarmed_mode:
+    name: "Lampeggia VERDE quando Allarme DISATTIVATO"
+    icon: mdi:alarm-light
+    initial: on
+    
+  dss_necessaria_forzatura_attivazione:
+    name: "Ignora infissi aperti"
+    icon: mdi:alarm-light
+    initial: off
+
+### Input select to select sound to play ###
+input_select:
+  dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home
+            
+  dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away
+
+binary_sensor:
+  - platform: template
+    sensors:
+      dss_people_home:
+        friendly_name: "Rilevati dispositivi tracciati in casa"
+          #inserire qui i gruppi di dispositivi o i dispositivi singoli tracciati che fanno scattare l'inserimento automatico
+        value_template: >-
+          {{ is_state('group.dss_dispositivi_user1', 'home') or is_state('group.dss_dispositivi_user2', 'home') or is_state('group.dss_dispositivi_user4', 'home') or is_state('group.dss_dispositivi_user4', 'home') }}
+
+  - platform: template
+    sensors:
+      dss_mode_giorno:
+        friendly_name: "Modalità di funzionamento Giorno"
+        #inserire qui l'ora di inizio e di fine della modalità giorno
+        value_template: >-
+          {{ states('sensor.time') > '07:00' and states('sensor.time') < '21:00' }}
+
+  - platform: template
+    sensors:
+      dss_alarm_giorno_attivo:
+        friendly_name: "Allarme diurno attivato"
+        value_template: >-
+          {{ states.binary_sensor.dss_mode_giorno.state == 'on' and states.alarm_control_panel.home_alarm.state != 'disarmed' }}
+        icon_template: mdi:alarm-light
+
+  - platform: template
+    sensors:
+      dss_alarm_notte_attivo:
+        friendly_name: "Allarme nottuno attivato"
+        icon_template: mdi:alarm-light
+        value_template: >-
+          {{ states.binary_sensor.dss_mode_giorno.state == 'off' and states.alarm_control_panel.home_alarm.state != 'disarmed' }}
+
+group:
+  allarme:
+    name: "Sicurezza Casa"
+    view: yes
+    entities:
+      - group.stato_allarme
+      - group.dss_dispositivi_tracciati
+      - group.stato_infissi
+      #qui si possono inserire altri gruppi, anche definiti in altri package... tipo quello del sensore allagamento
+
+  stato_allarme:
+    name: "Stato allarme"
+    control: hidden
+    entities:
+      - alarm_control_panel.home_alarm
+      - group.dss_gateway1_allarme_diurno
+      - group.dss_gateway1_allarme_notturno
+      - group.dss_automazioni_allarme
+      - group.dss_notifiche_allarme
+      - group.dss_gateway1_promemoria_allarme
+      - group.dss_gateway1_sensori_ritardati
+      - group.dss_avvisi_tts
+      - switch.ok_google_mo_torno
+
+  dss_automazioni_allarme:
+    name: "Automazioni globali Allarme"
+    control: hidden
+    icon: mdi:settings
+    entities:
+      - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
+      - automation.spegni_lampeggiante_ad_attivazione_avvenuta
+      - input_boolean.dss_lights_on_away_mode
+      - input_boolean.dss_lights_on_disarmed_mode
+      - automation.attivazione_automatica_se_dispositivi_non_in_casa
+      - automation.disattivazione_automatica_se_rientra_dispositivo
+      - automation.accendi_flash_gateway_verde_su_disattivazione
+      - automation.elenca_infissi_aperti_su_click_pulsanti
+      - automation.conferma_infissi_chiusi_su_doppio_click_pulsante_ingresso
+      # - automation.accendi_sonoff_combinatore_gms_su_allarme
+
+script:
+###########Ritardo l'inserimento di 30 secondi se gli infissi sono aperti                    
+  # infissi aperti attivo click singolo per sapere quali sono aperti, imposto il boolean per forzare l'attivazione e faccio partire il timer per l'annullamento.
+  dss_procedura_attivazione_infissi_aperti:
+    alias: "Procedura su attivazione con infissi aperti"
+    sequence:
+      - service: script.dss_alarm_script_accendi_light_gateways
+        data:
+          color_name: orange
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: automation.turn_on
+        data:
+          entity_id: automation.elenca_infissi_aperti_su_click_pulsanti
+      - service: automation.turn_on
+        data:
+          entity_id: automation.forza_attivazione_allarme_away_con_doppio_click_pulsante_ingresso
+      - service: automation.turn_on
+        data:
+          entity_id: automation.forza_attivazione_allarme_home_con_doppio_click_pulsanti_comodino
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Attenzione, alcuni infissi sono aperti... Clicca per l'elenco"
+
+  dss_procedura_reset_attivazione_rimandata:
+    alias: "Procedura reset attivazione rimandata"
+    sequence:
+      - condition: template
+        value_template: '{{ states.alarm_control_panel.home_alarm.state != "pending" }}'
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: automation.turn_off
+        data:
+          entity_id: automation.elenca_infissi_aperti_su_click_pulsanti
+      - service: automation.turn_off
+        data:
+          entity_id: automation.forza_attivazione_allarme_away_con_doppio_click_pulsante_ingresso
+      - service: automation.turn_off
+        data:
+          entity_id: automation.forza_attivazione_allarme_home_con_doppio_click_pulsanti_comodino
+      - service: script.dss_alarm_script_spegni_light_gateways
+
+  dss_play_triggered_sound_day:
+    alias: "GIORNO: Riproduci suono 'Allarme'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_triggered_sound_day
+      # - service: script.dss_alarm_gateway2_play_triggered_sound_day
+
+  dss_play_pending_sound_day:
+    alias: "GIORNO: Riproduci suono 'In Attivazione'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_pending_sound_day
+
+  dss_play_disarmed_sound_day:
+    alias: "GIORNO: Riproduci suono 'Disarmato'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_disarmed_sound_day
+
+### Scripts to play gateway sounds ###
+  dss_play_triggered_sound_night:
+    alias: "NOTTE: Riproduci suono 'Allarme'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_triggered_sound_night_loop
+
+  dss_play_pending_sound_night:
+    alias: "NOTTE: Riproduci suono 'In Attivazione'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_pending_sound_night
+
+  dss_play_disarmed_sound_night:
+    alias: "NOTTE: Riproduci suono 'Disarmato'"
+    sequence:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_play_disarmed_sound_night
+      
+# CANCEL Siren when Disarm - refer to Automation
+  dss_triggered_sound_cancel:
+    alias: "Silenzia e spegni Allarme"
+    sequence:
+      - delay:
+          seconds: 1
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_play_triggered_sound_day
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_play_triggered_sound_night
+      - service: script.dss_alarm_script_ferma_riproduzione_suono
+
+
+### le righe seguenti servono per la gestione di una smart plug collegata ad una sirena esterna
+      # - service: switch.turn_off
+        # data:
+          # entity_id: !secret entity_smart_plug
+
+  # dss_turn_on_smart_plug_day:
+    # alias: "GIORNO: Accendi Smart Plug"
+    # sequence:
+      # - condition: state
+        # entity_id: binary_sensor.dss_mode_giorno
+        # state: 'on'
+      # - condition: state
+        # entity_id: input_boolean.dss_mute_gateway_sounds
+        # state: 'off'
+      # - service: switch.turn_on
+        # data:
+          # entity_id: !secret entity_smart_plug
+
+  # dss_turn_on_smart_plug_night:
+    # alias: "NOTTE: Accendi Smart Plug"
+    # sequence:
+      # - condition: state
+        # entity_id: binary_sensor.dss_mode_giorno
+        # state: 'OFF'
+      # - condition: state
+        # entity_id: input_boolean.dss_mute_gateway_sounds
+        # state: 'off'
+      # - service: switch.turn_on
+        # data:
+          # entity_id: !secret entity_smart_plug
+
+############################################################
+###          ALARM TRIGGER START FLASHING LIGHT          ###
+############################################################
+
+  # START FLASH  
+  dss_light_flash:
+    alias: "Accendi luce lampeggiante in 'Allarme'"
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - service: script.dss_alarm_gateway_service_light_flash
+
+  # LOOP BACK TO START FLASH AGAIN         
+  dss_light_flash_loop:
+    alias: "Loop luce lampeggiante in 'Allarme'"
+    sequence:
+      - condition: state
+        entity_id: input_boolean.dss_mute_gateway_sounds
+        state: 'off'
+      - delay:
+        #### time for flash light off
+          seconds: .02
+      - service: script.dss_light_flash
+
+  # CANCEL FLASHING 
+  dss_light_flash_cancel:
+    alias: "Spegni luce lampeggiante in 'Allarme'"
+    sequence:
+      - delay:
+          seconds: 1
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_light_flash
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_light_flash_loop
+      - service: script.dss_alarm_script_spegni_light_gateways
+
+############################################################
+###          ALARM AWAY START FLASHING LIGHT             ###
+############################################################
+
+  # START FLASH  
+  dss_light_flash_away:
+    alias: "Accendi luce lampeggiante in 'Allarme' AWAY"
+    sequence:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+      - condition: state
+        entity_id: input_boolean.dss_lights_on_away_mode
+        state: 'on'
+      - service: script.dss_alarm_gateway_service_light_flash_away
+
+  # LOOP BACK TO START FLASH AGAIN         
+  dss_light_flash_loop_away:
+    alias: "Loop luce lampeggiante in 'Allarme' AWAY"
+    sequence:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+      - delay:
+      #### time for flash light off
+          seconds: 30
+      - service: script.dss_light_flash_away
+
+  # CANCEL FLASHING 
+  dss_light_flash_cancel_away:
+    alias: "Spegni luce lampeggiante in 'Allarme' AWAY"
+    sequence:
+      - delay:
+          seconds: 1
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_light_flash_away
+      - service: script.turn_off
+        data:
+          entity_id: script.dss_light_flash_loop_away
+      - service: script.dss_alarm_script_spegni_light_gateways
+
+automation:
+  # - alias: "Accendi SONOFF combinatore GMS su ALLARME"
+    # initial_state: true
+    # trigger:
+      # platform: state
+      # entity_id: alarm_control_panel.home_alarm
+      # to: 'triggered'
+    # action:
+      # - xxxxxxxxxxxxxxxx
+
+  - alias: "Accendi flash gateway verde su disattivazione"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      - service: script.dss_alarm_script_accendi_light_gateways
+        data:
+          color_name: green
+      - delay:
+        #### time for flash light on
+          seconds: 10
+      - service: script.dss_alarm_script_spegni_light_gateways
+
+  - alias: "Avviso infissi aperti su doppio click pulsante ingresso"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_away1
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim != "" }}
+    action:
+      - service: script.dss_procedura_attivazione_infissi_aperti
+      - delay:
+          seconds: 30
+      - service: script.dss_procedura_reset_attivazione_rimandata
+      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: alarm_control_panel.alarm_arm_away
+        data:
+          entity_id: alarm_control_panel.home_alarm
+        
+  - alias: "Avviso infissi aperti su doppio click pulsanti comodino"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
+    condition:
+      - condition: template
+        value_template: >
+          {% macro controllo_sensori() %}
+          {% set domains = ['binary_sensor'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+          {% for domain in domains -%}
+          {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {{ item.entity_id }}{% if not loop.last %}, {% endif %}
+          {% endfor %}
+          {%- endfor %}
+          {% endmacro %}
+          {{ controllo_sensori() |trim != "" }}
+    action:
+      - service: script.dss_procedura_attivazione_infissi_aperti
+      - delay:
+          seconds: 30
+      - service: script.dss_procedura_reset_attivazione_rimandata
+      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: alarm_control_panel.alarm_arm_home
+        data:
+          entity_id: alarm_control_panel.home_alarm     
+        
+  ###ho un pulsante all'ingresso. lo uso per attivare l'allarme MANUALMENTE in AWAY mode con DOPPIO CLICK
+  - alias: "Forza attivazione Allarme AWAY con DOPPIO CLICK Pulsante ingresso"      
+    initial_state: false
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_away1
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: disarmed
+      - condition: state
+        entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: alarm_control_panel.alarm_arm_away
+        data:
+          entity_id: alarm_control_panel.home_alarm     
+          
+  ###ho due pulsanti sui comodini. li uso per attivare l'allarme MANUALMENTE in HOME mode con DOPPIO CLICK
+  - alias: "Forza attivazione Allarme HOME con DOPPIO CLICK Pulsanti comodino"      
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: disarmed
+      - condition: state
+        entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_necessaria_forzatura_attivazione
+      - service: alarm_control_panel.alarm_arm_home
+        data:
+          entity_id: alarm_control_panel.home_alarm     
+
+  - alias: "Innesca se armato AWAY"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret sensori_che_fanno_scattare_allarme_away_mode
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+    action:
+      - service: alarm_control_panel.alarm_trigger
+        entity_id: alarm_control_panel.home_alarm 
+       
+  - alias: "Innesca se armato HOME"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret sensori_che_fanno_scattare_allarme_home_mode
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_home
+    action:
+      - service: alarm_control_panel.alarm_trigger
+        entity_id: alarm_control_panel.home_alarm 
+
+  - alias: "Attivazione automatica se Dispositivi non in Casa"
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_tracciati
+        from: 'home'
+        to: 'not_home'
+        for:
+          minutes: 1
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: disarmed
+      - condition: state
+        entity_id: input_boolean.dss_sospesa_attivazione_automatica
+        state: 'off'
+    action:
+      - service: alarm_control_panel.alarm_arm_away
+        data:
+          entity_id: alarm_control_panel.home_alarm     
+           
+  - alias: "Disattivazione automatica se rientra Dispositivo"      
+    # initial_state: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_tracciati
+        from: 'not_home'
+        to: 'home'
+        for:
+          seconds: 10
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        data:
+          entity_id: alarm_control_panel.home_alarm
+          
+  - alias: "Disattivazione sospensione attivazione automatica se rientra Dispositivo" 
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: group.dss_dispositivi_tracciati
+        from: 'not_home'
+        to: 'home'
+        for:
+          seconds: 10
+    condition:
+      - condition: state
+        entity_id: input_boolean.dss_sospesa_attivazione_automatica
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_sospesa_attivazione_automatica
+
+  ###Disattivo MANUALMENTE l'allarme con uno dei tre plusanti PREMUTI A LUNGO
+  - alias: "Disattiva Allarme con LONG CLICK Pulsanti"      
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: long_click_press 
+          entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: long_click_press 
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: long_click_press 
+          entity_id: !secret entity_pulsante_attiva_allarme_away1
+    condition:
+      condition: template
+      value_template: "{{ states.alarm_control_panel.home_alarm.state != 'disarmed' }}"
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        data:
+          entity_id: alarm_control_panel.home_alarm
+
+  ### Play specific sound while alarm is arming ###
+  - alias: "Attivazione allarme in corso"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        from: 'disarmed'
+        to: 'pending'
+    action:
+      ### Turn off gateway mute to play sound ###
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_play_pending_sound_day
+      - service: script.dss_play_pending_sound_night
+      - service: script.dss_light_flash_cancel_away
+      - service: script.dss_light_flash
+
+  ### Disattiva allarme, blocco i suoni ed il lampeggiante ###    
+  - alias: "Ferma suoni e luci quando disarmato"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_light_flash_cancel
+      - service: script.dss_light_flash_cancel_away
+      - service: script.dss_triggered_sound_cancel
+      - delay:
+          seconds: 1
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_play_disarmed_sound_day
+      - service: script.dss_play_disarmed_sound_night
+
+  ### Blocco i suoni dopo che l'allarme non è stato disinserito entro i 120sec  ###    
+  - alias: "Ferma suoni dopo 120 sec di 'Allarme'"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        from: 'triggered'
+        to: 'armed_away'
+    action:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_triggered_sound_cancel
+      - service: script.dss_light_flash_cancel
+      - service: script.dss_light_flash_cancel_away
+      - delay:
+          seconds: 10
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+### questi sono i componenti che mandano le notifiche - controlla i nomi dei propri servizi di notifica ###
+      - service: script.dss_alarm_script_invia_notifiche
+        data:
+          message: "ALLARME silenziato e RIARMATO in automatico!"
+
+      #spengo il lampeggiante quando armato AWAY, HOME o DISARMATO
+  - alias: "Spegni lampeggiante ad attivazione avvenuta"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_away'
+        for:
+          seconds: 30
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_home'
+        for:
+          seconds: 30
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      ### Turn off gateway mute to play sound ###
+      - delay: '00:00:30'
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_light_flash_cancel
+      - service: script.dss_light_flash_cancel_away
+   
+  #Accendo il lampeggiante quando armato AWAY, HOME o DISARMATO
+  - alias: "Accendi lampeggiante ad attivazione AWAY avvenuta"
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_away'
+        for:
+          seconds: 60
+    action:
+      ### Turn off gateway mute to play sound ###
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - delay: '00:00:30'
+      - service: script.dss_light_flash_away
+
+  ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
+  - alias: "GIORNO: Riproduci 'Promemoria Allarme AWAY'"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_away'
+    action:
+      - service: script.dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_away
+       
+  ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
+  - alias: "GIORNO: Riproduci 'Promemoria Allarme HOME'"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_home'
+    action:
+      - service: script.dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_home
+       
+  - alias: "GIORNO: Innesco Sensori ritardati Allarme AWAY"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_away'
+    action:
+      - service: script.dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_away
+       
+  - alias: "GIORNO: Innesco Sensori ritardati Allarme HOME"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_home'
+    action:
+      - service: script.dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_home
+       
+  ### Riproduci suono 'Allarme' quando scatta di giorno###
+  - alias: "Riproduci suono 'Allarme' quando scatta di giorno"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'triggered'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'on'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_play_triggered_sound_day
+      - service: script.dss_light_flash
+
+          ### questi sono i trigger che fanno scattare la riproduzione del suono di  notte###
+  - alias: "NOTTE: Riproduci 'Promemoria Allarme AWAY'"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_away'
+    action:
+      - service: script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_away
+
+  - alias: "NOTTE: Riproduci 'Promemoria Allarme HOME'"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_away'
+    action:
+      - service: script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home
+      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home
+
+  - alias: "NOTTE: Innesco Sensori ritardati Allarme AWAY"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_away'
+    action:
+      - service: script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away
+      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away
+       
+  - alias: "NOTTE: Innesco Sensori ritardati Allarme HOME"
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home1
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: 'armed_home'
+    action:
+      - service: script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home
+      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home
+       
+### Riproduci suono 'Allarme' quando scatta di notte###
+  - alias: "Riproduci suono 'Allarme' quando scatta di notte"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'triggered'
+    condition:
+      - condition: state
+        entity_id: binary_sensor.dss_mode_giorno
+        state: 'off'
+    action:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.dss_mute_gateway_sounds
+      - service: script.dss_play_triggered_sound_night
+      - service: script.dss_light_flash
+
+### Queste le key da personalizzare ed inserire nel file secrets.yaml
+
+# xiaomi_gateway1_mac: 11xx222x33xx
+
+# url_immagine_profilo_user1: "https://graph.facebook.com/xxxxxxxxx/picture?type=normal"
+# url_immagine_profilo_user2: "https://www.facebook.com/search/async/profile_picture/?fbid=xxxxxxxxx&width=100&height=100"
+
+# entity_light_gateway: light.gateway_light_xxxxxxxxxxxxxx
+# entity_sensore_promemoria_allarme_attivato_away1: binary_sensor.door_window_sensor_xxxxxxxxx
+# entity_sensore_promemoria_allarme_attivato_home1: [
+# binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 
+# binary_sensor.motion_sensor_yyyyyyyyyyyyyy
+#]
+
+# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: ['Metti qui', 'Elenco NOMI Sensori da ignorare']
+# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: ['Metti qui', 'Elenco NOMI Sensori da ignorare']
+
+# entity_pulsante_attiva_allarme_home1: binary_sensor.switch_aaaaaaaaaaaaaa
+# entity_pulsante_attiva_allarme_home2: binary_sensor.switch_bbbbbbbbbbbbbb
+# entity_pulsante_attiva_allarme_away1: binary_sensor.switch_cccccccccccccc
+
+# sensori_che_fanno_scattare_allarme_home_mode: [
+# binary_sensor.door_window_sensor_zzzzzzzzzzzzzz, 
+# binary_sensor.door_window_sensor_jjjjjjjjjjjjjj, 
+# binary_sensor.door_window_sensor_wwwwwwwwwwwwww
+# ]
+# sensori_che_fanno_scattare_allarme_away_mode: [
+# binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 
+# binary_sensor.motion_sensor_yyyyyyyyyyyyyy, 
+# binary_sensor.door_window_sensor_zzzzzzzzzzzzzz, 
+# binary_sensor.door_window_sensor_jjjjjjjjjjjjjj, 
+# binary_sensor.door_window_sensor_wwwwwwwwwwwwww
+# ]
+
+# #Nome dei Gruppi degli utenti. Devono cominciare con "Dispositivi "
+# nome_gruppo_dispositivi_utente1: "Dispositivi Utente1" 
+# elenco_dispositivi_tracciati_user1: [
+# device_tracker.redmi_note_4_ip,
+# device_tracker.redmi_note_4_bt,
+# sensor.tracker_Nut_utente1
+# ]
+# nome_gruppo_dispositivi_utente2: "Dispositivi Utente2"
+# elenco_dispositivi_tracciati_user2: [
+# device_tracker.redmi_note_6_pro_ip,
+# device_tracker.redmi_note_6_pro_bt,
+# sensor.tracker_Nut_utente2
+# ]
+
+# nome_dispositivo_Nut_tracker_user1: "Tracker Nut Utente1"
+# topic_dispositivo_Nut_tracker_user1: "xxxxxx/sensor/casa/xxxxxx/state"
+
+# nome_dispositivo_Nut_tracker_user2: "Tracker Nut Utente2"
+# topic_dispositivo_Nut_tracker_user2: "xxxxxx/sensor/casa/xxxxxx/state"
+
+
+
+### esempio contenuto editor grezzo LOVELACE
+
+  # - title: Sicurezza Casa
+    # badges: []
+    # path: allarme
+    # cards:
+      # - entity: alarm_control_panel.home_alarm
+        # type: alarm-panel
+      # - title: Dispositivi Tracciati
+        # show_header_toggle: false
+        # type: entities
+        # entities:
+          # - group.dss_dispositivi_user1
+          # - group.dss_dispositivi_user2
+      # - show_header_toggle: false
+        # title: Stato allarme
+        # type: entities
+        # entities:
+          # - entity: group.dss_gateway1_allarme_diurno
+          # - entity: group.dss_gateway1_allarme_notturno
+          # - entity: group.dss_automazioni_allarme
+          # - entity: group.dss_notifiche_allarme
+          # - entity: group.dss_gateway1_promemoria_allarme
+          # - entity: group.dss_gateway1_sensori_ritardati
+          # - entity: group.dss_avvisi_tts
+          # - entity: switch.ok_google_mo_torno

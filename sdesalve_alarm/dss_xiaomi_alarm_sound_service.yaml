@@ -1,0 +1,42 @@
+homeassistant: 
+  customize:
+    script.dss_alarm_script_riproduci_suono_gateway1:
+      hidden: true
+    # script.dss_alarm_script_riproduci_suono_gateway2:
+      # hidden: true
+    script.dss_alarm_script_ferma_riproduzione_suono:
+      hidden: true
+      
+script:
+  dss_alarm_script_riproduci_suono_gateway1:
+    sequence:
+      - service: xiaomi_aqara.play_ringtone
+        data_template: 
+        ### qui va messo il MAC del Gateway Xiaomi. Io uso il file secrets.yaml https://www.home-assistant.io/docs/configuration/secrets/ ###
+          gw_mac: !secret xiaomi_gateway1_mac
+          ringtone_id: "{{ ringtone_id }}"
+          ringtone_vol: "{{ ringtone_vol }}"
+
+###Esempio per utilizzare 2 gateway xiaomi per la riproduzione dei suoni
+  # dss_alarm_script_riproduci_suono_gateway2:
+    # sequence:
+      # - service: xiaomi_aqara.play_ringtone
+        # data_template: 
+        # ### qui va messo il MAC del Gateway Xiaomi. Io uso il file secrets.yaml https://www.home-assistant.io/docs/configuration/secrets/ ###
+          # gw_mac: !secret xiaomi_gateway2_mac
+          # ringtone_id: "{{ ringtone_id }}"
+          # ringtone_vol: "{{ ringtone_vol }}"
+
+  dss_alarm_script_ferma_riproduzione_suono:
+    sequence:
+      - service: xiaomi_aqara.stop_ringtone
+        data_template:
+          ### qui va messo il MAC del Gateway Xiaomi. Io uso il file secrets.yaml https://www.home-assistant.io/docs/configuration/secrets/ ###
+          gw_mac: !secret xiaomi_gateway1_mac
+
+###Esempio per utilizzare 2 gateway xiaomi per la riproduzione dei suoni
+      # - service: xiaomi_aqara.stop_ringtone
+        # data_template:
+          # ### qui va messo il MAC del Gateway Xiaomi. Io uso il file secrets.yaml https://www.home-assistant.io/docs/configuration/secrets/ ###
+          # gw_mac: !secret xiaomi_gateway2_mac
+

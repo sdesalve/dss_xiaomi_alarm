@@ -1,0 +1,20 @@
+homeassistant: 
+  customize:
+    script.dss_alarm_script_accendi_light_gateways:
+      hidden: true
+    script.dss_alarm_script_spegni_light_gateways:
+      hidden: true
+
+script:
+  dss_alarm_script_accendi_light_gateways:
+    sequence:
+      - service: light.turn_on
+        data_template:
+          entity_id: !secret entity_light_gateway
+          color_name: "{{ color_name }}"
+          
+  dss_alarm_script_spegni_light_gateways:
+    sequence:
+      - service: light.turn_off
+        data_template:
+          entity_id: !secret entity_light_gateway

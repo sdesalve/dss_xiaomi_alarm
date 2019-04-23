@@ -410,7 +410,6 @@ script:
         entity_id: input_boolean.dss_mute_gateway_sounds
         state: 'off'
       - service: script.dss_alarm_gateway_service_play_triggered_sound_day
-      # - service: script.dss_alarm_gateway2_play_triggered_sound_day
 
   dss_play_pending_sound_day:
     alias: "GIORNO: Riproduci suono 'In Attivazione'"
@@ -1095,7 +1094,6 @@ automation:
         state: 'armed_away'
     action:
       - service: script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home
-      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home
 
   - alias: "NOTTE: Innesco Sensori ritardati Allarme AWAY"
     trigger:
@@ -1112,7 +1110,6 @@ automation:
         state: 'armed_away'
     action:
       - service: script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away
-      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away
        
   - alias: "NOTTE: Innesco Sensori ritardati Allarme HOME"
     trigger:
@@ -1129,7 +1126,6 @@ automation:
         state: 'armed_home'
     action:
       - service: script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home
-      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home
        
 ### Riproduci suono 'Allarme' quando scatta di notte###
   - alias: "Riproduci suono 'Allarme' quando scatta di notte"

@@ -1,3 +1,18 @@
+### v10.8 sostituite notifiche TTS con alexa_media_player https://github.com/keatontaylor/alexa_media_player
+### righe da decommentare e personalizzare
+  
+# alexa_media:
+  # accounts:
+    # - email: !secret alexa_email
+      # password: !secret alexa_password
+      # url: amazon.it
+      # exclude_devices:
+      # - "Questo dispositivo"
+      
+# notify:
+  # - platform: alexa_media
+    # name: alexa_media
+
 homeassistant: 
   customize:
     script.dss_voice_riproduci_messaggio_tts:
@@ -40,10 +55,23 @@ script:
       # - service: notify.notifiche_tts
         # data_template:
           # message: "{{ message }}"
-      - service: notify.alexa_echo
+      # - service: notify.alexa_echo
+        # data_template:
+          # message: "{{ message }}"
+      - service: media_player.volume_set
+        data_template: 
+          entity_id: !secret entity_amazon_echo_id
+          volume_level: 0.5
+      - service: notify.alexa_media
         data_template:
           message: "{{ message }}"
-
+          target: !secret entity_amazon_echo_id
+          #title: "My title for Echo show"
+          data:
+            type: announce
+            #method: all
+          
+        
 ### ATTENZIONE: se usato, è richiesto anche lo script seguente. Nel caso tu non utilizzassi il mio package google_voice, devi decommentare il seguente script:
   # dss_voice_riproduci_messaggio:
     # sequence:
@@ -145,12 +173,12 @@ automation:
       - platform: event
         event_type: xiaomi_aqara.click
         event_data:
-          click_type: double
+          click_type: single
           entity_id: !secret entity_pulsante_attiva_allarme_home1
       - platform: event
         event_type: xiaomi_aqara.click
         event_data:
-          click_type: double
+          click_type: single
           entity_id: !secret entity_pulsante_attiva_allarme_home2
     condition:
       - condition: template

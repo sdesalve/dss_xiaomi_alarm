@@ -12,6 +12,8 @@ homeassistant:
       hidden: true
     script.dss_alarm_gateway_service_play_disarmed_sound_night:
       hidden: true
+    script.dss_alarm_gateway_service_light_off:
+      hidden: true
     script.dss_alarm_gateway_service_light_flash:
       hidden: true
     script.dss_alarm_gateway_service_light_flash_away:
@@ -63,6 +65,20 @@ script:
     sequence:
       - service: script.dss_alarm_gateway1_play_disarmed_sound_night
       # - service: script.dss_alarm_gateway2_play_disarmed_sound_night
+
+  dss_alarm_gateway_service_light_on:
+    sequence:
+      - service: script.dss_alarm_gateway1_light_on
+        data_template:
+          color_name: "{{ color_name }}"
+      # - service: script.dss_alarm_gateway2_light_on
+        # data_template:
+          # color_name: "{{ color_name }}"
+
+  dss_alarm_gateway_service_light_off:
+    sequence:
+      - service: script.dss_alarm_gateway1_light_off
+      # - service: script.dss_alarm_gateway2_light_off
 
   dss_alarm_gateway_service_light_flash:
     sequence:

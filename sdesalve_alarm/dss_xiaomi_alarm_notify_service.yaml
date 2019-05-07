@@ -31,8 +31,22 @@ automation:
     hide_entity: true
     trigger:
       - platform: state
-        entity_id: alarm_control_panel.home_alarm
-        to: 'triggered'
+        from: 'off'
+        to: 'on'
+        entity_id: !secret sensori_che_fanno_scattare_allarme_away_mode
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret sensori_che_fanno_scattare_allarme_home_mode
+    condition:
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_home
     action:
       - service: script.dss_alarm_script_invia_notifiche
         data_template:
@@ -97,7 +111,7 @@ automation:
             {% for domain in domains -%}
             {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
             
-            * {{ item.entity_id }}
+            * {{ item.name }}
             {% endfor %}
             {%- endfor %}
             {% endmacro %}
@@ -108,7 +122,7 @@ automation:
             {% else %}
             
             ATTENZIONE: i seguenti infissi sono rimasti aperti:
-
+            
             {{ elenco_infissi }}
             {% endif %}
 

@@ -452,27 +452,30 @@ script:
           # seconds: 1
       # - service: script.dss_alarm_gateway1_play_disarmed_sound_night
 
+  dss_alarm_gateway1_light_on:
+    sequence:
+      - service: light.turn_on
+        data_template:
+          entity_id: !secret entity_light_gateway1
+          color_name: "{{ color_name }}"
+
+  dss_alarm_gateway1_light_off:
+    sequence:
+      - service: light.turn_off
+        data_template:
+          entity_id: !secret entity_light_gateway1
+
   dss_alarm_gateway1_light_flash:
     sequence:
-      - service: script.dss_alarm_script_accendi_light_gateways
+      - service: script.dss_alarm_gateway1_light_on
         data:
           color_name: red
-      - delay:
-        #### time for flash light on
-          seconds: .02
-      - service: script.dss_alarm_script_spegni_light_gateways
-      - service: script.dss_light_flash_loop
 
   dss_alarm_gateway1_light_flash_away:
     sequence:
-      - service: script.dss_alarm_script_accendi_light_gateways
+      - service: script.dss_alarm_gateway1_light_on
         data:
           color_name: red
-      - delay:
-        #### time for flash light on
-          seconds: .02
-      - service: script.dss_alarm_script_spegni_light_gateways
-      - service: script.dss_light_flash_loop_away
       
   dss_alarm_gateway1_script_giorno_riproduci_promemoria_allarme_away:
     alias: "Script GIORNO: Riproduci 'Promemoria Allarme AWAY'"

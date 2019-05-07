@@ -1,3 +1,10 @@
+### v 10.8 del 07/05/2019
+### rinominata secrets entity_light_gateway in entity_light_gateway1
+### rinominato script.dss_alarm_script_accendi_light_gateways in dss_alarm_script_accendi_luci_segnalazione
+### rinominato script.dss_alarm_script_spegni_light_gateways in dss_alarm_script_spegni_luci_segnalazione
+
+
+
 ### v 10.8 del 05/05/2019
 ### aggiunte secrets all'esempio
 ### fix nomi sensori aperti
@@ -34,7 +41,7 @@
 ### 10.3
 ### cambiato script dss_alarm_script_ferma_riproduzione_suono e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
 ### aggiunto codice di esempio per poter usare 2 gateway per la riproduzione dei suoni
-### creati script dss_alarm_script_accendi_light_gateways e dss_alarm_script_spegni_light_gateways. Spostata la gestione della luce del gateay nel file dss_xiaomi_alarm_light_service.yaml
+### creati script dss_alarm_script_accendi_luci_segnalazione e dss_alarm_script_spegni_luci_segnalazione. Spostata la gestione della luce del gateay nel file dss_xiaomi_alarm_light_service.yaml
 
 ### 10.2 
 ### - splittato file in diversi file per semplificarne la personalizzazione e l'aggiornamento.
@@ -393,7 +400,7 @@ script:
   dss_procedura_attivazione_infissi_aperti:
     alias: "Procedura su attivazione con infissi aperti"
     sequence:
-      - service: script.dss_alarm_script_accendi_light_gateways
+      - service: script.dss_alarm_script_accendi_luci_segnalazione
         data:
           color_name: orange
       - service: input_boolean.turn_on
@@ -429,7 +436,7 @@ script:
       - service: automation.turn_off
         data:
           entity_id: automation.forza_attivazione_allarme_home_con_doppio_click_pulsanti_comodino
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
 
   dss_play_triggered_sound_day:
     alias: "GIORNO: Riproduci suono 'Allarme'"
@@ -556,6 +563,11 @@ script:
         entity_id: input_boolean.dss_mute_gateway_sounds
         state: 'off'
       - service: script.dss_alarm_gateway_service_light_flash
+      - delay:
+        #### time for flash light on
+          seconds: .02
+      - service: script.dss_alarm_gateway_service_light_off
+      - service: script.dss_light_flash_loop
 
   # LOOP BACK TO START FLASH AGAIN         
   dss_light_flash_loop:
@@ -581,7 +593,7 @@ script:
       - service: script.turn_off
         data:
           entity_id: script.dss_light_flash_loop
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
 
 ############################################################
 ###          ALARM AWAY START FLASHING LIGHT             ###
@@ -598,6 +610,11 @@ script:
         entity_id: input_boolean.dss_lights_on_away_mode
         state: 'on'
       - service: script.dss_alarm_gateway_service_light_flash_away
+      - delay:
+        #### time for flash light on
+          seconds: .02
+      - service: script.dss_alarm_gateway_service_light_off
+      - service: script.dss_light_flash_loop_away
 
   # LOOP BACK TO START FLASH AGAIN         
   dss_light_flash_loop_away:
@@ -623,7 +640,7 @@ script:
       - service: script.turn_off
         data:
           entity_id: script.dss_light_flash_loop_away
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
 
 automation:
   # - alias: "Accendi SONOFF combinatore GMS su ALLARME"
@@ -642,13 +659,13 @@ automation:
         entity_id: alarm_control_panel.home_alarm
         to: 'disarmed'
     action:
-      - service: script.dss_alarm_script_accendi_light_gateways
+      - service: script.dss_alarm_script_accendi_luci_segnalazione
         data:
           color_name: green
       - delay:
         #### time for flash light on
           seconds: 10
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
 
   - alias: "Avviso infissi aperti su doppio click pulsante ingresso"
     initial_state: true
@@ -677,7 +694,7 @@ automation:
       - delay:
           seconds: 30
       - service: script.dss_procedura_reset_attivazione_rimandata
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
@@ -717,7 +734,7 @@ automation:
       - delay:
           seconds: 30
       - service: script.dss_procedura_reset_attivazione_rimandata
-      - service: script.dss_alarm_script_spegni_light_gateways
+      - service: script.dss_alarm_gateway_service_light_off
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
@@ -1184,7 +1201,7 @@ automation:
 # url_immagine_profilo_user1: "https://graph.facebook.com/xxxxxxxxx/picture?type=normal"
 # url_immagine_profilo_user2: "https://www.facebook.com/search/async/profile_picture/?fbid=xxxxxxxxx&width=100&height=100"
 
-# entity_light_gateway: light.gateway_light_xxxxxxxxxxxxxx
+# entity_light_gateway1: light.gateway_light_xxxxxxxxxxxxxx
 # entity_sensore_promemoria_allarme_attivato_away1: binary_sensor.door_window_sensor_xxxxxxxxx
 # entity_sensore_promemoria_allarme_attivato_home1: [
 # binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 

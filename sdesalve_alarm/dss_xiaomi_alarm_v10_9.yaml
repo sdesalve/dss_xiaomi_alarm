@@ -1,3 +1,7 @@
+### v 10.9 del 08/05/2019
+### fix Invia notifica se innescato AWAY ed Invia notifica se innescato HOME
+
+
 ### v 10.8 del 07/05/2019
 ### rinominata secrets entity_light_gateway in entity_light_gateway1
 ### rinominato script.dss_alarm_script_accendi_light_gateways in dss_alarm_script_accendi_luci_segnalazione

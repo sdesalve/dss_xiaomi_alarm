@@ -26,7 +26,27 @@ group:
       - automation.notifica_che_gli_utenti_sono_usciti
       
 automation:
-  - alias: "Invia notifica se innescato"
+  - alias: "Invia notifica se innescato HOME"
+    initial_state: true
+    hide_entity: true
+    trigger:
+      - platform: state
+        from: 'off'
+        to: 'on'
+        entity_id: !secret sensori_che_fanno_scattare_allarme_home_mode
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_home
+    action:
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template:
+          message: >-
+           ALLARME Intrusione!
+           
+           {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+
+  - alias: "Invia notifica se innescato AWAY"
     initial_state: true
     hide_entity: true
     trigger:
@@ -34,19 +54,10 @@ automation:
         from: 'off'
         to: 'on'
         entity_id: !secret sensori_che_fanno_scattare_allarme_away_mode
-      - platform: state
-        from: 'off'
-        to: 'on'
-        entity_id: !secret sensori_che_fanno_scattare_allarme_home_mode
     condition:
-      condition: or
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_home
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: armed_away
     action:
       - service: script.dss_alarm_script_invia_notifiche
         data_template:

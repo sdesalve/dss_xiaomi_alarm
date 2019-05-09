@@ -485,7 +485,7 @@ script:
       - condition: state
         entity_id: input_boolean.dss_mute_gateway_sounds
         state: 'off'
-      - service: script.dss_alarm_gateway_service_play_triggered_sound_night_loop
+      - service: script.dss_alarm_gateway_service_play_triggered_sound_night
 
   dss_play_pending_sound_night:
     alias: "NOTTE: Riproduci suono 'In Attivazione'"

@@ -17,8 +17,7 @@ homeassistant:
   customize:
     script.dss_voice_riproduci_messaggio_tts:
       hidden: true
-    script.dss_voice_riproduci_messaggio:
-      hidden: true
+
 group:
   dss_avvisi_tts:
     name: "Avvisi TTS Allarme"
@@ -33,31 +32,32 @@ group:
       - automation.avviso_tts_allarme_innescato
 
 script:
-  ### v10.2 aggiunte notifiche TTS Amazon Alexa: 
-  
+  dss_voice_riproduci_messaggio_tts:
+    sequence:
+  # classico Google TTS
+      # - service: tts.google_say
+        # entity_id: media_player.ingresso
+        # data_template:
+          # language: it
+          # message: "{{ message }}"
+
+  ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
+  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
+      # - service: notify.notifiche_tts
+        # data_template:
+          # message: "{{ message }}"
+
+  ### v10.2 notifiche TTS Amazon Alexa: 
   #queste le modifiche da fare allo script scaricabile da https://github.com/walthowd/ha-alexa-tts
   # LANGUAGE="it-IT"
   # AMAZON='amazon.it'
   # ALEXA='alexa.amazon.it'
 
-  ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
-  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
-  
-  #ho aggiunto Google Assistant Web Server per le notifiche TTS
-  # per info https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274
-  # se preferisci usare il classico TTS, inverti i service commentati nello scrip tui sotto
-
-  dss_voice_riproduci_messaggio_tts:
-    sequence:
-      # - service: script.dss_voice_riproduci_messaggio
-        # data_template:
-          # message: "{{ message }}"
-      # - service: notify.notifiche_tts
-        # data_template:
-          # message: "{{ message }}"
       # - service: notify.alexa_echo
         # data_template:
           # message: "{{ message }}"
+
+  ### alexa_media_player https://github.com/keatontaylor/alexa_media_player vedi sopra come configurarlo
       - service: media_player.volume_set
         data_template: 
           entity_id: !secret entity_amazon_echo_id
@@ -70,16 +70,6 @@ script:
           data:
             type: announce
             #method: all
-          
-        
-### ATTENZIONE: se usato, è richiesto anche lo script seguente. Nel caso tu non utilizzassi il mio package google_voice, devi decommentare il seguente script:
-  # dss_voice_riproduci_messaggio:
-    # sequence:
-    # - service: tts.google_say
-      # entity_id: media_player.ingresso
-      # data_template:
-        # language: it
-        # message: "{{ message }}"
 
 automation:
   - alias: "Avviso TTS Allarme disarmato"
@@ -175,11 +165,6 @@ automation:
         event_data:
           click_type: single
           entity_id: !secret entity_pulsante_attiva_allarme_home1
-      - platform: event
-        event_type: xiaomi_aqara.click
-        event_data:
-          click_type: single
-          entity_id: !secret entity_pulsante_attiva_allarme_home2
     condition:
       - condition: template
         value_template: >
@@ -288,11 +273,6 @@ automation:
         event_data:
           click_type: double
           entity_id: !secret entity_pulsante_attiva_allarme_home1
-      - platform: event
-        event_type: xiaomi_aqara.click
-        event_data:
-          click_type: double
-          entity_id: !secret entity_pulsante_attiva_allarme_home2
     condition:
       - condition: template
         value_template: >

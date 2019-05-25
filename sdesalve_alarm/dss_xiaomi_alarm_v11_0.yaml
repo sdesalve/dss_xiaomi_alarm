@@ -1,6 +1,8 @@
-### v11.0 del 13/05/2019
+### v11.0 del 25/05/2019
 ### rimossa dal gruppo automazioni globali l'automazione "accendi_lampeggiante_ad_attivazione_away_avvenuta". Tanto c'è input_boolean.dss_lights_on_away_mode
 ### rimossa secrets entity_pulsante_attiva_allarme_home2
+### ottimizzazione files. Rimosso dss_xiaomi_alarm_sound_service.yaml
+
 
 
 ### v 10.9 del 08/05/2019

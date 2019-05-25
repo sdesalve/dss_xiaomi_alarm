@@ -1,10 +1,6 @@
-### v11.0 del 13/05/2019
-### rimossa dal gruppo automazioni globali l'automazione "accendi_lampeggiante_ad_attivazione_away_avvenuta". Tanto c'è input_boolean.dss_lights_on_away_mode
-### rimossa secrets entity_pulsante_attiva_allarme_home2
-
-
-### v 10.9 del 08/05/2019
+### v 10.9.1 del 25/05/2019
 ### fix Invia notifica se innescato AWAY ed Invia notifica se innescato HOME
+### ottimizzazione files. Rimosso dss_xiaomi_alarm_sound_service.yaml
 
 
 ### v 10.8 del 07/05/2019
@@ -48,7 +44,7 @@
 ### Aggiunto promemoria allarme attivo anche in modalità home (vedi entity entity_sensore_promemoria_allarme_attivato_home1)
 
 ### 10.3
-### cambiato script dss_alarm_script_ferma_riproduzione_suono_gateway1 e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
+### cambiato script dss_alarm_script_ferma_riproduzione_suono e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
 ### aggiunto codice di esempio per poter usare 2 gateway per la riproduzione dei suoni
 ### creati script dss_alarm_script_accendi_luci_segnalazione e dss_alarm_script_spegni_luci_segnalazione. Spostata la gestione della luce del gateay nel file dss_xiaomi_alarm_light_service.yaml
 
@@ -273,6 +269,7 @@ input_number:
     step: 1
     unit_of_measurement: sec.
 
+
 input_boolean:
   dss_sospesa_attivazione_automatica:
     name: "Sospendi attivazione automatica"
@@ -367,7 +364,7 @@ group:
     control: hidden
     icon: mdi:settings
     entities:
-      # - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
+      - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
       - automation.spegni_lampeggiante_ad_attivazione_avvenuta
       - input_boolean.dss_lights_on_away_mode
       - input_boolean.dss_lights_on_disarmed_mode
@@ -408,9 +405,6 @@ script:
   dss_procedura_attivazione_infissi_aperti:
     alias: "Procedura su attivazione con infissi aperti"
     sequence:
-      - service: script.dss_voice_riproduci_messaggio_tts
-        data:
-          message: "Attenzione, alcuni infissi sono aperti... Clicca per l'elenco"
       - service: script.dss_alarm_script_accendi_luci_segnalazione
         data:
           color_name: orange
@@ -426,6 +420,9 @@ script:
       - service: automation.turn_on
         data:
           entity_id: automation.forza_attivazione_allarme_home_con_doppio_click_pulsanti_comodino
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Attenzione, alcuni infissi sono aperti... Clicca per l'elenco"
 
   dss_procedura_reset_attivazione_rimandata:
     alias: "Procedura reset attivazione rimandata"
@@ -489,7 +486,7 @@ script:
       - condition: state
         entity_id: input_boolean.dss_mute_gateway_sounds
         state: 'off'
-      - service: script.dss_alarm_gateway_service_play_triggered_sound_night_loop
+      - service: script.dss_alarm_gateway_service_play_triggered_sound_night
 
   dss_play_pending_sound_night:
     alias: "NOTTE: Riproduci suono 'In Attivazione'"
@@ -525,7 +522,7 @@ script:
       - service: script.turn_off
         data:
           entity_id: script.dss_play_triggered_sound_night
-      - service: script.dss_alarm_script_ferma_riproduzione_suono_gateway1
+      - service: script.dss_alarm_script_ferma_riproduzione_suono
 
 
 ### le righe seguenti servono per la gestione di una smart plug collegata ad una sirena esterna
@@ -719,6 +716,11 @@ automation:
         event_data:
           click_type: double
           entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
     condition:
       - condition: template
         value_template: >
@@ -731,7 +733,7 @@ automation:
           {% endfor %}
           {%- endfor %}
           {% endmacro %}
-          {{ controllo_sensori() | trim != "" }}
+          {{ controllo_sensori() |trim != "" }}
     action:
       - service: script.dss_procedura_attivazione_infissi_aperti
       - delay:
@@ -743,7 +745,7 @@ automation:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
       - service: alarm_control_panel.alarm_arm_home
         data:
-          entity_id: alarm_control_panel.home_alarm
+          entity_id: alarm_control_panel.home_alarm     
         
   ###ho un pulsante all'ingresso. lo uso per attivare l'allarme MANUALMENTE in AWAY mode con DOPPIO CLICK
   - alias: "Forza attivazione Allarme AWAY con DOPPIO CLICK Pulsante ingresso"      
@@ -768,7 +770,7 @@ automation:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
       - service: alarm_control_panel.alarm_arm_away
         data:
-          entity_id: alarm_control_panel.home_alarm
+          entity_id: alarm_control_panel.home_alarm     
           
   ###ho due pulsanti sui comodini. li uso per attivare l'allarme MANUALMENTE in HOME mode con DOPPIO CLICK
   - alias: "Forza attivazione Allarme HOME con DOPPIO CLICK Pulsanti comodino"      
@@ -780,6 +782,11 @@ automation:
         event_data:
           click_type: double
           entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: double
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
     condition:
       - condition: state
         entity_id: alarm_control_panel.home_alarm
@@ -894,6 +901,11 @@ automation:
         event_data:
           click_type: long_click_press 
           entity_id: !secret entity_pulsante_attiva_allarme_home1
+      - platform: event
+        event_type: xiaomi_aqara.click
+        event_data:
+          click_type: long_click_press 
+          entity_id: !secret entity_pulsante_attiva_allarme_home2
       - platform: event
         event_type: xiaomi_aqara.click
         event_data:
@@ -1206,7 +1218,8 @@ automation:
 # dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx]
 # dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx, binary_sensor.motion_sensor_yyyyyyyyyyyyyy]
 
-# entity_pulsante_attiva_allarme_home1: [binary_sensor.switch_aaaaaaaaaaaaaa, binary_sensor.switch_bbbbbbbbbbbbbb]
+# entity_pulsante_attiva_allarme_home1: binary_sensor.switch_aaaaaaaaaaaaaa
+# entity_pulsante_attiva_allarme_home2: binary_sensor.switch_bbbbbbbbbbbbbb
 # entity_pulsante_attiva_allarme_away1: binary_sensor.switch_cccccccccccccc
 
 # sensori_che_fanno_scattare_allarme_home_mode: [
@@ -1236,11 +1249,11 @@ automation:
 # sensor.tracker_Nut_utente2
 # ]
 
-# nome_dispositivo_nut_tracker_user1: "Tracker Nut Utente1"
-# topic_dispositivo_nut_tracker_user1: "xxxxxx/sensor/casa/xxxxxx/state"
+# nome_dispositivo_Nut_tracker_user1: "Tracker Nut Utente1"
+# topic_dispositivo_Nut_tracker_user1: "xxxxxx/sensor/casa/xxxxxx/state"
 
-# nome_dispositivo_nut_tracker_user2: "Tracker Nut Utente2"
-# topic_dispositivo_nut_tracker_user2: "xxxxxx/sensor/casa/xxxxxx/state"
+# nome_dispositivo_Nut_tracker_user2: "Tracker Nut Utente2"
+# topic_dispositivo_Nut_tracker_user2: "xxxxxx/sensor/casa/xxxxxx/state"
 
 
 

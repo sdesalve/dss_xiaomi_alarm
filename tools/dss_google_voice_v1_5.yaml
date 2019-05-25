@@ -1,8 +1,5 @@
 ### developed by SDeSalve ###
 
-### v1.6
-### aggiunta possibilità di escludere entity da controllare nelle macro per nome o per entity_id
-
 ### v1.5
 ### aggiunto switch per riproduzione video su chromecast
 
@@ -208,14 +205,11 @@ script:
 
   dss_voice_riproduci_messaggio:
     sequence:
-      - service: script.dss_voice_riproduci_messaggio_tts
-        data_template:
-          message: "{{ message }}"
-    # - service: tts.google_translate_say
-      # entity_id: media_player.ingresso
-      # data_template:
-        # language: it
-        # message: "{{ message }}"
+    - service: tts.google_say
+      entity_id: media_player.ingresso
+      data_template:
+        language: it
+        message: "{{ message }}"
 
   dss_voice_script_stato_finestre:
     alias: "Controlla infissi aperti"
@@ -227,7 +221,7 @@ script:
           {% set domains = ['binary_sensor'] %}
           {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
           {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
           {{ item.name }} aperta...
           {% endfor %}
           {%- endfor %}
@@ -241,7 +235,7 @@ script:
         {% set domains = ['binary_sensor'] %}
         {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
         {% for domain in domains -%}
-        {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+        {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
         {{ item.name }} aperta...
         {% endfor %}
         {%- endfor %}
@@ -258,10 +252,10 @@ script:
       data_template:
         message: >-
           {% macro controllo_luci() %}
-          {% set domains = ['light','switch'] %}
-          {% set exclusions = ['Luce da ignorare', 'light.123455'] %}
+          {% set domains = ['light'] %}
+          {% set exclusions = ['Luce da ignorare'] %}
           {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+          {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on')) -%}
           {{ item.name }} accesa...
           {% endfor %}
           {%- endfor %}
@@ -272,10 +266,10 @@ script:
     - condition: template
       value_template: >
         {% macro controllo_luci() %}
-        {% set domains = ['light','switch'] %}
-        {% set exclusions = ['Luce da ignorare', 'light.123455'] %}
+        {% set domains = ['light'] %}
+        {% set exclusions = ['Luce da ignorare'] %}
         {% for domain in domains -%}
-        {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+        {% for item in states[domain] if (item.name not in exclusions) if ((item.state == 'on')) -%}
         {{ item.name }} accesa...
         {% endfor %}
         {%- endfor %}
@@ -353,7 +347,7 @@ automation:
             {{ [
             "Bentornato Salvatore... " ,
             "Ciao Salvatore... " 
-            ] |random }}
+            ] | random }}
           
   - alias: "DSS VOICE Benvenuta user2"
     initial_state: true

@@ -4,19 +4,17 @@ homeassistant:
       entity_picture: !secret url_immagine_profilo_user1 
     group.dss_dispositivi_user2:
       entity_picture: !secret url_immagine_profilo_user2
-    device_tracker.pocophone_user1_ip:
+    device_tracker.pocophone_salvatore_ip:
       entity_picture: !secret url_immagine_profilo_user1
-    device_tracker.pocophone_user1_bt:
+    device_tracker.pocophone_salvatore_bt:
       entity_picture: !secret url_immagine_profilo_user1
-    device_tracker.redmi_note_6_pro_user2_ip:
+    device_tracker.redmi_note_6_pro_vale_ip:
       entity_picture: !secret url_immagine_profilo_user2  
-    device_tracker.redmi_note_6_pro_user2_bt:
+    device_tracker.redmi_note_6_pro_vale_bt:
       entity_picture: !secret url_immagine_profilo_user2  
-    sensor.tracker_nut_user1:
-      friendly_name: !secret nome_dispositivo_nut_tracker_user1
+    sensor.tracker_Nut_salvatore:
       entity_picture: !secret url_immagine_profilo_user1
-    sensor.tracker_nut_user2:
-      friendly_name: !secret nome_dispositivo_nut_tracker_user2
+    sensor.tracker_Nut_valeria:
       entity_picture: !secret url_immagine_profilo_user2
 
 group:
@@ -60,34 +58,35 @@ group:
     # entities: !secret elenco_dispositivi_tracciati_user4
 
 ### questi sono i sensori che vengono aggiornati tramite MQTT con un ESP32 e servono a rilevare le presenze con Bluetooth LowEnergy
+### se non usi quel sistema.... puoi rimuovere questa parte
 ### qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
 
-### se non usi quel sistema.... puoi rimuovere tutta questa parte
 sensor:    
   - platform: mqtt
-    name: !secret nome_dispositivo_nut_tracker_user1
-    state_topic: !secret topic_dispositivo_nut_tracker_user1
+    name: !secret nome_dispositivo_Nut_tracker_user1
+    state_topic: !secret topic_dispositivo_Nut_tracker_user1
     availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
+    # expire_after: 180
     value_template: >-
       {% if value == 'ON' %}
         home
       {% elif value == 'OFF' %}
         away
       {% else %}
-        away
+        offline
       {% endif %}
 
   - platform: mqtt
-    name: !secret nome_dispositivo_nut_tracker_user2
-    state_topic: !secret topic_dispositivo_nut_tracker_user2
+    name: !secret nome_dispositivo_Nut_tracker_user2
+    state_topic: !secret topic_dispositivo_Nut_tracker_user2
     availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
+    # expire_after: 180
     value_template: >-
       {% if value == 'ON' %}
         home
       {% elif value == 'OFF' %}
         away
       {% else %}
-        away
+        offline
       {% endif %}
+

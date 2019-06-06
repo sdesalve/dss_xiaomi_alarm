@@ -1,5 +1,7 @@
 homeassistant: 
   customize:
+    script.dss_alarm_gateway_service_ferma_riproduzione_suoni:
+      hidden: true
     script.dss_alarm_gateway_service_play_triggered_sound_day:
       hidden: true
     script.dss_alarm_gateway_service_play_pending_sound_day:
@@ -35,98 +37,111 @@ homeassistant:
     script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home:
       hidden: true
 
+group:
+  stato_gateway_service:
+    name: "Stato Gateways"
+    control: hidden
+    entities:
+      - group.stato_gateway1
+      - group.stato_gateway2
+
 script:
+  dss_alarm_gateway_service_ferma_riproduzione_suoni:
+    sequence:
+      - service: script.dss_alarm_script_ferma_riproduzione_suono_gateway1
+      - service: script.dss_alarm_script_ferma_riproduzione_suono_gateway2
+
   dss_alarm_gateway_service_play_triggered_sound_day:
     sequence:
       - service: script.dss_alarm_gateway1_play_triggered_sound_day
-      # - service: script.dss_alarm_gateway2_play_triggered_sound_day
+      - service: script.dss_alarm_gateway2_play_triggered_sound_day
 
   dss_alarm_gateway_service_play_pending_sound_day:
     sequence:
       - service: script.dss_alarm_gateway1_play_pending_sound_day
-      # - service: script.dss_alarm_gateway2_play_pending_sound_day
+      - service: script.dss_alarm_gateway2_play_pending_sound_day
 
   dss_alarm_gateway_service_play_disarmed_sound_day:
     sequence:
       - service: script.dss_alarm_gateway1_play_disarmed_sound_day
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_day
+      - service: script.dss_alarm_gateway2_play_disarmed_sound_day
 
   dss_alarm_gateway_service_play_triggered_sound_night:
     sequence:
       - service: script.dss_alarm_gateway1_play_triggered_sound_night
-      # - service: script.dss_alarm_gateway2_play_triggered_sound_night
+      - service: script.dss_alarm_gateway2_play_triggered_sound_night
 
   dss_alarm_gateway_service_play_pending_sound_night:
     sequence:
       - service: script.dss_alarm_gateway1_play_pending_sound_night
-      # - service: script.dss_alarm_gateway2_play_pending_sound_night
+      - service: script.dss_alarm_gateway2_play_pending_sound_night
 
   dss_alarm_gateway_service_play_disarmed_sound_night:
     sequence:
       - service: script.dss_alarm_gateway1_play_disarmed_sound_night
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_night
+      - service: script.dss_alarm_gateway2_play_disarmed_sound_night
 
   dss_alarm_gateway_service_light_on:
     sequence:
       - service: script.dss_alarm_gateway1_light_on
         data_template:
           color_name: "{{ color_name }}"
-      # - service: script.dss_alarm_gateway2_light_on
-        # data_template:
-          # color_name: "{{ color_name }}"
+      - service: script.dss_alarm_gateway2_light_on
+        data_template:
+          color_name: "{{ color_name }}"
 
   dss_alarm_gateway_service_light_off:
     sequence:
       - service: script.dss_alarm_gateway1_light_off
-      # - service: script.dss_alarm_gateway2_light_off
+      - service: script.dss_alarm_gateway2_light_off
 
   dss_alarm_gateway_service_light_flash:
     sequence:
       - service: script.dss_alarm_gateway1_light_flash
-      # - service: script.dss_alarm_gateway2_light_flash
+      - service: script.dss_alarm_gateway2_light_flash
 
   dss_alarm_gateway_service_light_flash_away:
     sequence:
       - service: script.dss_alarm_gateway1_light_flash_away
-      # - service: script.dss_alarm_gateway2_light_flash_away
+      - service: script.dss_alarm_gateway2_light_flash_away
 
   dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_away:
     sequence:
       - service: script.dss_alarm_gateway1_script_giorno_riproduci_promemoria_allarme_away
-      # - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_away
+      - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_away
 
   dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_home:
     sequence:
       - service: script.dss_alarm_gateway1_script_giorno_riproduci_promemoria_allarme_home
-      # - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_home
+      - service: script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_home
 
   dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_away:
     sequence:
       - service: script.dss_alarm_gateway1_script_giorno_sensore_innesco_ritardato_allarme_away
-      # - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_away
+      - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_away
 
   dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_home:
     sequence:
       - service: script.dss_alarm_gateway1_script_giorno_sensore_innesco_ritardato_allarme_home
-      # - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_home
+      - service: script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_home
 
   dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_away:
     sequence:
       - service: script.dss_alarm_gateway1_script_notte_riproduci_promemoria_allarme_away
-      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_away
+      - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_away
 
   dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home:
     sequence:
       - service: script.dss_alarm_gateway1_script_notte_riproduci_promemoria_allarme_home
-      # - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home
+      - service: script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home
 
   dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away:
     sequence:
       - service: script.dss_alarm_gateway1_script_notte_sensore_innesco_ritardato_allarme_away
-      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away
+      - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away
 
   dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_home:
     sequence:
       - service: script.dss_alarm_gateway1_script_notte_sensore_innesco_ritardato_allarme_home
-      # - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home
+      - service: script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home
 

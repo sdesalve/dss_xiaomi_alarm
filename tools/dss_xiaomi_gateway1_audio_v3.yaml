@@ -1,58 +1,58 @@
 group:
-  Xiaomi Gateway:
-    - input_number.dss_xg_loop_delay
-    - script.dss_xg_play_sel_sound
-    - input_boolean.dss_xg_mute_gateway_sounds
-    - script.dss_xg_play_sel_sound_loop
-    - script.dss_xg_play_sel_sound_single
-    - input_number.dss_xg_gateway_volume
-    - input_select.dss_xg_gateway_sound
+  Xiaomi gateway1:
+    - input_number.dss_gateway1_loop_delay
+    - script.dss_gateway1_play_sel_sound
+    - input_boolean.dss_gateway1_mute_gateway_sounds
+    - script.dss_gateway1_play_sel_sound_loop
+    - script.dss_gateway1_play_sel_sound_single
+    - input_number.dss_gateway1_gateway_volume
+    - input_select.dss_gateway1_gateway_sound
 
 ### Input boolean to mute gateway sound ###
 input_boolean:
-  dss_xg_mute_gateway_sounds:
+  dss_gateway1_mute_gateway_sounds:
     name: Mute
     icon: mdi:volume-off
 ### Scripts to play gateway sounds ###
 script:
-  dss_xg_play_sel_sound:
+  dss_gateway1_play_sel_sound:
     alias: "Loop Play Sound"
     sequence:
       - condition: state
-        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
         state: 'off'
       - service: xiaomi_aqara.play_ringtone
         data_template:
           gw_mac: !secret xiaomi_gateway1_mac
-          ringtone_id: "{{ states.input_select.dss_xg_gateway_sound.state.split('-')[0] }}"
-          ringtone_vol: "{{ states.input_number.dss_xg_gateway_volume.state|int }}"
-      - delay: '00:00:{{ states.input_number.dss_xg_loop_delay.state | int }}'
-      - service: script.dss_xg_play_sel_sound_loop
+          ringtone_id: "{{ states.input_select.dss_gateway1_gateway_sound.state.split('-')[0] }}"
+          ringtone_vol: "{{ states.input_number.dss_gateway1_gateway_volume.state|int }}"
+      - delay: '00:00:{{ states.input_number.dss_gateway1_loop_delay.state | int }}'
+      - service: script.dss_gateway1_play_sel_sound_loop
 
-  dss_xg_play_sel_sound_loop:
+  dss_gateway1_play_sel_sound_loop:
     alias: "Play selected sound in Loop"
     sequence:
       - condition: state
-        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
         state: 'off'
-      - delay: '00:00:{{ states.input_number.dss_xg_loop_delay.state | int }}'
-      - service: script.dss_xg_play_sel_sound
+      - delay: '00:00:{{ states.input_number.dss_gateway1_loop_delay.state | int }}'
+      - service: script.dss_gateway1_play_sel_sound
 
-  dss_xg_play_sel_sound_single:
+  dss_gateway1_play_sel_sound_single:
     alias: "Single Play Sound"
     sequence:
       - condition: state
-        entity_id: input_boolean.dss_xg_mute_gateway_sounds
+        entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
         state: 'off'
       - service: xiaomi_aqara.play_ringtone
         data_template:
           gw_mac: !secret xiaomi_gateway1_mac
-          ringtone_id: "{{ states.input_select.dss_xg_gateway_sound.state.split('-')[0] }}"
-          ringtone_vol: "{{ states.input_number.dss_xg_gateway_volume.state|int }}"
+          ringtone_id: "{{ states.input_select.dss_gateway1_gateway_sound.state.split('-')[0] }}"
+          ringtone_vol: "{{ states.input_number.dss_gateway1_gateway_volume.state|int }}"
 
 ### Input slider to control gateway volume ###
 input_number:
-  dss_xg_gateway_volume:
+  dss_gateway1_gateway_volume:
     name: Volume
     initial: 10
     min: 0
@@ -61,7 +61,7 @@ input_number:
     icon: mdi:volume-high
 
 ### Input slider to control loop delay ###
-  dss_xg_loop_delay:
+  dss_gateway1_loop_delay:
     name: "Loop Delay"
     initial: 1
     min: 0
@@ -71,7 +71,7 @@ input_number:
 
 ### Input select to select sound to play ###
 input_select:
-  dss_xg_gateway_sound:
+  dss_gateway1_gateway_sound:
     name: Ringtone
     #le varie suonerie sono definite nel secrets.yaml. vedi nota alla fine del file
     options: !secret dss_gateway1_options_elenco_suonerie

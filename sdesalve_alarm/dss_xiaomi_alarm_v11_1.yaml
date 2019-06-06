@@ -1,3 +1,15 @@
+### v11.2 del 04/06/2019
+### aggiunto secondo Gateway di default. Nel caso non vi servisse, rimuovete tutti i riferimenti a gateway2
+
+
+
+### v11.1 del 27/05/2019
+### creato script dss_alarm_gateway_service_ferma_riproduzione_suoni per richiamare dss_alarm_script_ferma_riproduzione_suono_gateway1
+### creato gruppo stato_gateway_service per contenere i controlli dei vari gateway
+### Nascosta automazione spegni_lampeggiante_ad_attivazione_avvenuta e resa visibile accendi_lampeggiante_ad_attivazione_away_avvenuta
+### Nascosta automazione accendi_flash_gateway_verde_su_disattivazione 
+### Nascosta automazione conferma_infissi_chiusi_su_doppio_click_pulsante_ingresso 
+
 ### v11.0 del 25/05/2019
 ### rimossa dal gruppo automazioni globali l'automazione "accendi_lampeggiante_ad_attivazione_away_avvenuta". Tanto c'è input_boolean.dss_lights_on_away_mode
 ### rimossa secrets entity_pulsante_attiva_allarme_home2
@@ -50,7 +62,7 @@
 ### Aggiunto promemoria allarme attivo anche in modalità home (vedi entity entity_sensore_promemoria_allarme_attivato_home1)
 
 ### 10.3
-### cambiato script dss_alarm_script_ferma_riproduzione_suono_gateway1 e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
+### cambiato script dss_alarm_script_ferma_riproduzione_suono_gateway1e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
 ### aggiunto codice di esempio per poter usare 2 gateway per la riproduzione dei suoni
 ### creati script dss_alarm_script_accendi_luci_segnalazione e dss_alarm_script_spegni_luci_segnalazione. Spostata la gestione della luce del gateay nel file dss_xiaomi_alarm_light_service.yaml
 
@@ -355,12 +367,9 @@ group:
     control: hidden
     entities:
       - alarm_control_panel.home_alarm
-      - group.dss_gateway1_allarme_diurno
-      - group.dss_gateway1_allarme_notturno
+      - group.stato_gateway_service
       - group.dss_automazioni_allarme
       - group.dss_notifiche_allarme
-      - group.dss_gateway1_promemoria_allarme
-      - group.dss_gateway1_sensori_ritardati
       - group.dss_avvisi_tts
       - switch.ok_google_mo_torno
 
@@ -369,15 +378,15 @@ group:
     control: hidden
     icon: mdi:settings
     entities:
-      # - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
-      - automation.spegni_lampeggiante_ad_attivazione_avvenuta
+      - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
+      # - automation.spegni_lampeggiante_ad_attivazione_avvenuta
       - input_boolean.dss_lights_on_away_mode
       - input_boolean.dss_lights_on_disarmed_mode
       - automation.attivazione_automatica_se_dispositivi_non_in_casa
       - automation.disattivazione_automatica_se_rientra_dispositivo
-      - automation.accendi_flash_gateway_verde_su_disattivazione
+      # - automation.accendi_flash_gateway_verde_su_disattivazione
       - automation.elenca_infissi_aperti_su_click_pulsanti
-      - automation.conferma_infissi_chiusi_su_doppio_click_pulsante_ingresso
+      # - automation.conferma_infissi_chiusi_su_doppio_click_pulsante_ingresso
       # - automation.accendi_sonoff_combinatore_gms_su_allarme
 
   dss_stato_sensori_immediati_home:
@@ -527,7 +536,7 @@ script:
       - service: script.turn_off
         data:
           entity_id: script.dss_play_triggered_sound_night
-      - service: script.dss_alarm_script_ferma_riproduzione_suono_gateway1
+      - service: script.dss_alarm_gateway_service_ferma_riproduzione_suoni
 
 
 ### le righe seguenti servono per la gestione di una smart plug collegata ad una sirena esterna
@@ -664,10 +673,15 @@ automation:
 
   - alias: "Accendi flash gateway verde su disattivazione"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         to: 'disarmed'
+    condition:
+      - condition: state
+        entity_id: input_boolean.dss_lights_on_disarmed_mode
+        state: 'on'
     action:
       - service: script.dss_alarm_script_accendi_luci_segnalazione
         data:
@@ -979,8 +993,6 @@ automation:
 
       #spengo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Spegni lampeggiante ad attivazione avvenuta"
-    initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1006,6 +1018,8 @@ automation:
    
   #Accendo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Accendi lampeggiante ad attivazione AWAY avvenuta"
+    initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1191,31 +1205,54 @@ automation:
 
 ### Queste le key da personalizzare ed inserire nel file secrets.yaml
 
-# xiaomi_gateway1_mac: 11xx222x33xx
+# ############ DSS XIAOMI ALARM #############
 
+# ### MAC Address del primo Gateway Xiaomi. Notare la mancanza di separatori (:) e la scrittura in minuscolo.
+# xiaomi_gateway1_mac: 11aa222b33cd
+
+# ### se avete ulteriori gateway dovete inserirne i mac address
+# ### xiaomi_gateway2_mac: 22xx222x33xx
+
+
+# ### URL di un'immagine da associare agli utenti tracciati
 # url_immagine_profilo_user1: "https://graph.facebook.com/xxxxxxxxx/picture?type=normal"
 # url_immagine_profilo_user2: "https://www.facebook.com/search/async/profile_picture/?fbid=xxxxxxxxx&width=100&height=100"
 
+
+# ### se avete ulteriori utenti, definite anche le loro immagini. Nulla vi vieta di usare immagini locali
+# ### url_immagine_profilo_user3: "/local/www/foto.jpg"
+
+# ### Entity_id della luce del Gateway1
 # entity_light_gateway1: light.gateway_light_xxxxxxxxxxxxxx
+
+# ### se avete ulteriori gateway... sapete cosa fare
+
+# ### Entity_id di un sensore o di un gruppo di sensori che al cambio di stato da OFF ad ON, in caso di allarme attivo, farà riprodurre un avviso di allarme ATTIVO.
+# ### Notate che è possibile usare un entity_id singolo o un array. Se non si desidera utilizzare tale funzionalità basterà inserire un array vuoto: [ ]
 # entity_sensore_promemoria_allarme_attivato_away1: binary_sensor.door_window_sensor_xxxxxxxxx
 # entity_sensore_promemoria_allarme_attivato_home1: [
 # binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 
 # binary_sensor.motion_sensor_yyyyyyyyyyyyyy
-#]
-
+# ]
+# ### Entity_id di un sensore o di un gruppo di sensori che al cambio di stato da OFF ad ON, in caso di allarme attivo, farà riprodurre un avviso di allarme ATTIVO e DOPO 30 secondi farà innescare l'allarme.
 # entity_sensore_innesco_ritardato_allarme_away1: binary_sensor.door_window_sensor_xxxxxxxxxx
 # entity_sensore_innesco_ritardato_allarme_home1: []
-# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx]
-# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.motion_sensor_xxxxxxxxxxxxxx, binary_sensor.motion_sensor_yyyyyyyyyyyyyy]
 
+# ### Entity_id di un sensore o di un gruppo di sensori che, in fase di attivazione dell'allarme non dovranno essere considerati nel controllo dell'apertura. 
+# ### Cioè non ne verrà segnalata l'apertura mediante avvisi luminosi, TTS o Notifiche (Telegram e/o HTML5)
+# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: [binary_sensor.door_window_sensor_wwwwwwwwwwwwww]
+# dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.door_window_sensor_wwwwwwwwwwwwww, binary_sensor.door_window_sensor_zzzzzzzzzzzzzz]
+# ### Entity_id di un sensore o di un gruppo di sensori che attivano/disattivano l'allarme. 
+# ### Ovviamente sarà possibile specificare entity_id singoli, gruppi (mediante array [ ]), o array vuoti ([ ]).
 # entity_pulsante_attiva_allarme_home1: [binary_sensor.switch_aaaaaaaaaaaaaa, binary_sensor.switch_bbbbbbbbbbbbbb]
 # entity_pulsante_attiva_allarme_away1: binary_sensor.switch_cccccccccccccc
-
+# ### Entity_id di un sensore o di un gruppo di sensori che innescano l'allarme se attivo in modalità HOME. 
 # sensori_che_fanno_scattare_allarme_home_mode: [
 # binary_sensor.door_window_sensor_zzzzzzzzzzzzzz, 
 # binary_sensor.door_window_sensor_jjjjjjjjjjjjjj, 
 # binary_sensor.door_window_sensor_wwwwwwwwwwwwww
 # ]
+# ### Entity_id di un sensore o di un gruppo di sensori che innescano l'allarme se attivo in modalità AWAY. 
 # sensori_che_fanno_scattare_allarme_away_mode: [
 # binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 
 # binary_sensor.motion_sensor_yyyyyyyyyyyyyy, 
@@ -1224,20 +1261,24 @@ automation:
 # binary_sensor.door_window_sensor_wwwwwwwwwwwwww
 # ]
 
-# #Nome dei Gruppi degli utenti. Devono cominciare con "Dispositivi "
-# nome_gruppo_dispositivi_utente1: "Dispositivi Utente1" 
+# ### Nome del Gruppo dei dispositivi dell'utente 1. Deve cominciare con "Dispositivi "
+# nome_gruppo_dispositivi_utente1: "Dispositivi VOSTRO NOME" 
+
+# ### Entity_id di un device_tracker o di un gruppo di device_tracker che devono essere tracciati per l'utente 1. 
 # elenco_dispositivi_tracciati_user1: [
 # device_tracker.redmi_note_4_ip,
 # device_tracker.redmi_note_4_bt,
 # sensor.tracker_Nut_utente1
 # ]
-# nome_gruppo_dispositivi_utente2: "Dispositivi Utente2"
+# ### Nome del Gruppo dei dispositivi dell'utente 1. Deve cominciare con "Dispositivi "
+# nome_gruppo_dispositivi_utente2: "Dispositivi NOME ALTRO UTENTE"
+# ### Entity_id di un device_tracker o di un gruppo di device_tracker che devono essere tracciati per l'utente 2
 # elenco_dispositivi_tracciati_user2: [
 # device_tracker.redmi_note_6_pro_ip,
 # device_tracker.redmi_note_6_pro_bt,
 # sensor.tracker_Nut_utente2
 # ]
-
+# ### Se utilizzate il tracker ESP32 con Ble2Mqtt specificate il nome dei tracker ed i Topic MQTT
 # nome_dispositivo_nut_tracker_user1: "Tracker Nut Utente1"
 # topic_dispositivo_nut_tracker_user1: "xxxxxx/sensor/casa/xxxxxx/state"
 
@@ -1248,27 +1289,37 @@ automation:
 
 ### esempio contenuto editor grezzo LOVELACE
 
-  # - title: Sicurezza Casa
-    # badges: []
-    # path: allarme
+  # - badges: []
     # cards:
       # - entity: alarm_control_panel.home_alarm
         # type: alarm-panel
-      # - title: Dispositivi Tracciati
-        # show_header_toggle: false
-        # type: entities
-        # entities:
+      # - entities:
           # - group.dss_dispositivi_user1
           # - group.dss_dispositivi_user2
-      # - show_header_toggle: false
-        # title: Stato allarme
+          # - group.dss_automazioni_allarme
+          # - group.dss_notifiche_allarme
+          # - group.dss_avvisi_tts
+          # - switch.ok_google_mo_torno
+        # show_header_toggle: false
+        # title: Impostazioni Allarme
         # type: entities
-        # entities:
+      # - entities:
           # - entity: group.dss_gateway1_allarme_diurno
           # - entity: group.dss_gateway1_allarme_notturno
           # - entity: group.dss_automazioni_allarme
-          # - entity: group.dss_notifiche_allarme
           # - entity: group.dss_gateway1_promemoria_allarme
           # - entity: group.dss_gateway1_sensori_ritardati
-          # - entity: group.dss_avvisi_tts
-          # - entity: switch.ok_google_mo_torno
+        # show_header_toggle: false
+        # title: Stato allarme Gateway 1
+        # type: entities
+      # - entities:
+          # - entity: group.dss_gateway2_allarme_diurno
+          # - entity: group.dss_gateway2_allarme_notturno
+          # - entity: group.dss_automazioni_allarme
+          # - entity: group.dss_gateway2_promemoria_allarme
+          # - entity: group.dss_gateway2_sensori_ritardati
+        # show_header_toggle: false
+        # title: Stato allarme Gateway 2
+        # type: entities
+    # path: allarme
+    # title: Sicurezza Casa

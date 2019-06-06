@@ -23,7 +23,7 @@ group:
 ### Elenco dei Dispositivi Tracciati - inserite qui i dispositivi che fanno attivare/disattivare l'allarme in automatico ###
 ### io uso NMAP https://www.home-assistant.io/components/device_tracker.nmap_tracker/ ###
 ### e BLUETOOTH https://www.home-assistant.io/components/device_tracker.bluetooth_tracker/ ###
-### Ho aggiunto anche un tracker BTLE con un ESP32. qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
+### Ho aggiunto anche un tracker BTLE con un ESP32. qui la mia guida: https://github.com/sdesalve/dss_mqtt_binary_sensor_ble_scanner/blob/master/guida%20MQTT.pdf
 
 #questo è un gruppo di gruppi. Dato che traccio sia tramite bluetooth_tracker che tramite nmap_tracker i miei cellulari mi dava fastidio vedere 4 dispositivi.
 #così è immediato capire chi è in casa anche se viene tracciato con più metodi
@@ -65,7 +65,7 @@ group:
 ### se non usi quel sistema.... puoi rimuovere tutta questa parte
 sensor:    
   - platform: mqtt
-    name: !secret nome_dispositivo_nut_tracker_user1
+    name: tracker_nut_user1
     state_topic: !secret topic_dispositivo_nut_tracker_user1
     availability_topic: !secret topic_dispositivo_ESP32_availability
     expire_after: 300
@@ -79,7 +79,7 @@ sensor:
       {% endif %}
 
   - platform: mqtt
-    name: !secret nome_dispositivo_nut_tracker_user2
+    name: tracker_nut_user2
     state_topic: !secret topic_dispositivo_nut_tracker_user2
     availability_topic: !secret topic_dispositivo_ESP32_availability
     expire_after: 300

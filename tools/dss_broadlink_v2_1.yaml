@@ -22,14 +22,14 @@ binary_sensor:
 
 media_player:
   - platform: smartir
-    name: TV Cucina SmartIR
+    name: TV Cucina
     unique_id: tv_cucina_smartir
     device_code: 1060
     controller_data: !secret broadlink_rm_cucina_ip
     power_sensor: binary_sensor.chromecast_cucina_ping
     
   - platform: smartir
-    name: TV Letto SmartIR
+    name: TV Letto
     unique_id: tv_letto_smartir
     device_code: 1060
     controller_data: !secret broadlink_rm_letto_ip

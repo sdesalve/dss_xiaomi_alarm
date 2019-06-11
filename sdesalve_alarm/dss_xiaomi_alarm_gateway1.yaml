@@ -139,7 +139,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "1 - Police car 2"
     
   dss_gateway1_pending_sound_day:
@@ -149,7 +149,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10005 - Bip inserimento"
 
   dss_gateway1_disarmed_sound_day:
@@ -159,7 +159,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10036 - Allarme disinserito"
 
   dss_gateway1_alarm_sound_night_home:
@@ -169,7 +169,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "1 - Police car 2"
         
   dss_gateway1_pending_sound_night:
@@ -179,7 +179,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10005 - Bip inserimento"
 
   dss_gateway1_disarmed_sound_night:
@@ -189,7 +189,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10036 - Allarme disinserito"
 
   dss_gateway1_welcome_sound_day:
@@ -199,7 +199,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10037 - Benvenuto Allarme armato"
     
   dss_gateway1_welcome_sound_night:
@@ -209,7 +209,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10037 - Benvenuto Allarme armato"
     
   dss_gateway1_delayed_sensors_sound_day:
@@ -219,7 +219,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10037 - Benvenuto Allarme armato"
     
   dss_gateway1_delayed_sensors_sound_night:
@@ -229,7 +229,7 @@ input_select:
     #ho tolto la possibilità di scegliere le suonerie per evitare che possano essere cambiate involontariamente.
     #inverti i commenti nelle due righe qui sotto per far riapparire la possibilità di selezionare le suonerie
     
-    options: !secret dss_gateway1_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway1
     #options: "10037 - Benvenuto Allarme armato"
     
 group:
@@ -632,10 +632,12 @@ script:
 
 
 ### per aggiungere altri gateway, duplicare questo file e sostituire gateway1 con gateway2 ecc ecc
-        
-        
+#Queste le secrets richieste:
+# xiaomi_gateway1_mac: 34xx008xx1xx
+# entity_light_gateway1: light.gateway_light_34xx008xx1xx
+
 # # # Questo è l'elenco delle suonerie da inserire nel file secrets.yaml.
-# dss_gateway1_options_elenco_suonerie: [
+# dss_options_elenco_suonerie_gateway1: [
 # "0 - Police car 1", 
 # "1 - Police car 2", 
 # "2 - Accident", 

@@ -37,8 +37,8 @@
 
 ### v 10.7 del 20/04/2019
 ### aggiunti sensori ritardati e input_number per impostare il ritardo dal triggering all'innesco
-###     entity_sensore_innesco_ritardato_allarme_away1: binary_sensor.door_window_sensor_xxxxxxxxxx
-###     entity_sensore_innesco_ritardato_allarme_home1: []
+###     entity_sensore_innesco_ritardato_allarme_away: binary_sensor.door_window_sensor_xxxxxxxxxx
+###     entity_sensore_innesco_ritardato_allarme_home: []
 ### rimosso delay innesco allarme in modalità AWAY
 
 ### cambiati da nomi a entity_id dei sensori da ignorare negli avvisi TTS
@@ -59,7 +59,7 @@
 ### v 10.4 del 21/02/2019
 ### Pulizia di vecchie entity nei gruppi
 ### sistemati entity volume negli esempi per il 2° gateway
-### Aggiunto promemoria allarme attivo anche in modalità home (vedi entity entity_sensore_promemoria_allarme_attivato_home1)
+### Aggiunto promemoria allarme attivo anche in modalità home (vedi entity entity_sensore_promemoria_allarme_attivato_home)
 
 ### 10.3
 ### cambiato script dss_alarm_script_ferma_riproduzione_suono_gateway1e rimossi i dati del gateway. li prendo con il secret direttamente nel file dss_xiaomi_alarm_sound_service.yaml
@@ -165,7 +165,7 @@
 
 ### 7.0 rimosse suonerie da secrets....##
 ### per rimettere la possibilità di scegliere le suonerie basta inserire al posto dell'unica option questo codice:
-### options: !secret dss_gateway1_options_elenco_suonerie
+### options: !secret dss_options_elenco_suonerie_gateway1
 
 ### 6.9
 ### modificato messaggio vocale infissi chiusi in attivazione ed aggiunte le esclusioni
@@ -405,13 +405,13 @@ group:
     name: "Sensori ritardati"
     control: hidden
     icon: mdi:settings
-    entities: !secret entity_sensore_innesco_ritardato_allarme_away1
+    entities: !secret entity_sensore_innesco_ritardato_allarme_away
 
   dss_stato_sensori_ritardati_away:
     name: "Sensori ritardati"
     control: hidden
     icon: mdi:clock
-    entities: !secret entity_sensore_innesco_ritardato_allarme_home1
+    entities: !secret entity_sensore_innesco_ritardato_allarme_home
 
 script:
 ###########Ritardo l'inserimento di 30 secondi se gli infissi sono aperti                    
@@ -699,7 +699,7 @@ automation:
         event_type: xiaomi_aqara.click
         event_data:
           click_type: double
-          entity_id: !secret entity_pulsante_attiva_allarme_away1
+          entity_id: !secret entity_pulsante_attiva_allarme_away
     condition:
       - condition: template
         value_template: >
@@ -734,7 +734,7 @@ automation:
         event_type: xiaomi_aqara.click
         event_data:
           click_type: double
-          entity_id: !secret entity_pulsante_attiva_allarme_home1
+          entity_id: !secret entity_pulsante_attiva_allarme_home
     condition:
       - condition: template
         value_template: >
@@ -770,7 +770,7 @@ automation:
         event_type: xiaomi_aqara.click
         event_data:
           click_type: double
-          entity_id: !secret entity_pulsante_attiva_allarme_away1
+          entity_id: !secret entity_pulsante_attiva_allarme_away
     condition:
       - condition: state
         entity_id: alarm_control_panel.home_alarm
@@ -795,7 +795,7 @@ automation:
         event_type: xiaomi_aqara.click
         event_data:
           click_type: double
-          entity_id: !secret entity_pulsante_attiva_allarme_home1
+          entity_id: !secret entity_pulsante_attiva_allarme_home
     condition:
       - condition: state
         entity_id: alarm_control_panel.home_alarm
@@ -909,12 +909,12 @@ automation:
         event_type: xiaomi_aqara.click
         event_data:
           click_type: long_click_press 
-          entity_id: !secret entity_pulsante_attiva_allarme_home1
+          entity_id: !secret entity_pulsante_attiva_allarme_home
       - platform: event
         event_type: xiaomi_aqara.click
         event_data:
           click_type: long_click_press 
-          entity_id: !secret entity_pulsante_attiva_allarme_away1
+          entity_id: !secret entity_pulsante_attiva_allarme_away
     condition:
       condition: template
       value_template: "{{ states.alarm_control_panel.home_alarm.state != 'disarmed' }}"
@@ -1040,7 +1040,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away1
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1057,7 +1057,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home1
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1073,7 +1073,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away1
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1089,7 +1089,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home1
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1125,7 +1125,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away1
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_away
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1141,7 +1141,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home1
+        entity_id: !secret entity_sensore_promemoria_allarme_attivato_home
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1157,7 +1157,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away1
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_away
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1173,7 +1173,7 @@ automation:
       - platform: state
         from: 'off'
         to: 'on'
-        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home1
+        entity_id: !secret entity_sensore_innesco_ritardato_allarme_home
     condition:
       - condition: state
         entity_id: binary_sensor.dss_mode_giorno
@@ -1229,14 +1229,14 @@ automation:
 
 # ### Entity_id di un sensore o di un gruppo di sensori che al cambio di stato da OFF ad ON, in caso di allarme attivo, farà riprodurre un avviso di allarme ATTIVO.
 # ### Notate che è possibile usare un entity_id singolo o un array. Se non si desidera utilizzare tale funzionalità basterà inserire un array vuoto: [ ]
-# entity_sensore_promemoria_allarme_attivato_away1: binary_sensor.door_window_sensor_xxxxxxxxx
-# entity_sensore_promemoria_allarme_attivato_home1: [
+# entity_sensore_promemoria_allarme_attivato_away: binary_sensor.door_window_sensor_xxxxxxxxx
+# entity_sensore_promemoria_allarme_attivato_home: [
 # binary_sensor.motion_sensor_xxxxxxxxxxxxxx, 
 # binary_sensor.motion_sensor_yyyyyyyyyyyyyy
 # ]
 # ### Entity_id di un sensore o di un gruppo di sensori che al cambio di stato da OFF ad ON, in caso di allarme attivo, farà riprodurre un avviso di allarme ATTIVO e DOPO 30 secondi farà innescare l'allarme.
-# entity_sensore_innesco_ritardato_allarme_away1: binary_sensor.door_window_sensor_xxxxxxxxxx
-# entity_sensore_innesco_ritardato_allarme_home1: []
+# entity_sensore_innesco_ritardato_allarme_away: binary_sensor.door_window_sensor_xxxxxxxxxx
+# entity_sensore_innesco_ritardato_allarme_home: []
 
 # ### Entity_id di un sensore o di un gruppo di sensori che, in fase di attivazione dell'allarme non dovranno essere considerati nel controllo dell'apertura. 
 # ### Cioè non ne verrà segnalata l'apertura mediante avvisi luminosi, TTS o Notifiche (Telegram e/o HTML5)
@@ -1244,8 +1244,8 @@ automation:
 # dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.door_window_sensor_wwwwwwwwwwwwww, binary_sensor.door_window_sensor_zzzzzzzzzzzzzz]
 # ### Entity_id di un sensore o di un gruppo di sensori che attivano/disattivano l'allarme. 
 # ### Ovviamente sarà possibile specificare entity_id singoli, gruppi (mediante array [ ]), o array vuoti ([ ]).
-# entity_pulsante_attiva_allarme_home1: [binary_sensor.switch_aaaaaaaaaaaaaa, binary_sensor.switch_bbbbbbbbbbbbbb]
-# entity_pulsante_attiva_allarme_away1: binary_sensor.switch_cccccccccccccc
+# entity_pulsante_attiva_allarme_home: [binary_sensor.switch_aaaaaaaaaaaaaa, binary_sensor.switch_bbbbbbbbbbbbbb]
+# entity_pulsante_attiva_allarme_away: binary_sensor.switch_cccccccccccccc
 # ### Entity_id di un sensore o di un gruppo di sensori che innescano l'allarme se attivo in modalità HOME. 
 # sensori_che_fanno_scattare_allarme_home_mode: [
 # binary_sensor.door_window_sensor_zzzzzzzzzzzzzz, 

@@ -74,11 +74,11 @@ input_select:
   dss_gateway2_gateway_sound:
     name: Ringtone
     #le varie suonerie sono definite nel secrets.yaml. vedi nota alla fine del file
-    options: !secret dss_gateway2_options_elenco_suonerie
+    options: !secret dss_options_elenco_suonerie_gateway2
     icon: mdi:music-note
     
 # # # Questo è l'elenco delle suonerie da inserire sempre nel file secrets.yaml.
-# dss_gateway2_options_elenco_suonerie: [
+# dss_options_elenco_suonerie_gateway2: [
 #"0 - Police car 1", 
 # "1 - Police car 2", 
 # "2 - Accident", 

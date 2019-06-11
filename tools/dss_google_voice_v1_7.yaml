@@ -1,5 +1,12 @@
 ### developed by SDeSalve ###
 
+### v1.7
+### introdotte le secrets :
+
+# dss_binary_sensor_secrets_ignora_controllo_luci_accese_home: ['Nome Luce', entity_id_luce]
+# dss_binary_sensor_secrets_ignora_controllo_luci_accese_away: ['Nome Luce', entity_id_luce]
+
+
 ### v1.6
 ### aggiunta possibilità di escludere entity da controllare nelle macro per nome o per entity_id
 
@@ -32,6 +39,10 @@ homeassistant:
       hidden: true
     input_boolean.dss_voice_switch_mostra_dtv:
       hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away:
+      hidden: true
 
 # ATTENZIONE: per personalizzare le immagini dei singoli dispositivi tracciati, bisogna intervenire nel file know_devices.yaml ed aggiungere la key picture come mostrato sotto.
 # galaxy_s6:
@@ -41,6 +52,13 @@ homeassistant:
   # name: Galaxy S6 IP
   # picture: !secret url_immagine_profilo
   # track: true
+
+input_select:
+  dss_binary_sensor_secrets_ignora_controllo_luci_accese_home:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_luci_accese_home
+            
+  dss_binary_sensor_secrets_ignora_controllo_luci_accese_away:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_luci_accese_away
 
 switch:
   - platform: template
@@ -225,7 +243,7 @@ script:
         message: >-
           {% macro controllo_porte() %}
           {% set domains = ['binary_sensor'] %}
-          {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
           {% for domain in domains -%}
           {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
           {{ item.name }} aperta...
@@ -239,7 +257,7 @@ script:
       value_template: >
         {% macro controllo_porte() %}
         {% set domains = ['binary_sensor'] %}
-        {% set exclusions = ['Sensore_MOD', 'Metti qui Elenco NOMI Sensori da ignorare'] %}
+        {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
         {% for domain in domains -%}
         {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
         {{ item.name }} aperta...
@@ -259,7 +277,7 @@ script:
         message: >-
           {% macro controllo_luci() %}
           {% set domains = ['light','switch'] %}
-          {% set exclusions = ['Luce da ignorare', 'light.123455'] %}
+          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home.attributes['options'] %}
           {% for domain in domains -%}
           {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
           {{ item.name }} accesa...
@@ -273,7 +291,7 @@ script:
       value_template: >
         {% macro controllo_luci() %}
         {% set domains = ['light','switch'] %}
-        {% set exclusions = ['Luce da ignorare', 'light.123455'] %}
+        {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home.attributes['options'] %}
         {% for domain in domains -%}
         {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
         {{ item.name }} accesa...

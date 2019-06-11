@@ -83,9 +83,9 @@ automation:
             {% set domains = ['binary_sensor'] %}
             {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
             {% for domain in domains -%}
-            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
             
-            > {{ item.name }}
+            **{{ item.name }}<br/>
             {% endfor %}
             {%- endfor %}
             {% endmacro %}
@@ -120,9 +120,9 @@ automation:
             {% set domains = ['binary_sensor'] %}
             {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
             {% for domain in domains -%}
-            {% for item in states[domain] if (item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
             
-            > {{ item.name }}
+            **{{ item.name }}<br/>
             {% endfor %}
             {%- endfor %}
             {% endmacro %}

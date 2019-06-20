@@ -234,7 +234,7 @@ input_select:
     
 group:
   stato_gateway2:
-    name: "Stato Gateway2"
+    name: "Stato Gateway1"
     control: hidden
     entities:
       - group.dss_gateway2_allarme_diurno
@@ -273,7 +273,6 @@ group:
     control: hidden
     icon: mdi:voice
     entities:
-      - input_number.dss_delay_riproduzione_suono_welcome
       - input_select.dss_gateway2_welcome_sound_day
       - input_number.dss_gateway2_welcome_volume_day
       - automation.giorno_riproduci_promemoria_allarme_away
@@ -282,13 +281,13 @@ group:
       - input_number.dss_gateway2_welcome_volume_night
       - automation.notte_riproduci_promemoria_allarme_away
       - automation.notte_riproduci_promemoria_allarme_home
+      - input_number.dss_delay_riproduzione_suono_welcome
 
   dss_gateway2_sensori_ritardati:
     name: "Impostazioni Sensori Ritardati"
     control: hidden
     icon: mdi:voice
     entities:
-      - input_number.dss_delay_innesco_sensori_ritardati
       - input_select.dss_gateway2_delayed_sensors_sound_day
       - input_number.dss_gateway2_delayed_sensors_volume_day
       - automation.giorno_innesco_sensori_ritardati_allarme_home
@@ -297,6 +296,7 @@ group:
       - input_number.dss_gateway2_delayed_sensors_volume_night
       - automation.notte_innesco_sensori_ritardati_allarme_home
       - automation.notte_innesco_sensori_ritardati_allarme_away
+      - input_number.dss_delay_innesco_sensori_ritardati
 
 script:
 ### Scripts to play gateway sounds ###
@@ -323,8 +323,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template: 
-          ringtone_id: "{{ states.input_select.dss_gateway2_alarm_sound_day_home.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_alarm_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_day_home').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_day') | int }}"
       - delay:
           seconds: 5
       - service: script.dss_alarm_gateway2_play_triggered_sound_day_loop
@@ -349,8 +349,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_pending_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_pending_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_pending_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_pending_volume_day') | int }}"
       # - delay:
           # seconds: 5
       # - service: script.dss_alarm_gateway2_play_pending_sound_day_loop
@@ -379,8 +379,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_disarmed_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_disarmed_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_disarmed_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_disarmed_volume_day') | int }}"
       # - delay:
           # seconds: 5
       # - service: script.dss_alarm_gateway2_play_disarmed_sound_day_loop
@@ -405,8 +405,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template: 
-          ringtone_id: "{{ states.input_select.dss_gateway2_alarm_sound_night_home.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_alarm_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_night_home').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_night') | int }}"
       - delay:
           seconds: 5
       - service: script.dss_alarm_gateway2_play_triggered_sound_night_loop
@@ -429,8 +429,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_pending_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_pending_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_pending_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_pending_volume_night') | int }}"
     ###Se decommentate, le righe seguenti servono per ripetere in loop il suono di pending allarme
       # - delay:
           # seconds: 3
@@ -458,8 +458,8 @@ script:
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
           ### id dell'allarme - id = 1 Police 1 ###
-          ringtone_id: "{{ states.input_select.dss_gateway2_disarmed_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_disarmed_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_disarmed_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_disarmed_volume_night') | int }}"
 ###Se decommentate, le righe seguenti servono per ripetere in loop il suono di disarmed allarme
       # - delay:
           # seconds: 3
@@ -516,8 +516,8 @@ script:
           seconds: "{{ states('input_number.dss_delay_riproduzione_suono_welcome') | int }}"
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_welcome_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_welcome_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_welcome_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_welcome_volume_day') | int }}"
 
   dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_home:
     alias: "Script GIORNO: Riproduci 'Promemoria Allarme HOME'"
@@ -529,8 +529,8 @@ script:
           seconds: "{{ states('input_number.dss_delay_riproduzione_suono_welcome') | int }}"
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_welcome_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_welcome_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_welcome_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_welcome_volume_day') | int }}"
 
   dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_away:
     alias: "Script GIORNO: Innesco Sensori ritardati Allarme AWAY"
@@ -540,8 +540,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_delayed_sensors_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_delayed_sensors_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_delayed_sensors_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_delayed_sensors_volume_day') | int }}"
       - delay:
           seconds: "{{ states('input_number.dss_delay_innesco_sensori_ritardati') | int }}"
       - condition: state
@@ -558,8 +558,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_delayed_sensors_sound_day.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_delayed_sensors_volume_day.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_delayed_sensors_sound_day').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_delayed_sensors_volume_day') | int }}"
       - delay:
           seconds: "{{ states('input_number.dss_delay_innesco_sensori_ritardati') | int }}"
       - condition: state
@@ -578,8 +578,8 @@ script:
           seconds: "{{ states('input_number.dss_delay_riproduzione_suono_welcome') | int }}"
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_welcome_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_welcome_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_welcome_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_welcome_volume_night') | int }}"
 
   dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home:
     alias: "Script NOTTE: Riproduci 'Promemoria Allarme HOME'"
@@ -591,8 +591,8 @@ script:
           seconds: "{{ states('input_number.dss_delay_riproduzione_suono_welcome') | int }}"
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_welcome_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_welcome_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_welcome_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_welcome_volume_night') | int }}"
 
   dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away:
     alias: "Script NOTTE: Innesco Sensori ritardati Allarme AWAY"
@@ -602,8 +602,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_delayed_sensors_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_delayed_sensors_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_delayed_sensors_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_delayed_sensors_volume_night') | int }}"
       - delay:
           seconds: "{{ states('input_number.dss_delay_innesco_sensori_ritardati') | int }}"
       - condition: state
@@ -620,8 +620,8 @@ script:
         above: 0
       - service: script.dss_alarm_script_riproduci_suono_gateway2
         data_template:
-          ringtone_id: "{{ states.input_select.dss_gateway2_delayed_sensors_sound_night.state.split('-')[0] | int }}"
-          ringtone_vol: "{{ states.input_number.dss_gateway2_delayed_sensors_volume_night.state | int }}"
+          ringtone_id: "{{ states('input_select.dss_gateway2_delayed_sensors_sound_night').split('-')[0] | int }}"
+          ringtone_vol: "{{ states('input_number.dss_gateway2_delayed_sensors_volume_night') | int }}"
       - delay:
           seconds: "{{ states('input_number.dss_delay_innesco_sensori_ritardati') | int }}"
       - condition: state
@@ -632,8 +632,10 @@ script:
 
 
 ### per aggiungere altri gateway, duplicare questo file e sostituire gateway2 con gateway3 ecc ecc
-        
-        
+#Queste le secrets richieste:
+# xiaomi_gateway2_mac: 34xx008xx1xx
+# entity_light_gateway2: light.gateway_light_34xx008xx1xx
+
 # # # Questo è l'elenco delle suonerie da inserire nel file secrets.yaml.
 # dss_options_elenco_suonerie_gateway2: [
 # "0 - Police car 1", 
@@ -761,4 +763,3 @@ script:
 # "10099 - sound",
 # "10100 - sound"
 #]
-

@@ -1,3 +1,25 @@
+### v11.6 del 19/06/2019
+### rinominato servizio TTS da google_say a google_translate_say per evitare problemi a chi non ha specificato la KEY service_name nella definizione del TTS di Google
+### sostituite tutte le esclusioni da states.input_select.xxxxxxxxxxx.attributes['options'] a state_attr('input_select.xxxxxxxxxxx', 'options')
+### sostituite i template da states.input_select.xxxxxxxxxxx') a states('input_select.xxxxxxxxxxx')
+### fix dss_procedura_reset_attivazione_rimandata: rimosse automation.automation.xxxxxxx
+### cambiato da switch.ok_google_attiva_allarme a lock.ok_google_attiva_allarme, l'eventuale disattivazione dell'allarme richiederà un pin da comunicare all'assistente vocale
+###    vedi 
+###      https://www.home-assistant.io/components/google_assistant/#secure_devices_pin
+###      e https://www.home-assistant.io/components/google_assistant/#secure-devices
+
+
+### v11.5 del 17/06/2019
+### aggiunte secrets 
+# # dss_binary_sensor_secrets_ignora_controllo_luci_accese_home: ['nessuna']
+# # dss_binary_sensor_secrets_ignora_controllo_luci_accese_away: ['nessuna']
+
+# # dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away: ['nessuno']
+# # dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home: ['nessuno']
+### aggiunte notifiche all'attivazione dell'allarme con elenco luci e climatizzatori rimasti accesi
+
+
+
 ### v11.4 del 16/06/2019
 ### fix nome delle automazioni automation.elenca_infissi_aperti_su_click_pulsanti_away e automation.elenca_infissi_aperti_su_click_pulsanti_home. 
 ### All'attivazione dell'allarme se c'erano infissi aperti non venivano elencati se si faceva click.
@@ -223,6 +245,14 @@ homeassistant:
       hidden: true
     input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away:
       hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away:
+      hidden: true
+    input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home:
+      hidden: true
     script.dss_procedura_attivazione_infissi_aperti:
       hidden: true
     script.dss_procedura_avvisa_attivazione_annullata:
@@ -326,6 +356,18 @@ input_select:
   dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away:
     options: !secret dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away
 
+  dss_binary_sensor_secrets_ignora_controllo_luci_accese_away:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_luci_accese_away
+            
+  dss_binary_sensor_secrets_ignora_controllo_luci_accese_home:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_luci_accese_home
+
+  dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away
+            
+  dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home:
+    options: !secret dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home
+
 binary_sensor:
   - platform: template
     sensors:
@@ -348,8 +390,9 @@ binary_sensor:
       dss_alarm_giorno_attivo:
         friendly_name: "Allarme diurno attivato"
         value_template: >-
-          {{ states.binary_sensor.dss_mode_giorno.state == 'on' and states.alarm_control_panel.home_alarm.state != 'disarmed' }}
+          {{ is_state('binary_sensor.dss_mode_giorno', 'on') and not is_state('alarm_control_panel.home_alarm', 'disarmed') }}
         icon_template: mdi:alarm-light
+
 
   - platform: template
     sensors:
@@ -357,7 +400,7 @@ binary_sensor:
         friendly_name: "Allarme nottuno attivato"
         icon_template: mdi:alarm-light
         value_template: >-
-          {{ states.binary_sensor.dss_mode_giorno.state == 'off' and states.alarm_control_panel.home_alarm.state != 'disarmed' }}
+          {{ is_state('binary_sensor.dss_mode_giorno', 'off') and not is_state('alarm_control_panel.home_alarm', 'disarmed') }}
 
 group:
   allarme:
@@ -392,8 +435,6 @@ group:
       - automation.attivazione_automatica_se_dispositivi_non_in_casa
       - automation.disattivazione_automatica_se_rientra_dispositivo
       # - automation.accendi_flash_gateway_verde_su_disattivazione
-      - automation.elenca_infissi_aperti_su_click_pulsanti_home
-      - automation.elenca_infissi_aperti_su_click_pulsanti_away
       # - automation.conferma_infissi_chiusi_su_doppio_click_pulsante_ingresso
       # - automation.accendi_sonoff_combinatore_gms_su_allarme
 
@@ -453,16 +494,16 @@ script:
     alias: "Procedura reset attivazione rimandata"
     sequence:
       - condition: template
-        value_template: '{{ states.alarm_control_panel.home_alarm.state != "pending" }}'
+        value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'pending') }}"
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
       - service: automation.turn_off
         data:
-          entity_id: automation.automation.elenca_infissi_aperti_su_click_pulsanti_away
+          entity_id: automation.elenca_infissi_aperti_su_click_pulsanti_away
       - service: automation.turn_off
         data:
-          entity_id: automation.automation.elenca_infissi_aperti_su_click_pulsanti_home
+          entity_id: automation.elenca_infissi_aperti_su_click_pulsanti_home
       - service: automation.turn_off
         data:
           entity_id: automation.forza_attivazione_allarme_away_con_doppio_click_pulsante_ingresso
@@ -719,9 +760,9 @@ automation:
         value_template: >
           {% macro controllo_sensori() %}
           {% set domains = ['binary_sensor'] %}
-          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
           {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes.device_class is defined and item.attributes['device_class'] == 'opening') -%}
           {{ item.name }}{% if not loop.last %}, {% endif %}
           {% endfor %}
           {%- endfor %}
@@ -754,9 +795,9 @@ automation:
         value_template: >
           {% macro controllo_sensori() %}
           {% set domains = ['binary_sensor'] %}
-          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
           {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes.device_class is defined and item.attributes['device_class'] == 'opening') -%}
           {{ item.name }}{% if not loop.last %}, {% endif %}
           {% endfor %}
           {%- endfor %}
@@ -931,7 +972,7 @@ automation:
           entity_id: !secret entity_pulsante_attiva_allarme_away
     condition:
       condition: template
-      value_template: "{{ states.alarm_control_panel.home_alarm.state != 'disarmed' }}"
+      value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'disarmed') }}"
     action:
       - service: alarm_control_panel.alarm_disarm
         data:
@@ -1256,6 +1297,17 @@ automation:
 # ### Cioè non ne verrà segnalata l'apertura mediante avvisi luminosi, TTS o Notifiche (Telegram e/o HTML5)
 # dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home: [binary_sensor.door_window_sensor_wwwwwwwwwwwwww]
 # dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away: [binary_sensor.door_window_sensor_wwwwwwwwwwwwww, binary_sensor.door_window_sensor_zzzzzzzzzzzzzz]
+
+# ### Entity_id di un sensore o di un gruppo di sensori che, in fase di attivazione dell'allarme non dovranno essere considerati nel controllo luci accese. 
+# ### Cioè non ne verrà segnalata l'apertura mediante Notifiche (Telegram e/o HTML5)
+# dss_binary_sensor_secrets_ignora_controllo_luci_accese_home: ['Nessuna']
+# dss_binary_sensor_secrets_ignora_controllo_luci_accese_away: [switch.xxxxxxxxxxx, light.yyyyyyyyyyyyy, 'Nome Luce']
+
+# ### Entity_id di un sensore o di un gruppo di sensori che, in fase di attivazione dell'allarme non dovranno essere considerati nel controllo climatizzatore acceso. 
+# ### Cioè non ne verrà segnalata l'apertura mediante Notifiche (Telegram e/o HTML5)
+# dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home: ['Nessuno']
+# dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away: [climate.yyyyyyyyyyyyy, 'Nome Clima']
+
 # ### Entity_id di un sensore o di un gruppo di sensori che attivano/disattivano l'allarme. 
 # ### Ovviamente sarà possibile specificare entity_id singoli, gruppi (mediante array [ ]), o array vuoti ([ ]).
 # entity_pulsante_attiva_allarme_home: [binary_sensor.switch_aaaaaaaaaaaaaa, binary_sensor.switch_bbbbbbbbbbbbbb]

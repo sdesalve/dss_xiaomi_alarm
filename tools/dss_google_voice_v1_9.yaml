@@ -1,5 +1,8 @@
 ### developed by SDeSalve ###
 
+### v1.8
+### aggiornati switch broadlink per il nuovo servizio broadlink.send
+
 ### v1.7
 ### introdotte le secrets :
 
@@ -69,7 +72,7 @@ switch:
       # info sulle scorciatoie: http://www.androidworld.it/2018/03/21/google-assistant-scorciatoie-541516/
       ok_google_stato_infissi:
         friendly_name: "OK Google, quali infissi sono aperti"
-        value_template: "{{ states.input_boolean.dss_voice_switch_controlla_infissi_aperti.state == 'on' }}"
+        value_template: "{{ is_state('input_boolean.dss_voice_switch_controlla_infissi_aperti', 'on') }}"
         icon_template: mdi:google-home
         turn_on:
           service: script.turn_on
@@ -81,7 +84,7 @@ switch:
             entity_id: script.dss_voice_script_stato_finestre
       ok_google_stato_luci:
         friendly_name: "OK Google, quali luci sono accese"
-        value_template: "{{ states.input_boolean.dss_voice_switch_controlla_luci_accese.state == 'on' }}"
+        value_template: "{{ is_state('input_boolean.dss_voice_switch_controlla_luci_accese', 'on') }}"
         icon_template: mdi:google-home
         turn_on:
           service: script.turn_on
@@ -93,7 +96,7 @@ switch:
             entity_id: script.dss_voice_script_stato_luci
       ok_google_mostra_videocitofono:
         friendly_name: "OK Google, mostra videocitofono"
-        value_template: "{{ states.input_boolean.dss_voice_switch_mostra_videocitofono.state == 'on' }}"
+        value_template: "{{ is_state('input_boolean.dss_voice_switch_mostra_videocitofono.state', 'on') }}"
         icon_template: mdi:google-home
         turn_on:
           - service: script.dss_voice_script_mostra_videocitofono
@@ -105,7 +108,7 @@ switch:
 
       ok_google_mostra_dtv:
         friendly_name: "OK Google, mostra DTV"
-        value_template: "{{ states.input_boolean.dss_voice_switch_mostra_dtv.state == 'on' }}"
+        value_template: "{{ is_state('input_boolean.dss_voice_switch_mostra_dtv', 'on') }}"
         icon_template: mdi:google-home
         turn_on:
           - service: script.dss_voice_script_mostra_dtv
@@ -243,7 +246,7 @@ script:
         message: >-
           {% macro controllo_porte() %}
           {% set domains = ['binary_sensor'] %}
-          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
           {% for domain in domains -%}
           {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
           {{ item.name }} aperta...
@@ -257,7 +260,7 @@ script:
       value_template: >
         {% macro controllo_porte() %}
         {% set domains = ['binary_sensor'] %}
-        {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+        {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
         {% for domain in domains -%}
         {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
         {{ item.name }} aperta...
@@ -277,7 +280,7 @@ script:
         message: >-
           {% macro controllo_luci() %}
           {% set domains = ['light','switch'] %}
-          {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home.attributes['options'] %}
+          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') %}
           {% for domain in domains -%}
           {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
           {{ item.name }} accesa...
@@ -291,7 +294,7 @@ script:
       value_template: >
         {% macro controllo_luci() %}
         {% set domains = ['light','switch'] %}
-        {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home.attributes['options'] %}
+        {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') %}
         {% for domain in domains -%}
         {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
         {{ item.name }} accesa...
@@ -306,8 +309,9 @@ script:
   dss_voice_script_mostra_videocitofono:
     alias: "Mostra Videocitofono"
     sequence:
-      - service: switch.broadlink_send_packet_192_168_1_156
+      - service: broadlink.send
         data:
+          host: !secret broadlink_rm_cucina_ip
           packet:
             - "JgBGAJKVETkRORE5ERQQFRAVERQQFRE5ETkROREUERQRFBEUERQRORAVERUPOxAVDzsQOhA6EBUQOhA6EBUQOhAVEBUPFhAADQUAAA=="
       - service: camera.play_stream
@@ -315,8 +319,9 @@ script:
           entity_id: camera.dahua_vto2101e_p
           media_player: media_player.cucina
       - delay: '00:01:00'
-      - service: switch.broadlink_send_packet_192_168_1_156
+      - service: broadlink.send
         data:
+          host: !secret broadlink_rm_cucina_ip
           packet:
             - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
       - service: media_player.media_stop
@@ -326,8 +331,9 @@ script:
   dss_voice_script_mostra_dtv:
     alias: "Mostra DTV"
     sequence:
-      - service: switch.broadlink_send_packet_192_168_1_156
+      - service: broadlink.send
         data:
+          host: !secret broadlink_rm_cucina_ip
           packet:
             - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
       - service: media_player.media_stop

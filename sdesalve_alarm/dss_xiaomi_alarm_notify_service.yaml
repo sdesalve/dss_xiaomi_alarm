@@ -74,18 +74,19 @@ automation:
         entity_id: alarm_control_panel.home_alarm
         to: 'armed_away'
     action:
-### questi sono i componenti che mandano le notifiche - controlla i nomi dei propri servizi di notifica ###
+### questi sono i componenti che mandano le notifiche - controllare i nomi dei propri servizi di notifica ###
       - service: script.dss_alarm_script_invia_notifiche
         data_template:
           message: >-
             ATTIVATO Allarme - AWAY Mode.
             {% macro controllo_sensori() %}
             {% set domains = ['binary_sensor'] %}
-            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away.attributes['options'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
             {% for domain in domains -%}
             {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
             
-            **{{ item.name }}<br/>
+            
+            *{{ item.name }}
             {% endfor %}
             {%- endfor %}
             {% endmacro %}
@@ -98,6 +99,50 @@ automation:
             ATTENZIONE: i seguenti infissi sono rimasti aperti:
             
             {{ elenco_infissi }}
+            {% endif %}
+            
+            {% macro controllo_luci() %}
+            {% set domains = ['light', 'switch'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away', 'options') %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            
+            
+            *{{ item.name }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_luci = controllo_luci() %}
+            {% if elenco_luci |trim == "" %}
+            
+            Tutti le luci sono spente
+            {% else %}
+            
+            ATTENZIONE: le seguenti luci sono rimaste accese:
+            
+            {{ elenco_luci }}
+            {% endif %}
+            
+            {% macro controllo_clima() %}
+            {% set domains = ['climate'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            
+            
+            *{{ item.name }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_clima = controllo_clima() %}
+            {% if elenco_clima |trim == "" %}
+            
+            Tutti i climatizzatori sono spenti
+            {% else %}
+            
+            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
+            
+            {{ elenco_clima }}
             {% endif %}
 
       - service: script.dss_light_flash_cancel
@@ -118,11 +163,12 @@ automation:
             ATTIVATO Allarme - HOME Mode.
             {% macro controllo_sensori() %}
             {% set domains = ['binary_sensor'] %}
-            {% set exclusions = states.input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home.attributes['options'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
             {% for domain in domains -%}
             {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
             
-            **{{ item.name }}<br/>
+            
+            *{{ item.name }}
             {% endfor %}
             {%- endfor %}
             {% endmacro %}
@@ -135,6 +181,50 @@ automation:
             ATTENZIONE: i seguenti infissi sono rimasti aperti:
             
             {{ elenco_infissi }}
+            {% endif %}
+            
+            {% macro controllo_luci() %}
+            {% set domains = ['light', 'switch'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            
+            
+            *{{ item.name }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_luci = controllo_luci() %}
+            {% if elenco_luci |trim == "" %}
+            
+            Tutti le luci sono spente
+            {% else %}
+            
+            ATTENZIONE: le seguenti luci sono rimaste accese:
+            
+            {{ elenco_luci }}
+            {% endif %}
+            
+            {% macro controllo_clima() %}
+            {% set domains = ['climate'] %}
+            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') %}
+            {% for domain in domains -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            
+            
+            *{{ item.name }}
+            {% endfor %}
+            {%- endfor %}
+            {% endmacro %}
+            {% set elenco_clima = controllo_clima() %}
+            {% if elenco_clima |trim == "" %}
+            
+            Tutti i climatizzatori sono spenti
+            {% else %}
+            
+            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
+            
+            {{ elenco_clima }}
             {% endif %}
 
       - service: script.dss_light_flash_cancel

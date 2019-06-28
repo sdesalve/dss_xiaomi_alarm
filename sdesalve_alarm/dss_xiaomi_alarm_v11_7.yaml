@@ -1,3 +1,7 @@
+### v11.7 del 20/06/2019
+### aggiunti pulsanti e script alle notifiche telegram per spegnere le luci ed i condizionatori rimasti accesi. 
+### grazie mille alesoft73!
+
 ### v11.6 del 19/06/2019
 ### rinominato servizio TTS da google_say a google_translate_say per evitare problemi a chi non ha specificato la KEY service_name nella definizione del TTS di Google
 ### sostituite tutte le esclusioni da states.input_select.xxxxxxxxxxx.attributes['options'] a state_attr('input_select.xxxxxxxxxxx', 'options')
@@ -899,6 +903,7 @@ automation:
         entity_id: alarm_control_panel.home_alarm 
 
   - alias: "Attivazione automatica se Dispositivi non in Casa"
+    initial_state: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_tracciati
@@ -919,7 +924,7 @@ automation:
           entity_id: alarm_control_panel.home_alarm     
            
   - alias: "Disattivazione automatica se rientra Dispositivo"      
-    # initial_state: true
+    initial_state: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_tracciati
@@ -1108,6 +1113,7 @@ automation:
        
   ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
   - alias: "GIORNO: Riproduci 'Promemoria Allarme HOME'"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1124,6 +1130,7 @@ automation:
       - service: script.dss_alarm_gateway_service_script_giorno_riproduci_promemoria_allarme_home
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme AWAY"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1140,6 +1147,7 @@ automation:
       - service: script.dss_alarm_gateway_service_script_giorno_sensore_innesco_ritardato_allarme_away
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme HOME"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1176,6 +1184,7 @@ automation:
 
           ### questi sono i trigger che fanno scattare la riproduzione del suono di  notte###
   - alias: "NOTTE: Riproduci 'Promemoria Allarme AWAY'"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1192,6 +1201,7 @@ automation:
       - service: script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_away
 
   - alias: "NOTTE: Riproduci 'Promemoria Allarme HOME'"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1208,6 +1218,7 @@ automation:
       - service: script.dss_alarm_gateway_service_script_notte_riproduci_promemoria_allarme_home
 
   - alias: "NOTTE: Innesco Sensori ritardati Allarme AWAY"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'
@@ -1224,6 +1235,7 @@ automation:
       - service: script.dss_alarm_gateway_service_script_notte_sensore_innesco_ritardato_allarme_away
        
   - alias: "NOTTE: Innesco Sensori ritardati Allarme HOME"
+    initial_state: true
     trigger:
       - platform: state
         from: 'off'

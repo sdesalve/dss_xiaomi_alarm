@@ -2,16 +2,62 @@ homeassistant:
   customize:
     script.dss_alarm_script_invia_notifiche:
       hidden: true
+    script.orla_telegram_spegni_luci_rimaste_accese:
+      hidden: true
+    script.orla_telegram_spegni_clima_rimasti_accesi:
+      hidden: true
+    automation.orla_telegram_chk_luci_spegni:
+      hidden: true
 
 script:
   dss_alarm_script_invia_notifiche:
     sequence:
       - service: notify.notifiche_telegram
-        data_template:
+        data_template: 
           message: "{{ message }}"
       # - service: notify.notifiche_html5
         # data_template:
           # message: "{{ message }}"
+
+  dss_alarm_script_invia_notifiche_telegram_con_keyboard:
+    sequence:
+      - service: notify.notifiche_telegram
+        data_template: 
+          message: "{{ message }}"
+          data:
+              inline_keyboard:
+              - '{{ "\U0001F4A1" }} Spegni luci:/orla_telegram_chk_luci_spegni, {{ "\U00002744" }} Spegni clima:/orla_telegram_chk_clima_spegni'
+              - "Lascia stare:/removekeyboard"
+          
+  orla_telegram_spegni_luci_rimaste_accese:
+    sequence:
+      - service: homeassistant.turn_off
+        data_template:
+          entity_id: >
+            {%- macro controllo_luci() -%}
+            {%- set domains = ['light','switch'] -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
+            {%- for domain in domains -%}
+            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}{{ item.entity_id}}{%- if not loop.last %}, {%- endif -%}
+            {%- endfor -%}
+            {%- endfor -%}
+            {%- endmacro -%}
+            {{ controllo_luci() }}
+          
+  orla_telegram_spegni_clima_rimasti_accesi:
+    sequence:
+      - service: homeassistant.turn_off
+        data_template:
+          entity_id: >
+            {%- macro controllo_clima() -%}
+            {%- set domains = ['climate'] -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
+            {%- for domain in domains -%}
+            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}{{ item.entity_id}}{%- if not loop.last %}, {%- endif -%}
+            {%- endfor -%}
+            {%- endfor -%}
+            {%- endmacro -%}
+            {{ controllo_clima() }}
           
 group:
   dss_notifiche_allarme:
@@ -68,14 +114,14 @@ automation:
 
   ### Sending a notification when the alarm is Arm###
   - alias: "NOTIFICA Allarme armato in modalità AWAY"
-    # initial_state: true
+    initial_state: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         to: 'armed_away'
     action:
 ### questi sono i componenti che mandano le notifiche - controllare i nomi dei propri servizi di notifica ###
-      - service: script.dss_alarm_script_invia_notifiche
+      - service: script.dss_alarm_script_invia_notifiche_telegram_con_keyboard
         data_template:
           message: >-
             ATTIVATO Allarme - AWAY Mode.
@@ -150,14 +196,14 @@ automation:
 
       ### Sending a notification when the alarm is Arm###
   - alias: "NOTIFICA Allarme armato in modalità HOME"
-    # initial_state: true
+    initial_state: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         to: 'armed_home'
     action:
 ### questi sono i componenti che mandano le notifiche - controlla i nomi dei propri servizi di notifica ###
-      - service: script.dss_alarm_script_invia_notifiche
+      - service: script.dss_alarm_script_invia_notifiche_telegram_con_keyboard
         data_template:
           message: >-
             ATTIVATO Allarme - HOME Mode.
@@ -232,7 +278,7 @@ automation:
 
   ### Sending a notification when the alarm is Arm###
   - alias: "NOTIFICA Allarme disarmato"
-    # initial_state: true
+    initial_state: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -284,7 +330,7 @@ automation:
             {% endif %}
 
   - alias: "NOTIFICA che gli utenti sono usciti"
-    # initial_state: true
+    initial_state: true
     trigger:
       - platform: state
         entity_id: [group.dss_dispositivi_user1, group.dss_dispositivi_user2]
@@ -309,3 +355,70 @@ automation:
             Sospesa l'attivazione automatica dell'allarme...
             {% endif %}
 
+  - id: orla_telegram_chk_luci_spegni
+    alias: "Telegram chk luci spegni"
+    hide_entity: true
+    initial_state: true
+    trigger:
+      platform: event
+      event_type: telegram_callback
+      event_data:
+        data: "/orla_telegram_chk_luci_spegni"
+    action:
+      - service: telegram_bot.answer_callback_query
+        data_template:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "OK ci penso io"
+      - service: telegram_bot.edit_replymarkup
+        data_template:
+          message_id: '{{ trigger.event.data.message.message_id }}'
+          chat_id: '{{ trigger.event.data.message.chat.id }}'
+          inline_keyboard: []
+      - service: script.orla_telegram_spegni_luci_rimaste_accese
+      - service: notify.notifiche_telegram
+        data_template:
+          message: "OK ci ho pensato io, ho spento tutte le luci accese!"
+
+  - id: orla_telegram_chk_clima_spegni
+    alias: "Telegram chk clima spegni"
+    hide_entity: true
+    initial_state: true
+    trigger:
+      platform: event
+      event_type: telegram_callback
+      event_data:
+        data: "/orla_telegram_chk_clima_spegni"
+    action:
+      - service: telegram_bot.answer_callback_query
+        data_template:
+          callback_query_id: "{{ trigger.event.data.id }}"
+          message: "OK ci penso io"
+      - service: telegram_bot.edit_replymarkup
+        data_template:
+          message_id: '{{ trigger.event.data.message.message_id }}'
+          chat_id: '{{ trigger.event.data.message.chat.id }}'
+          inline_keyboard: []
+      - service: script.orla_telegram_spegni_clima_rimasti_accesi
+      - service: notify.notifiche_telegram
+        data_template:
+          message: "OK ci ho pensato io, ho spento tutti i climatizzatori accesi!"
+
+  - id: orla_telegram_chk_remove_keyboard
+    alias: "Telegram callback to remove keyboard"
+    hide_entity: true
+    initial_state: true
+    trigger:
+      platform: event
+      event_type: telegram_callback
+      event_data:
+        data: '/removekeyboard'
+    action:
+      - service: telegram_bot.answer_callback_query
+        data_template:
+          callback_query_id: '{{ trigger.event.data.id }}'
+          message: 'OK'
+      - service: telegram_bot.edit_replymarkup
+        data_template:
+          message_id: '{{ trigger.event.data.message.message_id }}'
+          chat_id: '{{ trigger.event.data.message.chat.id }}'
+          inline_keyboard: []

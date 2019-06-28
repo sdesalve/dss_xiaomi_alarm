@@ -1,0 +1,241 @@
+homeassistant: 
+  customize:
+    light.dss_shelly_cucina_o1:
+      friendly_name: "Luce 1 Cucina"
+    light.dss_shelly_cucina_o2:
+      friendly_name: "Luce 2 Cucina"
+    sensor.dss_shelly_cucina_power_o1:
+      friendly_name: "Potenza Istantanea U1 Shelly2.5 Cucina"
+    sensor.dss_shelly_cucina_energy_o1:
+      friendly_name: "Potenza Totale U1 Shelly2.5 Cucina"
+    sensor.dss_shelly_cucina_power_o2:
+      friendly_name: "Potenza Istantanea U2 Shelly2.5 Cucina"
+    sensor.dss_shelly_cucina_energy_o2:
+      friendly_name: "Potenza Totale U2 Shelly2.5 Cucina"
+    sensor.dss_shelly_cucina_energy_temp:
+      friendly_name: "Temperatura Shelly2.5 Cucina"
+    sensor.dss_shelly_cucina_energy_overtemp:
+      friendly_name: "Sovratemperatura Shelly2.5 Cucina"
+    binary_sensor.dss_shelly_cucina_sw1:
+      hidden: true
+    binary_sensor.dss_shelly_cucina_sw2:
+      hidden: true
+    counter.dss_shelly_cucina_click:
+      hidden: true
+
+light:
+  - platform: mqtt
+    name: dss_shelly_cucina_o1
+    command_topic: "shellies/shellyswitch25-E6728C/relay/0/command"
+    state_topic: "shellies/shellyswitch25-E6728C/relay/0"
+    qos: 1
+    payload_on: "on"
+    payload_off: "off"
+    optimistic: false
+    retain: false  
+  - platform: mqtt
+    name: dss_shelly_cucina_o2
+    command_topic: "shellies/shellyswitch25-E6728C/relay/1/command"
+    state_topic: "shellies/shellyswitch25-E6728C/relay/1"
+    qos: 1
+    payload_on: "on"
+    payload_off: "off"
+    optimistic: false
+    retain: false  
+
+sensor:
+  - platform: mqtt
+    name: dss_shelly_cucina_power_o1
+    state_topic: "shellies/shellyswitch25-E6728C/relay/0/power"
+    qos: 0
+    unit_of_measurement: "W"
+
+  - platform: mqtt
+    name: dss_shelly_cucina_energy_o1
+    state_topic: "shellies/shellyswitch25-E6728C/relay/0/energy"
+    qos: 0
+    unit_of_measurement: "W"
+
+  - platform: mqtt
+    name: dss_shelly_cucina_power_o2
+    state_topic: "shellies/shellyswitch25-E6728C/relay/1/power"
+    qos: 0
+    unit_of_measurement: "W"
+
+  - platform: mqtt
+    name: dss_shelly_cucina_energy_o2
+    state_topic: "shellies/shellyswitch25-E6728C/relay/1/energy"
+    qos: 0
+    unit_of_measurement: "W"
+
+  - platform: mqtt
+    name: dss_shelly_cucina_energy_temp
+    state_topic: "shellies/shellyswitch25-E6728C/temperature"
+    qos: 0
+    unit_of_measurement: "°C"
+
+  - platform: mqtt
+    name: dss_shelly_cucina_energy_overtemp
+    state_topic: "shellies/shellyswitch25-E6728C/overtemperature"
+    qos: 0
+
+binary_sensor:
+  - platform: mqtt
+    name: dss_shelly_cucina_sw1
+    state_topic: "shellies/shellyswitch25-E6728C/input/0"
+    payload_on: "1"
+    payload_off: "0"
+  - platform: mqtt
+    name: dss_shelly_cucina_sw2
+    state_topic: "shellies/shellyswitch25-E6728C/input/1"
+    payload_on: "1"
+    payload_off: "0"
+    
+counter:
+  dss_shelly_cucina_click:
+    initial: 0
+    step: 1
+    restore: true
+    
+automation:
+  - alias: cucina_luci_spente_resetta_clicker
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: light.dss_shelly_cucina_o1, light.dss_shelly_cucina_o2
+        to: 'off'
+        for:
+          seconds: 10
+    condition:
+      - condition: state
+        entity_id: light.dss_shelly_cucina_o1
+        state: 'off'
+      - condition: state
+        entity_id: light.dss_shelly_cucina_o2
+        state: 'off'
+    action:
+      - service: counter.reset
+        entity_id: counter.dss_shelly_cucina_click
+
+  - alias: cucina_pulsante_click_hold
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dss_shelly_cucina_sw1, binary_sensor.dss_shelly_cucina_sw2
+        from: 'off'
+        to: 'on'
+        for:
+          seconds: 2
+    action:
+      - wait_template: "{{ states[trigger.to_state.domain][trigger.to_state.object_id] == 'off' }}"
+      - delay:
+          seconds: 2      
+      - service: script.dss_script_spegni_luci_cucina
+      - service: script.dss_script_spegni_luci_ingresso
+
+  - alias: cucina_clicker_incremento 
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.dss_shelly_cucina_sw1, binary_sensor.dss_shelly_cucina_sw2
+        from: 'on'
+        to: 'off'
+    action:
+      - service: counter.increment
+        entity_id: counter.dss_shelly_cucina_click
+        
+  - alias: cucina_pulsante_click_nr1
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: counter.dss_shelly_cucina_click
+        from: '0'
+        to: '1'
+        # for:
+          # milliseconds: 500
+    action:
+      - service: light.turn_on
+        data:
+          entity_id: light.dss_shelly_cucina_o1
+      - service: light.turn_off
+        data:
+          entity_id: light.dss_shelly_cucina_o2
+        
+  - alias: cucina_pulsante_click_nr2
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: counter.dss_shelly_cucina_click
+        from: '1'
+        to: '2'
+        # for:
+          # milliseconds: 500
+    action:
+      - service: light.turn_off
+        data:
+          entity_id: light.dss_shelly_cucina_o1
+      - service: light.turn_on
+        data:
+          entity_id: light.dss_shelly_cucina_o2
+        
+  - alias: cucina_pulsante_click_nr3
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: counter.dss_shelly_cucina_click
+        from: '2'
+        to: '3'
+        # for:
+          # milliseconds: 500
+    action:
+      - service: light.turn_on
+        data:
+          entity_id: light.dss_shelly_cucina_o1
+      - service: light.turn_on
+        data:
+          entity_id: light.dss_shelly_cucina_o2
+        
+  - alias: cucina_pulsante_click_nr4
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: numeric_state
+        entity_id: counter.dss_shelly_cucina_click
+        above: 3
+        # for:
+          # milliseconds: 500
+    action:
+      - service: light.turn_off
+        data:
+          entity_id: light.dss_shelly_cucina_o1
+      - service: light.turn_off
+        data:
+          entity_id: light.dss_shelly_cucina_o2
+      - service: counter.reset
+        entity_id: counter.dss_shelly_cucina_click
+
+
+
+
+        
+# lovelace
+
+# entities:
+  # - entity: light.dss_shelly_cucina_o1
+  # - entity: sensor.dss_shelly_cucina_power_o1
+  # - entity: sensor.dss_shelly_cucina_energy_o1
+  # - entity: light.dss_shelly_cucina_o2
+  # - entity: sensor.dss_shelly_cucina_power_o2
+  # - entity: sensor.dss_shelly_cucina_energy_o2
+  # - entity: sensor.dss_shelly_cucina_energy_temp
+  # - entity: sensor.dss_shelly_cucina_energy_overtemp
+  # - entity: counter.dss_shelly_cucina_click
+# show_header_toggle: false
+# title: Shelly Cucina
+# type: entities

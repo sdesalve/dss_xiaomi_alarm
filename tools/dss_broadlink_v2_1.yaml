@@ -12,13 +12,13 @@ binary_sensor:
     platform: ping
     host: !secret chromecast_cucina_ip
     count: 2
-    scan_interval: 50
+    scan_interval: 10
     
   - name: chromecast_letto_ping 
     platform: ping
     host: !secret chromecast_letto_ip
     count: 2
-    scan_interval: 50
+    scan_interval: 10
 
 media_player:
   - platform: smartir

@@ -132,8 +132,9 @@ automation:
       - wait_template: "{{ states[trigger.to_state.domain][trigger.to_state.object_id] == 'off' }}"
       - delay:
           seconds: 2      
-      - service: script.dss_script_spegni_luci_cucina
+      - service: script.dss_script_spegni_luci_salotto
       - service: script.dss_script_spegni_luci_ingresso
+      - service: script.dss_script_spegni_luci_cucina
 
   - alias: cucina_clicker_incremento 
     hide_entity: true

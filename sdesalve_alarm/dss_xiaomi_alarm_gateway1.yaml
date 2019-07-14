@@ -273,30 +273,22 @@ group:
     control: hidden
     icon: mdi:voice
     entities:
+      - input_number.dss_delay_riproduzione_suono_welcome
       - input_select.dss_gateway1_welcome_sound_day
       - input_number.dss_gateway1_welcome_volume_day
-      - automation.giorno_riproduci_promemoria_allarme_away
-      - automation.giorno_riproduci_promemoria_allarme_home
       - input_select.dss_gateway1_welcome_sound_night
       - input_number.dss_gateway1_welcome_volume_night
-      - automation.notte_riproduci_promemoria_allarme_away
-      - automation.notte_riproduci_promemoria_allarme_home
-      - input_number.dss_delay_riproduzione_suono_welcome
 
   dss_gateway1_sensori_ritardati:
     name: "Impostazioni Sensori Ritardati"
     control: hidden
     icon: mdi:voice
     entities:
+      - input_number.dss_delay_innesco_sensori_ritardati
       - input_select.dss_gateway1_delayed_sensors_sound_day
       - input_number.dss_gateway1_delayed_sensors_volume_day
-      - automation.giorno_innesco_sensori_ritardati_allarme_home
-      - automation.giorno_innesco_sensori_ritardati_allarme_away
       - input_select.dss_gateway1_delayed_sensors_sound_night
       - input_number.dss_gateway1_delayed_sensors_volume_night
-      - automation.notte_innesco_sensori_ritardati_allarme_home
-      - automation.notte_innesco_sensori_ritardati_allarme_away
-      - input_number.dss_delay_innesco_sensori_ritardati
 
 script:
 ### Scripts to play gateway sounds ###

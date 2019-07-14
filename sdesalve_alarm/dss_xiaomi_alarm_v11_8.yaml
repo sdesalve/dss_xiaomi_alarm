@@ -1,3 +1,7 @@
+### v11.8 del 14/07/2019
+### sistemazioni ai gruppi e nascoste automazioni sensori ritardati e promemoria allarme attivo... abbassa i volumi a 0 se non vuoi che vengano riprodotti i suoni
+### cambiato sistema di rilevazione gruppi dispositivi user1 e user2 in casa
+
 ### v11.7 del 20/06/2019
 ### aggiunti pulsanti e script alle notifiche telegram per spegnere le luci ed i condizionatori rimasti accesi. 
 ### grazie mille alesoft73!
@@ -910,7 +914,7 @@ automation:
         from: 'home'
         to: 'not_home'
         for:
-          minutes: 1
+          minutes: 5
     condition:
       - condition: state
         entity_id: alarm_control_panel.home_alarm
@@ -1053,6 +1057,8 @@ automation:
 
       #spengo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Spegni lampeggiante ad attivazione avvenuta"
+    initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1078,7 +1084,7 @@ automation:
    
   #Accendo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Accendi lampeggiante ad attivazione AWAY avvenuta"
-    initial_state: true
+    initial_state: false
     hide_entity: true
     trigger:
       - platform: state
@@ -1096,6 +1102,8 @@ automation:
 
   ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
   - alias: "GIORNO: Riproduci 'Promemoria Allarme AWAY'"
+    initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1114,6 +1122,7 @@ automation:
   ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
   - alias: "GIORNO: Riproduci 'Promemoria Allarme HOME'"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1131,6 +1140,7 @@ automation:
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme AWAY"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1148,6 +1158,7 @@ automation:
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme HOME"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1185,6 +1196,7 @@ automation:
           ### questi sono i trigger che fanno scattare la riproduzione del suono di  notte###
   - alias: "NOTTE: Riproduci 'Promemoria Allarme AWAY'"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1202,6 +1214,7 @@ automation:
 
   - alias: "NOTTE: Riproduci 'Promemoria Allarme HOME'"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1219,6 +1232,7 @@ automation:
 
   - alias: "NOTTE: Innesco Sensori ritardati Allarme AWAY"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1236,6 +1250,7 @@ automation:
        
   - alias: "NOTTE: Innesco Sensori ritardati Allarme HOME"
     initial_state: true
+    hide_entity: true
     trigger:
       - platform: state
         from: 'off'

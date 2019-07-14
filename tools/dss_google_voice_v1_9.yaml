@@ -318,7 +318,7 @@ script:
         data:
           entity_id: camera.dahua_vto2101e_p
           media_player: media_player.cucina
-      - delay: '00:01:00'
+      - delay: '00:02:00'
       - service: broadlink.send
         data:
           host: !secret broadlink_rm_cucina_ip

@@ -448,6 +448,7 @@ automation:
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user1
+        from: 'not_home'
         to: 'home'
     action:
       - service: input_boolean.turn_on
@@ -462,6 +463,7 @@ automation:
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user2
+        from: 'not_home'
         to: 'home'
     action:
       - service: input_boolean.turn_on
@@ -476,6 +478,7 @@ automation:
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user3
+        from: 'not_home'
         to: 'home'
     action:
       - service: input_boolean.turn_on
@@ -490,6 +493,7 @@ automation:
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user4
+        from: 'not_home'
         to: 'home'
     action:
       - service: input_boolean.turn_on

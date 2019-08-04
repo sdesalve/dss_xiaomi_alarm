@@ -18,6 +18,23 @@ homeassistant:
     script.dss_voice_riproduci_messaggio_tts:
       hidden: true
 
+input_number:
+  dss_tts_volume_day:
+    name: "Volume TTS Giorno"
+    icon: mdi:volume-high
+    initial: 55
+    min: 0
+    max: 100
+    step: 5
+
+  dss_tts_volume_night:
+    name: "Volume TTS Notte"
+    icon: mdi:volume-high
+    initial: 35
+    min: 0
+    max: 100
+    step: 5
+
 group:
   dss_avvisi_tts:
     name: "Avvisi TTS Allarme"
@@ -29,11 +46,21 @@ group:
       - automation.avviso_tts_allarme_away_attivato
       - automation.avviso_tts_allarme_in_attivazione
       - automation.avviso_tts_allarme_in_innesco
+      - automation.avviso_tts_allarme_in_innesco_sensori_ritardati_away
+      - automation.avviso_tts_allarme_in_innesco_sensori_ritardati_home
       - automation.avviso_tts_allarme_innescato
+      - input_number.dss_tts_volume_day
+      - input_number.dss_tts_volume_night
 
 script:
   dss_voice_riproduci_messaggio_tts:
     sequence:
+  ### v11.9 Aggiunti volume TTS Giorno e Notte. Se = 0 non vengono riprodotti nella fascia oraria corrispondente i messaggi TTS
+      - condition: template
+        value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'on') and states('input_number.dss_tts_volume_day') | int > 0 }}"
+      - condition: template
+        value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'off') and states('input_number.dss_tts_volume_night') | int > 0 }}"
+
   # classico Google TTS
       # - service: tts.google_translate_say
         # entity_id: media_player.ingresso
@@ -61,7 +88,12 @@ script:
       - service: media_player.volume_set
         data_template: 
           entity_id: !secret entity_amazon_echo_id
-          volume_level: 0.5
+          volume_level: >-
+            {% if is_state('binary_sensor.dss_mode_giorno', 'on') %}
+            {{ (states('input_number.dss_tts_volume_day') | float / 100) | round(1) }}
+            {% else %}
+            {{ (states('input_number.dss_tts_volume_night') | float / 100) | round(1) }}
+            {% endif %}
       - service: notify.alexa_media
         data_template:
           message: "{{ message }}"
@@ -129,17 +161,37 @@ automation:
         entity_id: alarm_control_panel.home_alarm
         from: 'armed_away'
         to: 'pending'
+    action:
+      - condition: template
+        value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'disarmed') }}"
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Sta per scattare l'Allarme"
+
+  - alias: "Avviso TTS Allarme in innesco sensori ritardati AWAY"
+    initial_state: true
+    trigger:
       - platform: state
         from: 'off'
         to: 'on'
         entity_id: !secret entity_sensore_innesco_ritardato_allarme_away
+    action:
+      - condition: template
+        value_template: "{{ is_state('alarm_control_panel.home_alarm', 'armed_away') }}"
+      - service: script.dss_voice_riproduci_messaggio_tts
+        data:
+          message: "Sta per scattare l'Allarme"
+
+  - alias: "Avviso TTS Allarme in innesco sensori ritardati HOME"
+    initial_state: true
+    trigger:
       - platform: state
         from: 'off'
         to: 'on'
         entity_id: !secret entity_sensore_innesco_ritardato_allarme_home
     action:
       - condition: template
-        value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'disarmed') }}"
+        value_template: "{{ is_state('alarm_control_panel.home_alarm', 'armed_home') }}"
       - service: script.dss_voice_riproduci_messaggio_tts
         data:
           message: "Sta per scattare l'Allarme"

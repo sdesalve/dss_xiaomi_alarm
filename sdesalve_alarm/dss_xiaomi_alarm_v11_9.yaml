@@ -1,3 +1,8 @@
+### v11.9 del 25/07/2019
+### Aggiunti volume TTS Giorno e Notte. Se = 0 non vengono riprodotti nella fascia oraria corrispondente i messaggi TTS
+### aggiunte automazioni avviso_tts_allarme_in_innesco_sensori_ritardati_away e avviso_tts_allarme_in_innesco_sensori_ritardati_home
+### thanks jokerigno
+
 ### v11.8 del 14/07/2019
 ### sistemazioni ai gruppi e nascoste automazioni sensori ritardati e promemoria allarme attivo... abbassa i volumi a 0 se non vuoi che vengano riprodotti i suoni
 ### cambiato sistema di rilevazione gruppi dispositivi user1 e user2 in casa
@@ -436,7 +441,7 @@ group:
     control: hidden
     icon: mdi:settings
     entities:
-      - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
+      # - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
       # - automation.spegni_lampeggiante_ad_attivazione_avvenuta
       - input_boolean.dss_lights_on_away_mode
       - input_boolean.dss_lights_on_disarmed_mode

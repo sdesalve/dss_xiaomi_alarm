@@ -79,6 +79,12 @@ sensor:
       {% endif %}
 
   - platform: mqtt
+    name: rssi_nut_user1
+    state_topic: !secret rssi_dispositivo_nut_tracker_user1
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
+
+  - platform: mqtt
     name: tracker_nut_user2
     state_topic: !secret topic_dispositivo_nut_tracker_user2
     availability_topic: !secret topic_dispositivo_ESP32_availability
@@ -91,3 +97,10 @@ sensor:
       {% else %}
         away
       {% endif %}
+
+  - platform: mqtt
+    name: rssi_nut_user2
+    state_topic: !secret rssi_dispositivo_nut_tracker_user2
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
+

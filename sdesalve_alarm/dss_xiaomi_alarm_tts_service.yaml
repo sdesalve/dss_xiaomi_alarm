@@ -55,11 +55,13 @@ group:
 script:
   dss_voice_riproduci_messaggio_tts:
     sequence:
-  ### v11.9 Aggiunti volume TTS Giorno e Notte. Se = 0 non vengono riprodotti nella fascia oraria corrispondente i messaggi TTS
-      - condition: template
-        value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'on') and states('input_number.dss_tts_volume_day') | int > 0 }}"
-      - condition: template
-        value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'off') and states('input_number.dss_tts_volume_night') | int > 0 }}"
+      - condition: or
+        conditions:
+    ### v11.9 Aggiunti volume TTS Giorno e Notte. Se = 0 non vengono riprodotti nella fascia oraria corrispondente i messaggi TTS
+        - condition: template
+          value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'on') and states('input_number.dss_tts_volume_day') | int > 0 }}"
+        - condition: template
+          value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'off') and states('input_number.dss_tts_volume_night') | int > 0 }}"
 
   # classico Google TTS
       # - service: tts.google_translate_say

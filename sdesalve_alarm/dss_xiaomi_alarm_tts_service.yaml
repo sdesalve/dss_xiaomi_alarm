@@ -63,19 +63,6 @@ script:
         - condition: template
           value_template: "{{ is_state('binary_sensor.dss_mode_giorno', 'off') and states('input_number.dss_tts_volume_night') | int > 0 }}"
 
-  # classico Google TTS
-      # - service: tts.google_translate_say
-        # entity_id: media_player.ingresso
-        # data_template:
-          # language: it
-          # message: "{{ message }}"
-
-  ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
-  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
-      # - service: notify.notifiche_tts
-        # data_template:
-          # message: "{{ message }}"
-
   ### v10.2 notifiche TTS Amazon Alexa: 
   #queste le modifiche da fare allo script scaricabile da https://github.com/walthowd/ha-alexa-tts
   # LANGUAGE="it-IT"
@@ -104,6 +91,29 @@ script:
           data:
             type: announce
             #method: all
+            
+  # classico Google TTS
+      - service: media_player.volume_set
+        data_template: 
+          entity_id: media_player.ingresso
+          volume_level: >-
+            {% if is_state('binary_sensor.dss_mode_giorno', 'on') %}
+            {{ (states('input_number.dss_tts_volume_day') | float / 100) | round(1) }}
+            {% else %}
+            {{ (states('input_number.dss_tts_volume_night') | float / 100) | round(1) }}
+            {% endif %}
+      - service: tts.google_translate_say
+        entity_id: media_player.ingresso
+        data_template:
+          language: it
+          message: "{{ message }}"
+
+  ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
+  ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476
+      # - service: notify.notifiche_tts
+        # data_template:
+          # message: "{{ message }}"
+
 
 automation:
   - alias: "Avviso TTS Allarme disarmato"

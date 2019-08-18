@@ -1,5 +1,7 @@
 homeassistant: 
   customize:
+    script.dss_alarm_script_esegui_chiamata_voip:
+      hidden: true
     script.dss_alarm_script_invia_notifiche:
       hidden: true
     script.orla_telegram_spegni_luci_rimaste_accese:
@@ -12,6 +14,23 @@ homeassistant:
       hidden: true
 
 script:
+### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
+### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
+  dss_alarm_script_esegui_chiamata_voip:
+    sequence:
+      - service: hassio.addon_stdin
+        data_template:
+          #### ID del container ufficiale da utilizzare
+          # addon: 89275b70_dss_voip 
+          addon: local_dss_voip
+          input: {"call_sip_uri":"sip:501@pbxes.org","message_tts":"{{ message }}"}
+      - service: hassio.addon_stdin
+        data_template:
+          #### ID del container ufficiale da utilizzare
+          # addon: 89275b70_dss_voip 
+          addon: local_dss_voip
+          input: {"call_sip_uri":"sip:520@pbxes.org","message_tts":"{{ message }}"}
+
   dss_alarm_script_invia_notifiche:
     sequence:
       - service: notify.notifiche_telegram
@@ -92,6 +111,13 @@ automation:
            ALLARME Intrusione!
            
            {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
+### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
+### se non lo utilizzi puoi anche commentare la seguente chiamata script.dss_alarm_script_esegui_chiamata_voip
+      - service: script.dss_alarm_script_esegui_chiamata_voip
+        data_template:
+          message: >-
+           ALLARME Intrusione! {{ trigger.to_state.attributes.friendly_name }} è stata aperta
 
   - alias: "Invia notifica se innescato AWAY"
     initial_state: true
@@ -112,6 +138,13 @@ automation:
            ALLARME Intrusione!
            
            {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
+### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
+### se non lo utilizzi puoi anche commentare la seguente chiamata script.dss_alarm_script_esegui_chiamata_voip
+      - service: script.dss_alarm_script_esegui_chiamata_voip
+        data_template:
+          message: >-
+           ALLARME Intrusione! {{ trigger.to_state.attributes.friendly_name }} è stata aperta
 
   ### Sending a notification when the alarm is Arm###
   - alias: "NOTIFICA Allarme armato in modalità AWAY"

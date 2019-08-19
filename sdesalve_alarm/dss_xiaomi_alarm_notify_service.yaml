@@ -162,8 +162,9 @@ automation:
             {% macro controllo_sensori() %}
             {% set domains = ['binary_sensor'] %}
             {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
+            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
             {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
             
             
             *{{ item.name }}
@@ -260,9 +261,10 @@ automation:
             {% macro controllo_sensori() %}
             {% set domains = ['binary_sensor'] %}
             {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
+            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
             {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on') and (item.attributes.device_class is defined and item.attributes['device_class'] == 'opening')) -%}
-            
+            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+              
             
             *{{ item.name }}
             {% endfor %}

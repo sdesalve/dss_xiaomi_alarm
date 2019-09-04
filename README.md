@@ -7,7 +7,7 @@ Guida ed informazioni: https://hassiohelp.eu/2019/06/11/xiaomi-alarm/
 
 ## Ciao amico! ##
 
-Se ti sono stato utile e vuoi ringraziarmi, puoi offrirmi uno o più caffè! 
+Se trovi utile questo lavoro e vuoi ringraziarmi, puoi offrirmi uno o più caffè! 
 
 I :hearts: so much coffee... :grimacing::grimacing::grimacing:
 

@@ -12,12 +12,29 @@ homeassistant:
       entity_picture: !secret url_immagine_profilo_user2  
     device_tracker.redmi_note_6_pro_user2_bt:
       entity_picture: !secret url_immagine_profilo_user2  
-    sensor.tracker_nut_user1:
+    # sensor.tracker_nut_user1:
+      # friendly_name: !secret nome_dispositivo_nut_tracker_user1
+      # entity_picture: !secret url_immagine_profilo_user1
+    # sensor.tracker_nut_user2:
+      # friendly_name: !secret nome_dispositivo_nut_tracker_user2
+      # entity_picture: !secret url_immagine_profilo_user2
+    automation.imposta_gruppo_dispositivi_tracciati:
+      hidden: true
+    automation.controlla_dispositivi_rimasti_a_casa_allarme_attivo_away:
+      hidden: true
+    script.dss_alarm_script_reimposta_gruppo_dispositivi_tracciati:
+      hidden: true
+    script.dss_alarm_script_rimuovi_da_gruppo_dispositivi_tracciati_rimasti_casa:
+      hidden: true
+#test di ESPHome per ESP32
+    sensor.template_tracker_nut_user1:
       friendly_name: !secret nome_dispositivo_nut_tracker_user1
       entity_picture: !secret url_immagine_profilo_user1
-    sensor.tracker_nut_user2:
+      device_class: presence
+    sensor.template_tracker_nut_user2:
       friendly_name: !secret nome_dispositivo_nut_tracker_user2
       entity_picture: !secret url_immagine_profilo_user2
+      device_class: presence
 
 group:
 ### Elenco dei Dispositivi Tracciati - inserite qui i dispositivi che fanno attivare/disattivare l'allarme in automatico ###
@@ -25,8 +42,7 @@ group:
 ### e BLUETOOTH https://www.home-assistant.io/components/device_tracker.bluetooth_tracker/ ###
 ### Ho aggiunto anche un tracker BTLE con un ESP32. qui la mia guida: https://github.com/sdesalve/dss_mqtt_binary_sensor_ble_scanner/blob/master/guida%20MQTT.pdf
 
-#questo è un gruppo di gruppi. Dato che traccio sia tramite bluetooth_tracker che tramite nmap_tracker i miei cellulari mi dava fastidio vedere 4 dispositivi.
-#così è immediato capire chi è in casa anche se viene tracciato con più metodi
+#questo gruppo viene ripopolato automaticamente con i dispositivi dei gruppi dss_dispositivi_user1 e dss_dispositivi_user2 all'avvio di HA ed ad ogni disattivazione dell'allarme dallo script dss_alarm_script_reimposta_gruppo_dispositivi_tracciati
   dss_dispositivi_tracciati:
     name: "Dispositivi Tracciati"
     control: hidden
@@ -59,48 +75,149 @@ group:
     # control: hidden
     # entities: !secret elenco_dispositivi_tracciati_user4
 
+sensor:
+
+### per ovviare al problema del mancato tracciamento dei sensori di ESPHome che vengono visti come binary_sensor e non come device_tracker ho creato questi template sensori
+### dovranno essere tracciati nei gruppi questi sensori (sensor.template_tracker_nut_user1 e sensor.template_tracker_nut_user2)
+  - platform: template
+    sensors:
+      template_tracker_nut_user1:
+        value_template: >-
+          {% if is_state('binary_sensor.esphome_tracker_nut_user1','on') %}
+            A casa
+          {% else %}
+            Fuori
+          {% endif %}
+      template_tracker_nut_user2:
+        value_template: >-
+          {% if is_state('binary_sensor.esphome_tracker_nut_user2','on') %}
+            A casa
+          {% else %}
+            Fuori
+          {% endif %}
+          
 ### questi sono i sensori che vengono aggiornati tramite MQTT con un ESP32 e servono a rilevare le presenze con Bluetooth LowEnergy
 ### qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
 
 ### se non usi quel sistema.... puoi rimuovere tutta questa parte
-sensor:    
-  - platform: mqtt
-    name: tracker_nut_user1
-    state_topic: !secret topic_dispositivo_nut_tracker_user1
-    availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
-    value_template: >-
-      {% if value == 'ON' %}
-        home
-      {% elif value == 'OFF' %}
-        away
-      {% else %}
-        away
-      {% endif %}
+  # - platform: mqtt
+    # name: tracker_nut_user1
+    # state_topic: !secret topic_dispositivo_nut_tracker_user1
+    # availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 300
+    # value_template: >-
+      # {% if value == 'ON' %}
+        # home
+      # {% elif value == 'OFF' %}
+        # away
+      # {% else %}
+        # away
+      # {% endif %}
 
-  - platform: mqtt
-    name: rssi_nut_user1
-    state_topic: !secret rssi_dispositivo_nut_tracker_user1
-    availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
+  # - platform: mqtt
+    # name: rssi_nut_user1
+    # state_topic: !secret rssi_dispositivo_nut_tracker_user1
+    # availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 300
 
-  - platform: mqtt
-    name: tracker_nut_user2
-    state_topic: !secret topic_dispositivo_nut_tracker_user2
-    availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
-    value_template: >-
-      {% if value == 'ON' %}
-        home
-      {% elif value == 'OFF' %}
-        away
-      {% else %}
-        away
-      {% endif %}
+  # - platform: mqtt
+    # name: tracker_nut_user2
+    # state_topic: !secret topic_dispositivo_nut_tracker_user2
+    # availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 300
+    # value_template: >-
+      # {% if value == 'ON' %}
+        # home
+      # {% elif value == 'OFF' %}
+        # away
+      # {% else %}
+        # away
+      # {% endif %}
 
-  - platform: mqtt
-    name: rssi_nut_user2
-    state_topic: !secret rssi_dispositivo_nut_tracker_user2
-    availability_topic: !secret topic_dispositivo_ESP32_availability
-    expire_after: 300
+  # - platform: mqtt
+    # name: rssi_nut_user2
+    # state_topic: !secret rssi_dispositivo_nut_tracker_user2
+    # availability_topic: !secret topic_dispositivo_ESP32_availability
+    # expire_after: 300
 
+automation:
+  - alias: "Imposta gruppo dispositivi tracciati"
+    trigger:
+      - platform: homeassistant
+        event: start
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'disarmed'
+    action:
+      - service: script.dss_alarm_script_reimposta_gruppo_dispositivi_tracciati
+      
+  - alias: "Controlla dispositivi rimasti a casa allarme attivo AWAY"
+    initial_state: true
+    trigger:
+      - platform: state
+        entity_id: alarm_control_panel.home_alarm
+        to: 'armed_away'
+        for: '00:05:00'
+    action:
+      - condition: template
+        value_template: >
+          {% macro controllo_device() %}
+            {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state == 'home' -%} 
+              {{ tracker.entity_id }}{% if not loop.last %}, {% endif -%}
+            {% endfor %}              
+          {% endmacro %}
+          {{ controllo_device() | trim != "" }}
+      - service: script.dss_alarm_script_rimuovi_da_gruppo_dispositivi_tracciati_rimasti_casa
+      - service: script.dss_alarm_script_invia_notifiche
+        data_template:
+          message: >-
+            {% macro controllo_device() %}
+              {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state == 'home' -%} 
+            
+            
+                ⭐️ {{ tracker.entity_id }}
+              {% endfor %}              
+            {% endmacro %}
+            ATTENZIONE: i seguenti dispositivi tracciati sono rimasti a casa e li ho rimossi dai dispositivi tracciati:
+            {{ controllo_device() }}
+
+script:
+  dss_alarm_script_reimposta_gruppo_dispositivi_tracciati:
+    sequence:
+      # - service: group.reload
+      # - service: group.set
+        # data_template:
+          # object_id: dss_dispositivi_tracciati
+          # entities: 
+            # - group.dss_dispositivi_user1
+            # - group.dss_dispositivi_user2
+      - service: group.set
+        data_template:
+          object_id: dss_dispositivi_tracciati
+          entities: >-
+            {% macro controllo_device() %}
+              {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') %}
+                {{ tracker.entity_id }}{% if not loop.last %}, {% endif -%}
+              {% endfor %}              
+            {% endmacro %}
+            {{ controllo_device() }}
+
+  dss_alarm_script_rimuovi_da_gruppo_dispositivi_tracciati_rimasti_casa:
+    sequence:
+      - service: group.set
+        data_template:
+          object_id: dss_dispositivi_tracciati
+          entities: >-
+            {% macro controllo_device() %}
+              {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state != 'home' -%} 
+                {{ tracker.entity_id }}{% if not loop.last %}, {% endif -%}
+              {% endfor %}              
+            {% endmacro %}
+            {{ controllo_device() }}
+
+input_select:
+  # dss_binary_sensor_secrets_dispositivi_tracciati_non_ignorare_rimasti_casa:
+    # options: !secret dss_binary_sensor_secrets_dispositivi_tracciati_non_ignorare_rimasti_casa
+
+  # dss_binary_sensor_secrets_dispositivi_tracciati_da_ignorare_rimasti_casa:
+    # options: ['nessuno']

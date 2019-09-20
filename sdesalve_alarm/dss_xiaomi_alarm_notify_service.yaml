@@ -21,14 +21,14 @@ script:
       - service: hassio.addon_stdin
         data_template:
           #### ID del container ufficiale da utilizzare
-          # addon: 89275b70_dss_voip 
-          addon: local_dss_voip
+          # addon: local_dss_voip
+          addon: 89275b70_dss_voip 
           input: {"call_sip_uri":"sip:501@pbxes.org","message_tts":"{{ message }}"}
       - service: hassio.addon_stdin
         data_template:
           #### ID del container ufficiale da utilizzare
-          # addon: 89275b70_dss_voip 
-          addon: local_dss_voip
+          # addon: local_dss_voip
+          addon: 89275b70_dss_voip 
           input: {"call_sip_uri":"sip:520@pbxes.org","message_tts":"{{ message }}"}
 
   dss_alarm_script_invia_notifiche:
@@ -55,11 +55,8 @@ script:
         data_template:
           entity_id: >
             {%- macro controllo_luci() -%}
-            {%- set domains = ['light','switch'] -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {%- for domain in domains -%}
-            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}{{ item.entity_id}}{%- if not loop.last %}, {%- endif -%}
-            {%- endfor -%}
+            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_luci() }}
@@ -70,11 +67,8 @@ script:
         data_template:
           entity_id: >
             {%- macro controllo_clima() -%}
-            {%- set domains = ['climate'] -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
-            {%- for domain in domains -%}
-            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}{{ item.entity_id}}{%- if not loop.last %}, {%- endif -%}
-            {%- endfor -%}
+            {% for item in expand(states['light']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_clima() }}
@@ -110,7 +104,7 @@ automation:
           message: >-
            ALLARME Intrusione!
            
-           {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+           <strong>{{ trigger.to_state.attributes.friendly_name }}</strong> è stata aperta
 ### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
 ### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
 ### se non lo utilizzi puoi anche commentare la seguente chiamata script.dss_alarm_script_esegui_chiamata_voip
@@ -137,7 +131,7 @@ automation:
           message: >-
            ALLARME Intrusione!
            
-           {{ trigger.to_state.attributes.friendly_name }} è stata aperta
+           <strong>{{ trigger.to_state.attributes.friendly_name }}</strong> è stata aperta
 ### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
 ### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
 ### se non lo utilizzi puoi anche commentare la seguente chiamata script.dss_alarm_script_esegui_chiamata_voip
@@ -158,88 +152,72 @@ automation:
       - service: script.dss_alarm_script_invia_notifiche_telegram_con_keyboard
         data_template:
           message: >-
-            ATTIVATO Allarme - AWAY Mode.
-            {% macro controllo_sensori() %}
-            {% set domains = ['binary_sensor'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
-            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+            <strong>ATTIVATO Allarme - AWAY Mode.</strong>
+            {%- macro controllo_sensori() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') -%}
+            {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+            {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on' and item.attributes['device_class'] in device_types) %}
             
-            
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
+            🚪 {{ item.name}}
+            {%- endfor -%}
+            {% endmacro -%}
             {% set elenco_infissi = controllo_sensori() %}
             {% if elenco_infissi |trim == "" %}
+            
             
             Tutti gli infissi sono chiusi
             {% else %}
             
-            ATTENZIONE: i seguenti infissi sono rimasti aperti:
             
+            ATTENZIONE: i seguenti infissi sono rimasti aperti:
             {{ elenco_infissi }}
             {% endif %}
             
-            {% macro controllo_luci() %}
-            {% set domains = ['light', 'switch'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away', 'options') %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            {%- macro controllo_luci() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
+            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
             
-            
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
-            {% set elenco_luci = controllo_luci() %}
+            💡 {{ item.name}}
+            {%- endfor -%}
+            {%- endmacro -%}
+            {%- set elenco_luci = controllo_luci() -%}
             {% if elenco_luci |trim == "" %}
+            
             
             Tutti le luci sono spente
             {% else %}
             
-            ATTENZIONE: le seguenti luci sono rimaste accese:
             
+            ATTENZIONE: le seguenti luci sono rimaste accese:
             {{ elenco_luci }}
             {% endif %}
             
-            {% macro controllo_clima() %}
-            {% set domains = ['climate'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            {%- macro controllo_clima() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') -%}
+            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
             
-            
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
+            ❄️ {{ item.name}}
+            {%- endfor -%}
+            {%- endmacro -%}
             {% set elenco_clima = controllo_clima() %}
             {% if elenco_clima |trim == "" %}
+            
             
             Tutti i climatizzatori sono spenti
             {% else %}
             
-            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
             
+            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
             {{ elenco_clima }}
             {% endif %}
           elenco_clima_accesi: >-
-            {%- set domains = ['climate'] -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
-            {%- for domain in domains -%}
-            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
-            {{ item.name }},
-            {%- endfor -%}
+            {% for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}
+            {{ item.name }}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
           elenco_luci_accese: >-
-            {%- set domains = ['light', 'switch'] -%}
-            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away', 'options') -%}
-            {%- for domain in domains -%}
-            {%- for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
-            {{ item.name }},
-            {%- endfor -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
+            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
 
       - service: script.dss_light_flash_cancel
@@ -257,74 +235,64 @@ automation:
       - service: script.dss_alarm_script_invia_notifiche_telegram_con_keyboard
         data_template:
           message: >-
-            ATTIVATO Allarme - HOME Mode.
-            {% macro controllo_sensori() %}
-            {% set domains = ['binary_sensor'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
-            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
-              
+            <strong>ATTIVATO Allarme - HOME Mode.</strong>
+            {%- macro controllo_sensori() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') -%}
+            {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+            {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on' and item.attributes['device_class'] in device_types) %}
             
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
+            🚪 {{ item.name}}
+            {%- endfor -%}
+            {% endmacro -%}
             {% set elenco_infissi = controllo_sensori() %}
             {% if elenco_infissi |trim == "" %}
+            
             
             Tutti gli infissi sono chiusi
             {% else %}
             
-            ATTENZIONE: i seguenti infissi sono rimasti aperti:
             
+            ATTENZIONE: i seguenti infissi sono rimasti aperti:
             {{ elenco_infissi }}
             {% endif %}
             
-            {% macro controllo_luci() %}
-            {% set domains = ['light', 'switch'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            {%- macro controllo_luci() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
+            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
             
-            
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
-            {% set elenco_luci = controllo_luci() %}
+            💡 {{ item.name}}
+            {%- endfor -%}
+            {%- endmacro -%}
+            {%- set elenco_luci = controllo_luci() -%}
             {% if elenco_luci |trim == "" %}
+            
             
             Tutti le luci sono spente
             {% else %}
             
-            ATTENZIONE: le seguenti luci sono rimaste accese:
             
+            ATTENZIONE: le seguenti luci sono rimaste accese:
             {{ elenco_luci }}
             {% endif %}
             
-            {% macro controllo_clima() %}
-            {% set domains = ['climate'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if ((item.state == 'on')) -%}
+            {%- macro controllo_clima() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') -%}
+            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
             
-            
-            *{{ item.name }}
-            {% endfor %}
-            {%- endfor %}
-            {% endmacro %}
+            ❄️ {{ item.name}}
+            {%- endfor -%}
+            {%- endmacro -%}
             {% set elenco_clima = controllo_clima() %}
             {% if elenco_clima |trim == "" %}
+            
             
             Tutti i climatizzatori sono spenti
             {% else %}
             
-            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
             
+            ATTENZIONE: i seguenti climatizzatori sono rimasti accesi:
             {{ elenco_clima }}
             {% endif %}
-
       - service: script.dss_light_flash_cancel
       - service: script.dss_light_flash_cancel_away
 
@@ -350,7 +318,7 @@ automation:
         # from: 'not_home'
         # to: 'home'
         # for:
-          # seconds: 10
+          # seconds: 15
       - platform: state
         entity_id: group.dss_dispositivi_user1
         from: 'not_home'
@@ -407,7 +375,7 @@ automation:
       - service: script.dss_alarm_script_invia_notifiche
         data_template: 
           message: >-
-            {{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }} è rientrato/a nella casa!
+            <strong>{{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }}</strong> è rientrato/a nella casa!
             {% if is_state('input_boolean.dss_sospesa_attivazione_automatica', 'on') %}
             
             Ripristinata l'attivazione automatica dell'allarme...
@@ -422,7 +390,7 @@ automation:
         from: 'home'
         to: 'not_home'
         for:
-          minutes: 1
+          minutes: 2
     condition:
       - condition: template
         value_template: >-
@@ -433,10 +401,10 @@ automation:
       - service: script.dss_alarm_script_invia_notifiche
         data_template :
           message: >-
-            {{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }} ha abbandonato la casa!
+            <strong>{{ trigger.to_state.attributes.friendly_name | replace( "Dispositivi ","") }}</strong> ha abbandonato per ultimo la casa!
             {% if is_state('input_boolean.dss_sospesa_attivazione_automatica', 'on') %}
             
-            Sospesa l'attivazione automatica dell'allarme...
+            <strong>Sospesa l'attivazione automatica dell'allarme...</strong>
             {% elif is_state('automation.attivazione_automatica_se_dispositivi_non_in_casa', 'on') and is_state('alarm_control_panel.home_alarm', 'disarmed') %}
             
             Tra pochi minuti verrà inserito automaticamente l'allarme.

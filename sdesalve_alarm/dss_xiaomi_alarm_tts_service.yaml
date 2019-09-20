@@ -232,31 +232,25 @@ automation:
     condition:
       - condition: template
         value_template: >
-          {% macro controllo_sensori() %}
-          {% set domains = ['binary_sensor'] %}
-          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
-          {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-          {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+          {%- macro controllo_sensori() -%}
+          {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') -%}
+          {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+          {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
           {{ item.name }}{% if not loop.last %}, {% endif %}
-          {% endfor %}
-          {%- endfor %}
+          {%- endfor -%}
           {% endmacro %}
-          {{ controllo_sensori() |trim != "" }}
+          {{ controllo_sensori() | trim != "" }}
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data_template:
           message: >-
             I seguenti infissi risultano aperti...
-            {% macro controllo_sensori() %}
-            {% set domains = ['binary_sensor'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
-            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
-            {{ item.name }}{% if not loop.last or true %}... {% endif %}
-            {% endfor %}
-            {%- endfor %}
+            {%- macro controllo_sensori() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') -%}
+            {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+            {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) %}
+            {{ item.name }}...
+            {%- endfor -%}
             {% endmacro %}
             {{ controllo_sensori() }}
 
@@ -272,31 +266,25 @@ automation:
     condition:
       - condition: template
         value_template: >
-          {% macro controllo_sensori() %}
-          {% set domains = ['binary_sensor'] %}
-          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
-          {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-          {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+          {%- macro controllo_sensori() -%}
+          {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') -%}
+          {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+          {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
           {{ item.name }}{% if not loop.last %}, {% endif %}
-          {% endfor %}
-          {%- endfor %}
+          {%- endfor -%}
           {% endmacro %}
-          {{ controllo_sensori() |trim != "" }}
+          {{ controllo_sensori() | trim != "" }}
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data_template:
           message: >-
             I seguenti infissi risultano aperti...
-            {% macro controllo_sensori() %}
-            {% set domains = ['binary_sensor'] %}
-            {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
-            {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-            {% for domain in domains -%}
-            {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
-            {{ item.name }}{% if not loop.last or true %}... {% endif %}
-            {% endfor %}
-            {%- endfor %}
+            {%- macro controllo_sensori() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') -%}
+            {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
+            {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) %}
+            {{ item.name }}...
+            {%- endfor -%}
             {% endmacro %}
             {{ controllo_sensori() }}
 
@@ -313,16 +301,13 @@ automation:
       - condition: template
         value_template: >
           {% macro controllo_sensori() %}
-          {% set domains = ['binary_sensor'] %}
           {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
           {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-          {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+          {% for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) %}
           {{ item.name }}{% if not loop.last %}, {% endif %}
-          {% endfor %}
           {%- endfor %}
           {% endmacro %}
-          {{ controllo_sensori() |trim == "" }}
+          {{ controllo_sensori() | trim == "" }}
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data:
@@ -346,16 +331,13 @@ automation:
       - condition: template
         value_template: >
           {% macro controllo_sensori() %}
-          {% set domains = ['binary_sensor'] %}
-          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') %}
+          {% set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') %}
           {% set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] %}
-          {% for domain in domains -%}
-          {% for item in states[domain] if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) -%}
+          {% for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions) if (item.state == 'on' and item.attributes['device_class'] in device_types) %}
           {{ item.name }}{% if not loop.last %}, {% endif %}
-          {% endfor %}
           {%- endfor %}
           {% endmacro %}
-          {{ controllo_sensori() |trim == "" }}
+          {{ controllo_sensori() | trim == "" }}
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data:

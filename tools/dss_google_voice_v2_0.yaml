@@ -275,7 +275,7 @@ script:
         message: >-
           {%- macro controllo_luci() -%}
           {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-          {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+          {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
           {%- endfor -%}
           {%- endmacro -%}
           {{ controllo_luci() | trim == "" }}

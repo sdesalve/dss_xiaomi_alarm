@@ -56,7 +56,7 @@ script:
           entity_id: >
             {%- macro controllo_luci() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_luci() }}
@@ -68,7 +68,7 @@ script:
           entity_id: >
             {%- macro controllo_clima() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
-            {% for item in expand(states['light']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {% for item in expand(states['light']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_clima() }}
@@ -154,7 +154,7 @@ automation:
           message: >-
             <strong>ATTIVATO Allarme - AWAY Mode.</strong>
             {%- macro controllo_sensori() -%}
-            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_home', 'options') -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_infissi_chiusi_away', 'options') -%}
             {%- set device_types = ['door', 'garage_door', 'lock', 'opening', 'window'] -%}
             {%- for item in expand(states['binary_sensor']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on' and item.attributes['device_class'] in device_types) %}
             
@@ -174,8 +174,8 @@ automation:
             {% endif %}
             
             {%- macro controllo_luci() -%}
-            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away', 'options') -%}
+            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') %}
             
             💡 {{ item.name}}
             {%- endfor -%}
@@ -193,8 +193,8 @@ automation:
             {% endif %}
             
             {%- macro controllo_clima() -%}
-            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') -%}
-            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
+            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') %}
             
             ❄️ {{ item.name}}
             {%- endfor -%}
@@ -212,12 +212,12 @@ automation:
             {% endif %}
           elenco_clima_accesi: >-
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
-            {% for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}
+            {% for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}
             {{ item.name }}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
           elenco_luci_accese: >-
-            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_away', 'options') -%}
+            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
 
       - service: script.dss_light_flash_cancel
@@ -258,7 +258,7 @@ automation:
             
             {%- macro controllo_luci() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
+            {%- for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') %}
             
             💡 {{ item.name}}
             {%- endfor -%}
@@ -277,7 +277,7 @@ automation:
             
             {%- macro controllo_clima() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home', 'options') -%}
-            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id in exclusions and item.state == 'on') %}
+            {%- for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') %}
             
             ❄️ {{ item.name}}
             {%- endfor -%}

@@ -1,3 +1,7 @@
+### v13.1.1 del 24/09/2019
+### small fix in dss_xiaomi_alarm_notify_service.yaml
+
+
 ### v13.1.0 del 19/09/2019
 ### aggiunto controllo device_types nelle macro di controllo sensori finestre aperte.
 ### riscritte le macro per il controllo stato luci, clima ed infissi

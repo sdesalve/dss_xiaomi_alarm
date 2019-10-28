@@ -29,3 +29,18 @@ camera:
   - name: dahua_camera_cancello_giardino
     platform: ffmpeg
     input: !secret dss_dahua_camera_cancello_giardino_cam_rtsp_url
+    
+    
+### Esempio Secrets:    
+### dss_dahua_camera_cancello_giardino_cam_rtsp_url: "rtsp://192.168.1.98:554/user=admin_password=f38YgH1e_channel=1_stream=1.sdp?real_stream"
+### 
+### dss_dahua_camera_fronte_user: "admin"
+### dss_dahua_camera_fronte_password: "xxxxxx"
+### dss_dahua_camera_fronte_cam_snapshot: "http://192.168.1.95/cgi-bin/snapshot.cgi?channel=1"
+### dss_dahua_camera_fronte_cam_rtsp_url: "rtsp://admin:xxxxxx@192.168.1.95/cam/realmonitor?channel=1&subtype=2"
+### 
+### dss_dahua_camera_ingresso_user: "admin"
+### dss_dahua_camera_ingresso_password: "xxxxxx"
+### dss_dahua_camera_ingresso_cam_snapshot: "http://192.168.1.90/cgi-bin/snapshot.cgi?channel=1"
+### dss_dahua_camera_ingresso_cam_rtsp_url: "rtsp://admin:xxxxxx@192.168.1.90/cam/realmonitor?channel=1&subtype=2"
+

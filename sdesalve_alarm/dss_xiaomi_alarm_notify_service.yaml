@@ -68,7 +68,7 @@ script:
           entity_id: >
             {%- macro controllo_clima() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_clima_acceso_away', 'options') -%}
-            {% for item in expand(states['light']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {% for item in expand(states['climate']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_clima() }}

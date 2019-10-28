@@ -12,15 +12,11 @@ homeassistant:
       entity_picture: !secret url_immagine_profilo_user2  
     device_tracker.redmi_note_6_pro_user2_bt:
       entity_picture: !secret url_immagine_profilo_user2  
-    # sensor.tracker_nut_user1:
-      # friendly_name: !secret nome_dispositivo_nut_tracker_user1
-      # entity_picture: !secret url_immagine_profilo_user1
-    # sensor.tracker_nut_user2:
-      # friendly_name: !secret nome_dispositivo_nut_tracker_user2
-      # entity_picture: !secret url_immagine_profilo_user2
     automation.imposta_gruppo_dispositivi_tracciati:
       hidden: true
     automation.controlla_dispositivi_rimasti_a_casa_allarme_attivo_away:
+      hidden: true
+    automation.imposta_away_i_dispositivi_tracciati_startup:
       hidden: true
     script.dss_alarm_script_reimposta_gruppo_dispositivi_tracciati:
       hidden: true
@@ -35,6 +31,13 @@ homeassistant:
       friendly_name: !secret nome_dispositivo_nut_tracker_user2
       entity_picture: !secret url_immagine_profilo_user2
       device_class: presence
+#dss_mqtt_binary_sensor_ble_scanner per ESP32
+    sensor.tracker_nut_user1:
+      friendly_name: !secret nome_dispositivo_nut_tracker_user1
+      entity_picture: !secret url_immagine_profilo_user1
+    sensor.tracker_nut_user2:
+      friendly_name: !secret nome_dispositivo_nut_tracker_user2
+      entity_picture: !secret url_immagine_profilo_user2
 
 group:
 ### Elenco dei Dispositivi Tracciati - inserite qui i dispositivi che fanno attivare/disattivare l'allarme in automatico ###
@@ -84,64 +87,84 @@ sensor:
       template_tracker_nut_user1:
         value_template: >-
           {% if is_state('binary_sensor.esphome_tracker_nut_user1','on') %}
-            A casa
+          home
           {% else %}
-            Fuori
+          away
           {% endif %}
       template_tracker_nut_user2:
         value_template: >-
           {% if is_state('binary_sensor.esphome_tracker_nut_user2','on') %}
-            A casa
+          home
           {% else %}
-            Fuori
+          away
           {% endif %}
           
 ### questi sono i sensori che vengono aggiornati tramite MQTT con un ESP32 e servono a rilevare le presenze con Bluetooth LowEnergy
 ### qui la mia guida: https://github.com/sdesalve/Open-Home-Automation/blob/master/ha_mqtt_binary_sensor_ble_scanner/guida%20MQTT.pdf
 
 ### se non usi quel sistema.... puoi rimuovere tutta questa parte
-  # - platform: mqtt
-    # name: tracker_nut_user1
-    # state_topic: !secret topic_dispositivo_nut_tracker_user1
-    # availability_topic: !secret topic_dispositivo_ESP32_availability
-    # expire_after: 300
-    # value_template: >-
-      # {% if value == 'ON' %}
-        # home
-      # {% elif value == 'OFF' %}
-        # away
-      # {% else %}
-        # away
-      # {% endif %}
+  - platform: mqtt
+    name: tracker_nut_user1
+    state_topic: !secret topic_dispositivo_nut_tracker_user1
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
+    value_template: >-
+      {% if value == 'ON' %}
+        home
+      {% elif value == 'OFF' %}
+        away
+      {% else %}
+        away
+      {% endif %}
 
-  # - platform: mqtt
-    # name: rssi_nut_user1
-    # state_topic: !secret rssi_dispositivo_nut_tracker_user1
-    # availability_topic: !secret topic_dispositivo_ESP32_availability
-    # expire_after: 300
+  - platform: mqtt
+    name: rssi_nut_user1
+    state_topic: !secret rssi_dispositivo_nut_tracker_user1
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
 
-  # - platform: mqtt
-    # name: tracker_nut_user2
-    # state_topic: !secret topic_dispositivo_nut_tracker_user2
-    # availability_topic: !secret topic_dispositivo_ESP32_availability
-    # expire_after: 300
-    # value_template: >-
-      # {% if value == 'ON' %}
-        # home
-      # {% elif value == 'OFF' %}
-        # away
-      # {% else %}
-        # away
-      # {% endif %}
+  - platform: mqtt
+    name: tracker_nut_user2
+    state_topic: !secret topic_dispositivo_nut_tracker_user2
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
+    value_template: >-
+      {% if value == 'ON' %}
+        home
+      {% elif value == 'OFF' %}
+        away
+      {% else %}
+        away
+      {% endif %}
 
-  # - platform: mqtt
-    # name: rssi_nut_user2
-    # state_topic: !secret rssi_dispositivo_nut_tracker_user2
-    # availability_topic: !secret topic_dispositivo_ESP32_availability
-    # expire_after: 300
+  - platform: mqtt
+    name: rssi_nut_user2
+    state_topic: !secret rssi_dispositivo_nut_tracker_user2
+    availability_topic: !secret topic_dispositivo_ESP32_availability
+    expire_after: 300
 
 automation:
+  - alias: "Imposta away i dispositivi tracciati startup"
+    initial_state: true
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - service: mqtt.publish
+        data_template:
+          topic: !secret topic_dispositivo_ESP32_availability
+          payload: 'OFF'
+      - service: mqtt.publish
+        data_template:
+          topic: !secret topic_dispositivo_nut_tracker_user1
+          payload: 'OFF'
+      - service: mqtt.publish
+        data_template:
+          topic: !secret topic_dispositivo_nut_tracker_user2
+          payload: 'OFF'
+        
   - alias: "Imposta gruppo dispositivi tracciati"
+    initial_state: true
     trigger:
       - platform: homeassistant
         event: start
@@ -215,7 +238,7 @@ script:
             {% endmacro %}
             {{ controllo_device() }}
 
-input_select:
+# input_select:
   # dss_binary_sensor_secrets_dispositivi_tracciati_non_ignorare_rimasti_casa:
     # options: !secret dss_binary_sensor_secrets_dispositivi_tracciati_non_ignorare_rimasti_casa
 

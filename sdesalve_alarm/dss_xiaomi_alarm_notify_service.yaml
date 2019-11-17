@@ -51,7 +51,7 @@ script:
           
   orla_telegram_spegni_luci_rimaste_accese:
     sequence:
-      - service: homeassistant.turn_off
+      - service: light.turn_off
         data_template:
           entity_id: >
             {%- macro controllo_luci() -%}
@@ -63,7 +63,7 @@ script:
           
   orla_telegram_spegni_clima_rimasti_accesi:
     sequence:
-      - service: homeassistant.turn_off
+      - service: climate.turn_off
         data_template:
           entity_id: >
             {%- macro controllo_clima() -%}
@@ -337,24 +337,24 @@ automation:
         # value_template: >-
           # {{ is_state('group.dss_dispositivi_user1', 'not_home') or is_state('group.dss_dispositivi_user2', 'not_home') }}
     condition:
-      condition: or
-      conditions:
-        - condition: and
-          conditions:
-            - condition: state
-              entity_id: group.dss_dispositivi_user1
-              state: 'home'
-            - condition: state
-              entity_id: group.dss_dispositivi_user2
-              state: 'not_home'
-        - condition: and
-          conditions:
-            - condition: state
-              entity_id: group.dss_dispositivi_user1
-              state: 'not_home'
-            - condition: state
-              entity_id: group.dss_dispositivi_user2
-              state: 'home'
+      - condition: or
+        conditions:
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: group.dss_dispositivi_user1
+                state: 'home'
+              - condition: state
+                entity_id: group.dss_dispositivi_user2
+                state: 'not_home'
+          - condition: and
+            conditions:
+              - condition: state
+                entity_id: group.dss_dispositivi_user1
+                state: 'not_home'
+              - condition: state
+                entity_id: group.dss_dispositivi_user2
+                state: 'home'
 # ### se hai più di 2 gruppi di dispositivi INVECE devi usare questo sistema:
     # condition:
       # condition: or
@@ -372,6 +372,14 @@ automation:
           # value_template: >-
             # {{ is_state('group.dss_dispositivi_user4', 'home') and is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') }}
     action:
+      - condition: template
+        value_template: >- 
+          {%- macro controllo_dispositivo_rientrato() -%}
+          {%- for entity in trigger.to_state.attributes.entity_id if states(entity) == 'on' and entity in expand('group.dss_dispositivi_tracciati') -%}
+            {{ entity.entity_id }}{%- if not loop.last %},{% endif %}
+          {%- endfor -%}
+          {%- endmacro -%}
+          {{ controllo_dispositivo_rientrato() | trim == "" }}
       - service: script.dss_alarm_script_invia_notifiche
         data_template: 
           message: >-
@@ -398,6 +406,14 @@ automation:
         # value_template: >-
           # {{ is_state('group.dss_dispositivi_user1', 'not_home') and is_state('group.dss_dispositivi_user2', 'not_home') and is_state('group.dss_dispositivi_user3', 'not_home') and is_state('group.dss_dispositivi_user4', 'not_home') }}
     action:
+      - condition: template
+        value_template: >- 
+          {%- macro controllo_dispositivo_rientrato() -%}
+          {%- for entity in trigger.to_state.attributes.entity_id if states(entity) == 'off' and entity in expand('group.dss_dispositivi_tracciati') -%}
+            {{ entity.entity_id }}{%- if not loop.last %},{% endif %}
+          {%- endfor -%}
+          {%- endmacro -%}
+          {{ controllo_dispositivo_rientrato() | trim == "" }}
       - service: script.dss_alarm_script_invia_notifiche
         data_template :
           message: >-

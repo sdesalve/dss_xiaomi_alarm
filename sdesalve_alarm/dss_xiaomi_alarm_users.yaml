@@ -198,7 +198,7 @@ automation:
               {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state == 'home' -%} 
             
             
-                ⭐️ {{ tracker.entity_id }}
+                ⭐️ {{ tracker.name }}
               {% endfor %}              
             {% endmacro %}
             ATTENZIONE: i seguenti dispositivi tracciati sono rimasti a casa e li ho rimossi dai dispositivi tracciati:

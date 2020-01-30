@@ -54,7 +54,7 @@ input_number:
   dss_gateway1_alarm_volume_day:
     name: "Volume 'Allarme'"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -62,7 +62,7 @@ input_number:
   dss_gateway1_pending_volume_day:
     name: "Volume 'In attivazione'"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -70,7 +70,7 @@ input_number:
   dss_gateway1_disarmed_volume_day:
     name: "Volume 'Disarmato'"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -78,7 +78,7 @@ input_number:
   dss_gateway1_alarm_volume_night:
     name: "Volume 'Allarme'"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5
@@ -86,7 +86,7 @@ input_number:
   dss_gateway1_pending_volume_night:
     name: "Volume 'In attivazione'"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5
@@ -94,7 +94,7 @@ input_number:
   dss_gateway1_disarmed_volume_night:
     name: "Volume 'Disarmato'"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5
@@ -102,7 +102,7 @@ input_number:
   dss_gateway1_welcome_volume_day:
     name: "Volume 'Promemoria Allarme'"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -110,7 +110,7 @@ input_number:
   dss_gateway1_welcome_volume_night:
     name: "Volume 'Promemoria Allarme'"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5
@@ -118,7 +118,7 @@ input_number:
   dss_gateway1_delayed_sensors_volume_day:
     name: "Volume 'Avviso Innesco'"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -126,7 +126,7 @@ input_number:
   dss_gateway1_delayed_sensors_volume_night:
     name: "Volume 'Avviso Innesco'"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5

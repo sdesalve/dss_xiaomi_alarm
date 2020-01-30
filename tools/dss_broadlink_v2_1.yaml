@@ -12,13 +12,19 @@ binary_sensor:
     platform: ping
     host: !secret chromecast_cucina_ip
     count: 2
-    scan_interval: 10
+    scan_interval: 5
     
   - name: chromecast_letto_ping 
     platform: ping
     host: !secret chromecast_letto_ip
     count: 2
-    scan_interval: 10
+    scan_interval: 5
+
+  - name: chromecast_salotto_ping 
+    platform: ping
+    host: !secret tv_hitachi_salotto_ip
+    count: 2
+    scan_interval: 5
 
 media_player:
   - platform: smartir
@@ -34,6 +40,13 @@ media_player:
     device_code: 1060
     controller_data: !secret broadlink_rm_letto_ip
     power_sensor: binary_sensor.chromecast_letto_ping
+    
+  - platform: smartir
+    name: TV Salotto
+    unique_id: tv_salotto_smartir
+    device_code: 3482
+    controller_data: !secret broadlink_rm_salotto_ip
+    power_sensor: binary_sensor.chromecast_salotto_ping
     
 
 climate:
@@ -79,3 +92,15 @@ switch:
         # friendly_name: "Learner Letto"
         # command_on: ''
         # command_off: ''
+        
+  - platform: broadlink
+    friendly_name: Broadlink Switch Salotto
+    host: !secret broadlink_rm_salotto_ip
+    mac: !secret broadlink_rm_salotto_mac
+    type: rm
+    timeout: 30
+    switches:
+      learner_salotto:
+        friendly_name: "Learner Salotto"
+        command_on: ''
+        command_off: ''

@@ -22,7 +22,7 @@ input_number:
   dss_tts_volume_day:
     name: "Volume TTS Giorno"
     icon: mdi:volume-high
-    initial: 55
+    initial: 45
     min: 0
     max: 100
     step: 5
@@ -30,7 +30,7 @@ input_number:
   dss_tts_volume_night:
     name: "Volume TTS Notte"
     icon: mdi:volume-high
-    initial: 35
+    initial: 30
     min: 0
     max: 100
     step: 5

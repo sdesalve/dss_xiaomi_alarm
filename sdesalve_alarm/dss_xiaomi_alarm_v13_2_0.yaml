@@ -1,3 +1,9 @@
+### v13.2.0 del 27/11/2019
+### aggiunta secret dss_triggers_menu_telegram_command_allarme per nuovo menù di comando dell'allarme con Telegram
+### ### es:
+### ###    dss_triggers_menu_telegram_command_allarme: '/alarm'
+
+
 ### v13.1.1 del 24/09/2019
 ### small fix in dss_xiaomi_alarm_notify_service.yaml
 

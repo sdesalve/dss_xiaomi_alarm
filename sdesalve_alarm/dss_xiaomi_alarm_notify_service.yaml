@@ -12,6 +12,10 @@ homeassistant:
       hidden: true
     automation.orla_telegram_chk_clima_luci_spegni:
       hidden: true
+    automation.orla_html5_chk_clima_luci_spegni:
+      hidden: true
+    automation.orla_html5_chk_remove_keyboard:
+      hidden: true
 
 script:
 ### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
@@ -36,9 +40,10 @@ script:
       - service: notify.notifiche_telegram
         data_template: 
           message: "{{ message }}"
-      # - service: notify.notifiche_html5
-        # data_template:
-          # message: "{{ message }}"
+      - delay: '00:00:05'
+      - service: notify.notifiche_html5
+        data_template:
+          message: "{{ message | striptags }}"
 
   dss_alarm_script_invia_notifiche_telegram_con_keyboard:
     sequence:
@@ -48,7 +53,20 @@ script:
           data:
               inline_keyboard: 
                 - '{% if elenco_luci_accese | trim != "" and elenco_clima_accesi | trim != "" %}Spegni tutto:/orla_telegram_chk_clima_luci_spegni {% elif elenco_luci_accese | trim != "" %}{{ "\U0001F4A1" }} Spegni luci:/orla_telegram_chk_luci_spegni {% elif elenco_clima_accesi | trim != "" %}{{ "\U00002744" }} Spegni clima:/orla_telegram_chk_clima_spegni {% else %}{{ "\U00002744" }} Luci e Climatizzatori spenti:/removekeyboard{% endif %}'
-          
+      - service: notify.notifiche_html5
+        data_template:
+          message: "{{ message | striptags }}"
+          data:
+            requireInteraction: true
+            tag: notifiche_html5_allarme
+            actions: 
+              - action: orla_html5_chk_clima_luci_spegni
+                title: 💡 Spegni tutto
+              - action: orla_html5_chk_remove_keyboard
+                title: ⛔️ Ignora 
+              # {% if elenco_luci_accese | trim != "" or elenco_clima_accesi | trim != "" %}
+              # {% endif %}
+
   orla_telegram_spegni_luci_rimaste_accese:
     sequence:
       - service: light.turn_off
@@ -56,10 +74,19 @@ script:
           entity_id: >
             {%- macro controllo_luci() -%}
             {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
-            {% for item in expand(states['light'], states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {% for item in expand(states['light']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
             {%- endfor -%}
             {%- endmacro -%}
             {{ controllo_luci() }}
+      - service: switch.turn_off
+        data_template:
+          entity_id: >
+            {%- macro controllo_switch() -%}
+            {%- set exclusions = state_attr('input_select.dss_binary_sensor_secrets_ignora_controllo_luci_accese_home', 'options') -%}
+            {% for item in expand(states['switch']) if (item.name not in exclusions and item.entity_id not in exclusions and item.state == 'on') -%}{{ item.entity_id}}{%- if not loop.last %}, {% endif %}
+            {%- endfor -%}
+            {%- endmacro -%}
+            {{ controllo_switch() }}
           
   orla_telegram_spegni_clima_rimasti_accesi:
     sequence:
@@ -374,12 +401,12 @@ automation:
     action:
       - condition: template
         value_template: >- 
-          {%- macro controllo_dispositivo_rientrato() -%}
-          {%- for entity in trigger.to_state.attributes.entity_id if states(entity) == 'on' and entity in expand('group.dss_dispositivi_tracciati') -%}
-            {{ entity.entity_id }}{%- if not loop.last %},{% endif %}
+          {%- macro controlla_dispositivo_rientrato_non_escluso_dai_tracciati() -%}
+          {%- for each_entity in trigger.to_state.attributes.entity_id if (each_entity.state == 'on' or each_entity.state == 'home') and each_entity not in expand('group.dss_dispositivi_tracciati') -%}
+            {{ each_entity.entity_id }}{%- if not loop.last %},{% endif %}
           {%- endfor -%}
           {%- endmacro -%}
-          {{ controllo_dispositivo_rientrato() | trim == "" }}
+          {{ controlla_dispositivo_rientrato_non_escluso_dai_tracciati() | trim == "" }}
       - service: script.dss_alarm_script_invia_notifiche
         data_template: 
           message: >-
@@ -479,10 +506,10 @@ automation:
     hide_entity: true
     initial_state: true
     trigger:
-      platform: event
-      event_type: telegram_callback
-      event_data:
-        data: "/orla_telegram_chk_clima_luci_spegni"
+      - platform: event
+        event_type: telegram_callback
+        event_data:
+          data: "/orla_telegram_chk_clima_luci_spegni"
     action:
       - service: telegram_bot.answer_callback_query
         data_template:
@@ -518,3 +545,37 @@ automation:
           message_id: '{{ trigger.event.data.message.message_id }}'
           chat_id: '{{ trigger.event.data.message.chat.id }}'
           inline_keyboard: []
+
+  - id: orla_html5_chk_clima_luci_spegni
+    alias: "HTML5 Push chk clima luci spegni"
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: html5_notification.clicked
+        event_data:
+          action: orla_html5_chk_clima_luci_spegni
+    action:
+      # - service: script.orla_telegram_spegni_clima_rimasti_accesi
+      - service: script.orla_telegram_spegni_luci_rimaste_accese
+      - service: notify.notifiche_html5
+        data_template:
+          message: "OK ci ho pensato io, ho spento tutto!"
+
+  - id: orla_html5_chk_remove_keyboard
+    alias: "HTML5 Push callback to remove keyboard"
+    hide_entity: true
+    initial_state: true
+    trigger:
+      - platform: event
+        event_type: html5_notification.clicked
+        event_data:
+          action: orla_html5_chk_remove_keyboard
+    action:
+      - service: notify.notifiche_html5
+        data_template:
+          message: "OK ignoro!"
+      - service: notify.html5_dismiss
+        data_template:
+          data:
+            tag: "notifiche_html5_allarme"

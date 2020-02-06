@@ -38,7 +38,6 @@ input_number:
 group:
   dss_avvisi_tts:
     name: "Avvisi TTS Allarme"
-    control: hidden
     icon: mdi:settings
     entities:
       - automation.avviso_tts_allarme_disarmato
@@ -222,7 +221,6 @@ automation:
 ### questo script controlla gli infissi aperti all'atto dell'attivazione e li comunica
   - alias: "Elenca infissi aperti su click pulsanti HOME"
     initial_state: false
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -256,7 +254,6 @@ automation:
 
   - alias: "Elenca infissi aperti su click pulsanti AWAY"
     initial_state: false
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -290,7 +287,6 @@ automation:
 
   - alias: "Conferma infissi chiusi su doppio click pulsante ingresso"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -320,7 +316,6 @@ automation:
 
   - alias: "Conferma infissi chiusi su doppio click pulsanti comodino"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click

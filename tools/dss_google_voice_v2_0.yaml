@@ -159,7 +159,6 @@ input_text:
 group:
   dss_voice_package:
     name: "Messaggi vocali"
-    view: yes
     entities:
       - group.dss_voice_automazioni
       - group.dss_dispositivi_tracciati
@@ -332,7 +331,6 @@ script:
 automation:
   - alias: "DSS VOICE Riproduzione automatica del testo"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: input_text.dss_voice_testo_da_riprodurre
@@ -344,7 +342,6 @@ automation:
 
   - alias: "DSS VOICE Benvenuto user1"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: !secret entity_sensore_portoncino
@@ -369,7 +366,6 @@ automation:
           
   - alias: "DSS VOICE Benvenuta user2"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: !secret entity_sensore_portoncino
@@ -396,7 +392,6 @@ automation:
 
   - alias: "DSS VOICE Benvenuta user3"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: !secret entity_sensore_portoncino
@@ -414,7 +409,6 @@ automation:
 
   - alias: "DSS VOICE Benvenuta user4"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: !secret entity_sensore_portoncino
@@ -432,7 +426,6 @@ automation:
 
   - alias: "DSS VOICE Appena rientrato user1"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user1
@@ -447,7 +440,6 @@ automation:
 
   - alias: "DSS VOICE Appena rientrata user2"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user2
@@ -462,7 +454,6 @@ automation:
 
   - alias: "DSS VOICE Appena rientrata user3"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user3
@@ -477,7 +468,6 @@ automation:
 
   - alias: "DSS VOICE Appena rientrata user4"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_user4
@@ -492,7 +482,6 @@ automation:
 
   - alias: "DSS VOICE Benvenuti ad entrambi"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: !secret entity_sensore_portoncino

@@ -235,7 +235,6 @@ input_select:
 group:
   stato_gateway2:
     name: "Stato Gateway1"
-    control: hidden
     entities:
       - group.dss_gateway2_allarme_diurno
       - group.dss_gateway2_allarme_notturno
@@ -245,7 +244,6 @@ group:
   dss_gateway2_allarme_diurno:
     name: "Allarme diurno"
     icon: mdi:white-balance-sunny
-    control: hidden
     entities:
       - binary_sensor.dss_alarm_giorno_attivo
       - input_select.dss_gateway2_alarm_sound_day_home
@@ -258,7 +256,6 @@ group:
   dss_gateway2_allarme_notturno:
     name: "Allarme notturno"
     icon: mdi:weather-night
-    control: hidden
     entities:
       - binary_sensor.dss_alarm_notte_attivo
       - input_select.dss_gateway2_alarm_sound_night_home
@@ -270,7 +267,6 @@ group:
 
   dss_gateway2_promemoria_allarme:
     name: "Impostazioni Promemoria 'Allarme'"
-    control: hidden
     icon: mdi:voice
     entities:
       - input_number.dss_delay_riproduzione_suono_welcome
@@ -281,7 +277,6 @@ group:
 
   dss_gateway2_sensori_ritardati:
     name: "Impostazioni Sensori Ritardati"
-    control: hidden
     icon: mdi:voice
     entities:
       - input_number.dss_delay_innesco_sensori_ritardati

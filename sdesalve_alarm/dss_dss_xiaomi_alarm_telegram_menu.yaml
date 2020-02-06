@@ -1,6 +1,5 @@
 automation:
   - alias: mrj_start_menu_alarm_telegram
-    hide_entity: true
     initial_state: 'on'
     trigger:
       - platform: event
@@ -20,7 +19,6 @@ automation:
               - "{{ '\U0001f6d1' }} Chiudi:/removekeyboard"
 
   - alias: mrj_manage_menu_alarm_telegram
-    hide_entity: true
     initial_state: 'on'
     trigger:
     - platform: event
@@ -44,7 +42,6 @@ automation:
            # "Check allarme"
            
   - alias: mrj_disable_menu_alarm_telegram
-    hide_entity: true
     initial_state: 'on'
     trigger:
     - platform: event
@@ -74,7 +71,6 @@ automation:
            # "Alarm disarm"
 
   - alias: mrj_arm_home_menu_alarm_telegram
-    hide_entity: true
     initial_state: 'on'
     trigger:
     - platform: event
@@ -105,7 +101,6 @@ automation:
            # " Alarm arm home"
 
   - alias: mrj_arm_away_menu_alarm_telegram
-    hide_entity: true
     initial_state: 'on'
     trigger:
     - platform: event

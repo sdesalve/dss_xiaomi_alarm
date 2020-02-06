@@ -12,10 +12,10 @@ homeassistant:
       hidden: true
     automation.orla_telegram_chk_clima_luci_spegni:
       hidden: true
-    automation.orla_html5_chk_clima_luci_spegni:
-      hidden: true
-    automation.orla_html5_chk_remove_keyboard:
-      hidden: true
+    # automation.orla_html5_chk_clima_luci_spegni:
+      # hidden: true
+    # automation.orla_html5_chk_remove_keyboard:
+      # hidden: true
 
 script:
 ### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
@@ -41,9 +41,9 @@ script:
         data_template: 
           message: "{{ message }}"
       - delay: '00:00:05'
-      - service: notify.notifiche_html5
-        data_template:
-          message: "{{ message | striptags }}"
+      # - service: notify.notifiche_html5
+        # data_template:
+          # message: "{{ message | striptags }}"
 
   dss_alarm_script_invia_notifiche_telegram_con_keyboard:
     sequence:
@@ -53,19 +53,19 @@ script:
           data:
               inline_keyboard: 
                 - '{% if elenco_luci_accese | trim != "" and elenco_clima_accesi | trim != "" %}Spegni tutto:/orla_telegram_chk_clima_luci_spegni {% elif elenco_luci_accese | trim != "" %}{{ "\U0001F4A1" }} Spegni luci:/orla_telegram_chk_luci_spegni {% elif elenco_clima_accesi | trim != "" %}{{ "\U00002744" }} Spegni clima:/orla_telegram_chk_clima_spegni {% else %}{{ "\U00002744" }} Luci e Climatizzatori spenti:/removekeyboard{% endif %}'
-      - service: notify.notifiche_html5
-        data_template:
-          message: "{{ message | striptags }}"
-          data:
-            requireInteraction: true
-            tag: notifiche_html5_allarme
-            actions: 
-              - action: orla_html5_chk_clima_luci_spegni
-                title: 💡 Spegni tutto
-              - action: orla_html5_chk_remove_keyboard
-                title: ⛔️ Ignora 
-              # {% if elenco_luci_accese | trim != "" or elenco_clima_accesi | trim != "" %}
-              # {% endif %}
+      # - service: notify.notifiche_html5
+        # data_template:
+          # message: "{{ message | striptags }}"
+          # data:
+            # requireInteraction: true
+            # tag: notifiche_html5_allarme
+            # actions: 
+              # - action: orla_html5_chk_clima_luci_spegni
+                # title: 💡 Spegni tutto
+              # - action: orla_html5_chk_remove_keyboard
+                # title: ⛔️ Ignora 
+              # # {% if elenco_luci_accese | trim != "" or elenco_clima_accesi | trim != "" %}
+              # # {% endif %}
 
   orla_telegram_spegni_luci_rimaste_accese:
     sequence:
@@ -103,7 +103,6 @@ script:
 group:
   dss_notifiche_allarme:
     name: "Notifiche Telegram"
-    control: hidden
     icon: mdi:message-alert
     entities:
       - automation.notifica_allarme_armato_in_modalita_away
@@ -115,7 +114,6 @@ group:
 automation:
   - alias: "Invia notifica se innescato HOME"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -142,7 +140,6 @@ automation:
 
   - alias: "Invia notifica se innescato AWAY"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -326,7 +323,6 @@ automation:
   ### Sending a notification when the alarm is Arm###
   - alias: "NOTIFICA Allarme disarmato"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -455,7 +451,6 @@ automation:
 
   - id: orla_telegram_chk_luci_spegni
     alias: "Telegram chk luci spegni"
-    hide_entity: true
     initial_state: true
     trigger:
       platform: event
@@ -479,7 +474,6 @@ automation:
 
   - id: orla_telegram_chk_clima_spegni
     alias: "Telegram chk clima spegni"
-    hide_entity: true
     initial_state: true
     trigger:
       platform: event
@@ -503,7 +497,6 @@ automation:
 
   - id: orla_telegram_chk_clima_luci_spegni
     alias: "Telegram chk clima luci spegni"
-    hide_entity: true
     initial_state: true
     trigger:
       - platform: event
@@ -528,7 +521,6 @@ automation:
 
   - id: orla_telegram_chk_remove_keyboard
     alias: "Telegram callback to remove keyboard"
-    hide_entity: true
     initial_state: true
     trigger:
       platform: event
@@ -546,36 +538,34 @@ automation:
           chat_id: '{{ trigger.event.data.message.chat.id }}'
           inline_keyboard: []
 
-  - id: orla_html5_chk_clima_luci_spegni
-    alias: "HTML5 Push chk clima luci spegni"
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_type: html5_notification.clicked
-        event_data:
-          action: orla_html5_chk_clima_luci_spegni
-    action:
-      # - service: script.orla_telegram_spegni_clima_rimasti_accesi
-      - service: script.orla_telegram_spegni_luci_rimaste_accese
-      - service: notify.notifiche_html5
-        data_template:
-          message: "OK ci ho pensato io, ho spento tutto!"
+  # - id: orla_html5_chk_clima_luci_spegni
+    # alias: "HTML5 Push chk clima luci spegni"
+    # initial_state: true
+    # trigger:
+      # - platform: event
+        # event_type: html5_notification.clicked
+        # event_data:
+          # action: orla_html5_chk_clima_luci_spegni
+    # action:
+      # # - service: script.orla_telegram_spegni_clima_rimasti_accesi
+      # - service: script.orla_telegram_spegni_luci_rimaste_accese
+      # - service: notify.notifiche_html5
+        # data_template:
+          # message: "OK ci ho pensato io, ho spento tutto!"
 
-  - id: orla_html5_chk_remove_keyboard
-    alias: "HTML5 Push callback to remove keyboard"
-    hide_entity: true
-    initial_state: true
-    trigger:
-      - platform: event
-        event_type: html5_notification.clicked
-        event_data:
-          action: orla_html5_chk_remove_keyboard
-    action:
-      - service: notify.notifiche_html5
-        data_template:
-          message: "OK ignoro!"
-      - service: notify.html5_dismiss
-        data_template:
-          data:
-            tag: "notifiche_html5_allarme"
+  # - id: orla_html5_chk_remove_keyboard
+    # alias: "HTML5 Push callback to remove keyboard"
+    # initial_state: true
+    # trigger:
+      # - platform: event
+        # event_type: html5_notification.clicked
+        # event_data:
+          # action: orla_html5_chk_remove_keyboard
+    # action:
+      # - service: notify.notifiche_html5
+        # data_template:
+          # message: "OK ignoro!"
+      # - service: notify.html5_dismiss
+        # data_template:
+          # data:
+            # tag: "notifiche_html5_allarme"

@@ -442,7 +442,6 @@ binary_sensor:
 group:
   allarme:
     name: "Sicurezza Casa"
-    view: yes
     entities:
       - group.stato_allarme
       - group.dss_dispositivi_tracciati
@@ -765,7 +764,6 @@ automation:
 
   - alias: "Accendi flash gateway verde su disattivazione"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -785,7 +783,6 @@ automation:
 
   - alias: "Avviso infissi aperti su doppio click pulsante ingresso"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -818,7 +815,6 @@ automation:
         
   - alias: "Avviso infissi aperti su doppio click pulsanti comodino"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -852,7 +848,6 @@ automation:
   ###ho un pulsante all'ingresso. lo uso per attivare l'allarme MANUALMENTE in AWAY mode con DOPPIO CLICK
   - alias: "Forza attivazione Allarme AWAY con DOPPIO CLICK Pulsante ingresso"      
     initial_state: false
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -877,7 +872,6 @@ automation:
   ###ho due pulsanti sui comodini. li uso per attivare l'allarme MANUALMENTE in HOME mode con DOPPIO CLICK
   - alias: "Forza attivazione Allarme HOME con DOPPIO CLICK Pulsanti comodino"      
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -901,7 +895,6 @@ automation:
 
   - alias: "Innesca se armato AWAY"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -917,7 +910,6 @@ automation:
        
   - alias: "Innesca se armato HOME"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -972,7 +964,6 @@ automation:
           
   - alias: "Disattivazione sospensione attivazione automatica se rientra Dispositivo" 
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_tracciati
@@ -992,7 +983,6 @@ automation:
   ###Disattivo MANUALMENTE l'allarme con uno dei tre plusanti PREMUTI A LUNGO
   - alias: "Disattiva Allarme con LONG CLICK Pulsanti"      
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: event
         event_type: xiaomi_aqara.click
@@ -1015,7 +1005,6 @@ automation:
   ### Play specific sound while alarm is arming ###
   - alias: "Attivazione allarme in corso"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1034,7 +1023,6 @@ automation:
   ### Disattiva allarme, blocco i suoni ed il lampeggiante ###    
   - alias: "Ferma suoni e luci quando disarmato"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1057,7 +1045,6 @@ automation:
   ### Blocco i suoni dopo che l'allarme non è stato disinserito entro i 120sec  ###    
   - alias: "Ferma suoni dopo 120 sec di 'Allarme'"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1083,7 +1070,6 @@ automation:
       #spengo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Spegni lampeggiante ad attivazione avvenuta"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1110,7 +1096,6 @@ automation:
   #Accendo il lampeggiante quando armato AWAY, HOME o DISARMATO
   - alias: "Accendi lampeggiante ad attivazione AWAY avvenuta"
     initial_state: false
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1128,7 +1113,6 @@ automation:
   ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
   - alias: "GIORNO: Riproduci 'Promemoria Allarme AWAY'"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1147,7 +1131,6 @@ automation:
   ### questi sono i trigger che fanno scattare la riproduzione del suono di giorno ###
   - alias: "GIORNO: Riproduci 'Promemoria Allarme HOME'"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1165,7 +1148,6 @@ automation:
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme AWAY"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1183,7 +1165,6 @@ automation:
        
   - alias: "GIORNO: Innesco Sensori ritardati Allarme HOME"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1202,7 +1183,6 @@ automation:
   ### Riproduci suono 'Allarme' quando scatta di giorno###
   - alias: "Riproduci suono 'Allarme' quando scatta di giorno"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
@@ -1221,7 +1201,6 @@ automation:
           ### questi sono i trigger che fanno scattare la riproduzione del suono di  notte###
   - alias: "NOTTE: Riproduci 'Promemoria Allarme AWAY'"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1239,7 +1218,6 @@ automation:
 
   - alias: "NOTTE: Riproduci 'Promemoria Allarme HOME'"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1257,7 +1235,6 @@ automation:
 
   - alias: "NOTTE: Innesco Sensori ritardati Allarme AWAY"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1275,7 +1252,6 @@ automation:
        
   - alias: "NOTTE: Innesco Sensori ritardati Allarme HOME"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         from: 'off'
@@ -1294,7 +1270,6 @@ automation:
 ### Riproduci suono 'Allarme' quando scatta di notte###
   - alias: "Riproduci suono 'Allarme' quando scatta di notte"
     initial_state: true
-    hide_entity: true
     trigger:
       - platform: state
         entity_id: alarm_control_panel.home_alarm

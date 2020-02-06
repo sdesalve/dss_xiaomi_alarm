@@ -40,7 +40,6 @@ homeassistant:
 group:
   stato_gateway_service:
     name: "Stato Gateways"
-    control: hidden
     entities:
       - group.stato_gateway1
       - group.stato_gateway2

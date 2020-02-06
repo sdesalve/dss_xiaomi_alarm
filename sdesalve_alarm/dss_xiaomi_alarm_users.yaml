@@ -60,7 +60,6 @@ group:
 #questo gruppo viene ripopolato automaticamente con i dispositivi dei gruppi dss_dispositivi_user1 e dss_dispositivi_user2 all'avvio di HA ed ad ogni disattivazione dell'allarme dallo script dss_alarm_script_reimposta_gruppo_dispositivi_tracciati
   dss_dispositivi_tracciati:
     name: "Dispositivi Tracciati"
-    control: hidden
     entities:
       - group.dss_dispositivi_user1
       - group.dss_dispositivi_user2
@@ -72,12 +71,10 @@ group:
 
   dss_dispositivi_user1:
     name: !secret nome_gruppo_dispositivi_utente1
-    control: hidden
     entities: !secret elenco_dispositivi_tracciati_user1
 
   dss_dispositivi_user2:
     name: !secret nome_gruppo_dispositivi_utente2
-    control: hidden
     entities: !secret elenco_dispositivi_tracciati_user2
 
   # dss_dispositivi_user3:

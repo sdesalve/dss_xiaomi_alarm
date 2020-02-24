@@ -30,6 +30,9 @@ camera:
     platform: ffmpeg
     input: !secret dss_dahua_camera_cancello_giardino_cam_rtsp_url
     
+  - name: imou_camera_polpetta
+    platform: ffmpeg
+    input: !secret dss_imou_camera_polpetta_cam_rtsp_url
     
 ### Esempio Secrets:    
 ### dss_dahua_camera_cancello_giardino_cam_rtsp_url: "rtsp://192.168.1.98:554/user=admin_password=f38YgH1e_channel=1_stream=1.sdp?real_stream"

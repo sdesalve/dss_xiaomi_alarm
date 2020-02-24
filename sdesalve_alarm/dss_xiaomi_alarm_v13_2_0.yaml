@@ -450,7 +450,6 @@ group:
 
   stato_allarme:
     name: "Stato allarme"
-    control: hidden
     entities:
       - alarm_control_panel.home_alarm
       - group.stato_gateway_service
@@ -461,7 +460,6 @@ group:
 
   dss_automazioni_allarme:
     name: "Automazioni globali Allarme"
-    control: hidden
     icon: mdi:settings
     entities:
       # - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
@@ -476,25 +474,21 @@ group:
 
   dss_stato_sensori_immediati_home:
     name: "Sensori immediati"
-    control: hidden
     icon: mdi:settings
     entities: !secret sensori_che_fanno_scattare_allarme_home_mode
 
   dss_stato_sensori_immediati_away:
     name: "Sensori immediati"
-    control: hidden
     icon: mdi:settings
     entities: !secret sensori_che_fanno_scattare_allarme_away_mode
 
   dss_stato_sensori_ritardati_home:
     name: "Sensori ritardati"
-    control: hidden
     icon: mdi:settings
     entities: !secret entity_sensore_innesco_ritardato_allarme_away
 
   dss_stato_sensori_ritardati_away:
     name: "Sensori ritardati"
-    control: hidden
     icon: mdi:clock
     entities: !secret entity_sensore_innesco_ritardato_allarme_home
 
@@ -1289,6 +1283,9 @@ automation:
 
 # ############ DSS XIAOMI ALARM #############
 
+### secret per attivare il menù di comando dell'allarme con Telegram
+# dss_triggers_menu_telegram_command_allarme: '/alarm'
+
 # ### MAC Address del primo Gateway Xiaomi. Notare la mancanza di separatori (:) e la scrittura in minuscolo.
 # xiaomi_gateway1_mac: 11aa222b33cd
 
@@ -1380,8 +1377,6 @@ automation:
 
 # nome_dispositivo_nut_tracker_user2: "Tracker Nut Utente2"
 # topic_dispositivo_nut_tracker_user2: "xxxxxx/sensor/casa/xxxxxx/state"
-
-
 
 ### esempio contenuto editor grezzo LOVELACE
 

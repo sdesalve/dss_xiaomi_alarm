@@ -91,21 +91,21 @@ script:
             type: announce
             #method: all
             
-  # classico Google TTS
-      - service: media_player.volume_set
-        data_template: 
-          entity_id: media_player.ingresso
-          volume_level: >-
-            {% if is_state('binary_sensor.dss_mode_giorno', 'on') %}
-            {{ (states('input_number.dss_tts_volume_day') | float / 100) | round(1) }}
-            {% else %}
-            {{ (states('input_number.dss_tts_volume_night') | float / 100) | round(1) }}
-            {% endif %}
-      - service: tts.google_translate_say
-        entity_id: media_player.ingresso
-        data_template:
-          language: it
-          message: "{{ message }}"
+  # # classico Google TTS
+      # - service: media_player.volume_set
+        # data_template: 
+          # entity_id: media_player.ingresso
+          # volume_level: >-
+            # {% if is_state('binary_sensor.dss_mode_giorno', 'on') %}
+            # {{ (states('input_number.dss_tts_volume_day') | float / 100) | round(1) }}
+            # {% else %}
+            # {{ (states('input_number.dss_tts_volume_night') | float / 100) | round(1) }}
+            # {% endif %}
+      # - service: tts.google_translate_say
+        # entity_id: media_player.ingresso
+        # data_template:
+          # language: it
+          # message: "{{ message }}"
 
   ### v9.2 rimosso Google Assistant Web Server: prima del messaggio riproduceva "Broadcast from MIONOME"
   ### vedi https://community.home-assistant.io/t/community-hass-io-add-on-google-assistant-webserver-broadcast-messages-without-interrupting-music/37274/476

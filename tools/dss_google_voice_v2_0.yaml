@@ -49,7 +49,7 @@ homeassistant:
 
 # ATTENZIONE: per personalizzare le immagini dei singoli dispositivi tracciati, bisogna intervenire nel file know_devices.yaml ed aggiungere la key picture come mostrato sotto.
 # galaxy_s6:
-  # hide_if_away: false
+  # # hide_if_away: false
   # icon:
   # mac: xx:xx:xx:xx:xx:xx
   # name: Galaxy S6 IP
@@ -191,7 +191,6 @@ group:
 
   dss_voice_automazioni:
     name: "Automazioni Voce"
-    control: hidden
     icon: mdi:settings
     entities:
       - input_text.dss_voice_testo_da_riprodurre

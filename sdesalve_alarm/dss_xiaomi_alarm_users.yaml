@@ -51,6 +51,13 @@ homeassistant:
       friendly_name: !secret nome_dispositivo_nut_tracker_user2
       entity_picture: !secret url_immagine_profilo_user2
 
+# person:
+  # - name: !secret nome_gruppo_dispositivi_utente1
+    # id: dss_person_utente1
+    # device_trackers: !secret elenco_dispositivi_tracciati_user1
+    
+    
+    
 group:
 ### Elenco dei Dispositivi Tracciati - inserite qui i dispositivi che fanno attivare/disattivare l'allarme in automatico ###
 ### io uso NMAP https://www.home-assistant.io/components/device_tracker.nmap_tracker/ ###
@@ -79,12 +86,10 @@ group:
 
   # dss_dispositivi_user3:
     # name: !secret nome_gruppo_dispositivi_utente3
-    # control: hidden
     # entities: !secret elenco_dispositivi_tracciati_user3
 
   # dss_dispositivi_user4:
     # name: !secret nome_gruppo_dispositivi_utente4
-    # control: hidden
     # entities: !secret elenco_dispositivi_tracciati_user4
 
   dss_dispositivi_user1_original:

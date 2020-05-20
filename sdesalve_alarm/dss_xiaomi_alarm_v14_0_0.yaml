@@ -1,3 +1,7 @@
+### v14.0.0 del 20-05-2020
+### fix breaking changes HomeAssistant 0.110 in Manual Alarm Panel . Thanks to @alesoft73
+
+
 ### v13.2.0 del 27/11/2019
 ### aggiunta secret dss_triggers_menu_telegram_command_allarme per nuovo menù di comando dell'allarme con Telegram
 ### ### es:
@@ -332,15 +336,15 @@ homeassistant:
 alarm_control_panel:
   - platform: manual
     name: "Home Alarm"
-    pending_time: 0
+    arming_time: 0
     disarmed:
       trigger_time: 0
     armed_home:
-      pending_time: 10
+      arming_time: 10
       #nessun ritardo prima di far scattare l'allarme in caso di allarme HOME. Meglio che suoni subito!
       delay_time: 0
     armed_away:
-      pending_time: 30
+      arming_time: 30
       #ritardo prima di far scattare l'allarme in caso di allarme AWAY. 
       delay_time: 0
 
@@ -524,7 +528,7 @@ script:
     alias: "Procedura reset attivazione rimandata"
     sequence:
       - condition: template
-        value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'pending') }}"
+        value_template: "{{ not is_state('alarm_control_panel.home_alarm', 'pending') and not is_state('alarm_control_panel.home_alarm', 'arming') }}"
       - service: input_boolean.turn_off
         data:
           entity_id: input_boolean.dss_necessaria_forzatura_attivazione
@@ -1003,7 +1007,7 @@ automation:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         from: 'disarmed'
-        to: 'pending'
+        to: 'arming'
     action:
       ### Turn off gateway mute to play sound ###
       - service: input_boolean.turn_off

@@ -154,7 +154,7 @@ automation:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         from: 'disarmed'
-        to: 'pending'
+        to: 'arming'
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data:

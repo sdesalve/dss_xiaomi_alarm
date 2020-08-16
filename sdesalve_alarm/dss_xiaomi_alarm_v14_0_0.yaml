@@ -1007,7 +1007,7 @@ automation:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         from: 'disarmed'
-        to: 'pending' #to: 'arming'
+        to: 'arming'
     action:
       ### Turn off gateway mute to play sound ###
       - service: input_boolean.turn_off

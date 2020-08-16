@@ -336,15 +336,15 @@ homeassistant:
 alarm_control_panel:
   - platform: manual
     name: "Home Alarm"
-    arming_time: 0
+    arming_time: 0 #pending_time: 0 #
     disarmed:
       trigger_time: 0
     armed_home:
-      arming_time: 10
+      arming_time: 10 #pending_time: 0 #
       #nessun ritardo prima di far scattare l'allarme in caso di allarme HOME. Meglio che suoni subito!
       delay_time: 0
     armed_away:
-      arming_time: 30
+      arming_time: 30 #pending_time: 0 #
       #ritardo prima di far scattare l'allarme in caso di allarme AWAY. 
       delay_time: 0
 
@@ -1007,7 +1007,7 @@ automation:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         from: 'disarmed'
-        to: 'arming'
+        to: 'pending' #to: 'arming'
     action:
       ### Turn off gateway mute to play sound ###
       - service: input_boolean.turn_off

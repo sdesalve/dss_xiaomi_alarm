@@ -253,15 +253,15 @@ automation:
       - platform: state
         entity_id: alarm_control_panel.home_alarm
         to: 'armed_away'
-        for: '00:05:00'
+        for: '00:03:00'
     action:
       - condition: template
-        value_template: >
-          {% macro controllo_device() %}
-            {% for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state == 'home' -%} 
+        value_template: >-
+          {%- macro controllo_device() -%}
+            {%- for tracker in expand('group.dss_dispositivi_user1', 'group.dss_dispositivi_user2') if tracker.state == 'home' -%} 
               {{ tracker.entity_id }}{% if not loop.last %}, {% endif -%}
-            {% endfor %}              
-          {% endmacro %}
+            {%- endfor -%}
+          {%- endmacro -%}
           {{ controllo_device() | trim != "" }}
       - service: script.dss_alarm_script_rimuovi_da_gruppo_dispositivi_tracciati_rimasti_casa
       - service: script.dss_alarm_script_invia_notifiche

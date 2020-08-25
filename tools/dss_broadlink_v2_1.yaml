@@ -1,10 +1,3 @@
-homeassistant: 
-  customize:
-    binary_sensor.chromecast_cucina_ping:
-      hidden: true
-    binary_sensor.chromecast_letto_ping:
-      hidden: true
-
 smartir:
 
 binary_sensor:

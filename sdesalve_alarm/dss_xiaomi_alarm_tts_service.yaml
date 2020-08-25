@@ -13,11 +13,6 @@
   # - platform: alexa_media
     # name: alexa_media
 
-homeassistant: 
-  customize:
-    script.dss_voice_riproduci_messaggio_tts:
-      hidden: true
-
 input_number:
   dss_tts_volume_day:
     name: "Volume TTS Giorno"
@@ -124,7 +119,7 @@ automation:
     action:
       - service: script.dss_voice_riproduci_messaggio_tts
         data:
-          message: "Allarme disattivato..."
+          message: "Allarme disinserito..."
 
   - alias: "Avviso TTS Allarme HOME attivato"
     initial_state: true

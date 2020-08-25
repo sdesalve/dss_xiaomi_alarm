@@ -1,18 +1,19 @@
-homeassistant: 
-  customize:
-    script.dss_alarm_script_accendi_luci_segnalazione:
-      hidden: true
-    script.dss_alarm_script_spegni_luci_segnalazione:
-      hidden: true
-
 script:
   dss_alarm_script_accendi_luci_segnalazione:
     sequence:
+      #cancella se non hai gateway
       - service: script.dss_alarm_gateway_service_light_on
+        data_template:
+          color_name: "{{ color_name }}"
+      #cancella se non hai mediaplayer
+      - service: script.dss_alarm_mediaplayer_service_light_on
         data_template:
           color_name: "{{ color_name }}"
 
           
   dss_alarm_script_spegni_luci_segnalazione:
     sequence:
+      #cancella se non hai gateway
       - service: script.dss_alarm_gateway_service_light_off
+      #cancella se non hai mediaplayer
+      - service: script.dss_alarm_mediaplayer_service_light_off

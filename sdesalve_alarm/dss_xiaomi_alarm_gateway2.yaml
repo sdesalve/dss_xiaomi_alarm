@@ -1,54 +1,3 @@
-homeassistant: 
-  customize:
-    script.dss_alarm_script_riproduci_suono_gateway2:
-      hidden: true
-    script.dss_alarm_script_ferma_riproduzione_suono_gateway2:
-      hidden: true
-    script.dss_alarm_gateway2_play_triggered_sound_day:
-      hidden: true
-    script.dss_alarm_gateway2_play_triggered_sound_day_loop:
-      hidden: true
-    script.dss_alarm_gateway2_play_pending_sound_day:
-      hidden: true
-    script.dss_alarm_gateway2_play_pending_sound_day_loop:
-      hidden: true
-    script.dss_alarm_gateway2_play_disarmed_sound_day:
-      hidden: true
-    script.dss_alarm_gateway2_play_disarmed_sound_day_loop:
-      hidden: true
-    script.dss_alarm_gateway2_play_triggered_sound_night:
-      hidden: true
-    script.dss_alarm_gateway2_play_triggered_sound_night_loop:
-      hidden: true
-    script.dss_alarm_gateway2_play_pending_sound_night:
-      hidden: true
-    script.dss_alarm_gateway2_play_pending_sound_night_loop:
-      hidden: true
-    script.dss_alarm_gateway2_play_disarmed_sound_night:
-      hidden: true
-    script.dss_alarm_gateway2_play_disarmed_sound_night_loop:
-      hidden: true
-    script.dss_alarm_gateway2_light_flash:
-      hidden: true
-    script.dss_alarm_gateway2_light_flash_away:
-      hidden: true
-    script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_away:
-      hidden: true
-    script.dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_home:
-      hidden: true
-    script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_away:
-      hidden: true
-    script.dss_alarm_gateway2_script_notte_riproduci_promemoria_allarme_home:
-      hidden: true
-    script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_away:
-      hidden: true
-    script.dss_alarm_gateway2_script_giorno_sensore_innesco_ritardato_allarme_home:
-      hidden: true
-    script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_away:
-      hidden: true
-    script.dss_alarm_gateway2_script_notte_sensore_innesco_ritardato_allarme_home:
-      hidden: true
-
 ## Input slider to control gateway volume ###
 input_number:
   dss_gateway2_alarm_volume_day:
@@ -234,7 +183,7 @@ input_select:
     
 group:
   stato_gateway2:
-    name: "Stato Gateway1"
+    name: "Stato gateway2"
     entities:
       - group.dss_gateway2_allarme_diurno
       - group.dss_gateway2_allarme_notturno
@@ -308,26 +257,22 @@ script:
       - condition: numeric_state
         entity_id: input_number.dss_gateway2_alarm_volume_day
         above: 0
-      - service: script.dss_alarm_script_riproduci_suono_gateway2
-        data_template: 
-          ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_day_home').split('-')[0] | int }}"
-          ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_day') | int }}"
-      - delay:
-          seconds: 5
-      - service: script.dss_alarm_gateway2_play_triggered_sound_day_loop
-
-  dss_alarm_gateway2_play_triggered_sound_day_loop:
-    alias: "GIORNO: Loop suono 'Allarme'"
-    sequence:
-      - condition: state
-        entity_id: binary_sensor.dss_mode_giorno
-        state: 'on'
-      - condition: state
-        entity_id: input_boolean.dss_mute_gateway_sounds
-        state: 'off'
-      - delay:
-          seconds: 1
-      - service: script.dss_alarm_gateway2_play_triggered_sound_day
+      - alias: dss_alarm_gateway2_play_triggered_sound_day_loop
+        repeat:
+          while:
+            - condition: state
+              entity_id: binary_sensor.dss_mode_giorno
+              state: 'on'
+            - condition: state
+              entity_id: input_boolean.dss_mute_gateway_sounds
+              state: 'off'
+          sequence:
+            - service: script.dss_alarm_script_riproduci_suono_gateway2
+              data_template: 
+                ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_day_home').split('-')[0] | int }}"
+                ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_day') | int }}"
+            - delay:
+                seconds: 5
 
   dss_alarm_gateway2_play_pending_sound_day:
     sequence:
@@ -338,26 +283,6 @@ script:
         data_template:
           ringtone_id: "{{ states('input_select.dss_gateway2_pending_sound_day').split('-')[0] | int }}"
           ringtone_vol: "{{ states('input_number.dss_gateway2_pending_volume_day') | int }}"
-      # - delay:
-          # seconds: 5
-      # - service: script.dss_alarm_gateway2_play_pending_sound_day_loop
-
-  # dss_alarm_gateway2_play_pending_sound_day_loop:
-    # alias: "GIORNO: Loop suono 'In Attivazione'"
-    # sequence:
-      # # - condition: time
-        # # after: '21:00:00'
-        # # before: '7:00:00'
-      # - condition: state
-        # entity_id: binary_sensor.dss_mode_giorno
-        # state: 'on'
-      # - condition: state
-        # entity_id: input_boolean.dss_mute_gateway_sounds
-        # state: 'off'
-      # - delay:
-          # seconds: 1
-      # - service: script.dss_alarm_gateway2_play_pending_sound_day
-### fine righe loop suono da decommentare se necessario
 
   dss_alarm_gateway2_play_disarmed_sound_day:
     sequence:
@@ -368,21 +293,6 @@ script:
         data_template:
           ringtone_id: "{{ states('input_select.dss_gateway2_disarmed_sound_day').split('-')[0] | int }}"
           ringtone_vol: "{{ states('input_number.dss_gateway2_disarmed_volume_day') | int }}"
-      # - delay:
-          # seconds: 5
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_day_loop
-  # dss_alarm_gateway2_play_disarmed_sound_day_loop:
-    # alias: "GIORNO: Loop suono 'Disarmato'"
-    # sequence:
-      # - condition: state
-        # entity_id: binary_sensor.dss_mode_giorno
-        # state: 'on'
-      # - condition: state
-        # entity_id: input_boolean.dss_mute_gateway_sounds
-        # state: 'off'
-      # - delay:
-          # seconds: 1
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_day
 
 ### Scripts to play gateway sounds ###
   dss_alarm_gateway2_play_triggered_sound_night:
@@ -390,24 +300,22 @@ script:
       - condition: numeric_state
         entity_id: input_number.dss_gateway2_alarm_volume_night
         above: 0
-      - service: script.dss_alarm_script_riproduci_suono_gateway2
-        data_template: 
-          ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_night_home').split('-')[0] | int }}"
-          ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_night') | int }}"
-      - delay:
-          seconds: 5
-      - service: script.dss_alarm_gateway2_play_triggered_sound_night_loop
-  dss_alarm_gateway2_play_triggered_sound_night_loop:
-    sequence:
-      - condition: state
-        entity_id: binary_sensor.dss_mode_giorno
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.dss_mute_gateway_sounds
-        state: 'off'
-      - delay:
-          seconds: 1
-      - service: script.dss_alarm_gateway2_play_triggered_sound_night
+      - alias: dss_alarm_gateway2_play_triggered_sound_night_loop
+        repeat:
+          while:
+            - condition: state
+              entity_id: binary_sensor.dss_mode_giorno
+              state: 'off'
+            - condition: state
+              entity_id: input_boolean.dss_mute_gateway_sounds
+              state: 'off'
+          sequence:
+            - service: script.dss_alarm_script_riproduci_suono_gateway2
+              data_template: 
+                ringtone_id: "{{ states('input_select.dss_gateway2_alarm_sound_night_home').split('-')[0] | int }}"
+                ringtone_vol: "{{ states('input_number.dss_gateway2_alarm_volume_night') | int }}"
+            - delay:
+                seconds: 5
  
   dss_alarm_gateway2_play_pending_sound_night:
     sequence:
@@ -418,24 +326,6 @@ script:
         data_template:
           ringtone_id: "{{ states('input_select.dss_gateway2_pending_sound_night').split('-')[0] | int }}"
           ringtone_vol: "{{ states('input_number.dss_gateway2_pending_volume_night') | int }}"
-    ###Se decommentate, le righe seguenti servono per ripetere in loop il suono di pending allarme
-      # - delay:
-          # seconds: 3
-      # - service: script.dss_alarm_gateway2_play_pending_sound_night_loop
- 
-  # dss_alarm_gateway2_play_pending_sound_night_loop:
-    # alias: "NOTTE: Loop suono 'In Attivazione'"
-    # sequence:
-      # - condition: state
-        # entity_id: binary_sensor.dss_mode_giorno
-        # state: 'off'
-      # - condition: state
-        # entity_id: input_boolean.dss_mute_gateway_sounds
-        # state: 'off'
-      # - delay:
-          # seconds: 1
-      # - service: script.dss_alarm_gateway2_play_pending_sound_night
-### fine righe loop suono da decommentare se necessario
 
   dss_alarm_gateway2_play_disarmed_sound_night:
     sequence:
@@ -447,26 +337,6 @@ script:
           ### id dell'allarme - id = 1 Police 1 ###
           ringtone_id: "{{ states('input_select.dss_gateway2_disarmed_sound_night').split('-')[0] | int }}"
           ringtone_vol: "{{ states('input_number.dss_gateway2_disarmed_volume_night') | int }}"
-###Se decommentate, le righe seguenti servono per ripetere in loop il suono di disarmed allarme
-      # - delay:
-          # seconds: 3
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_night_loop
- 
-  # dss_alarm_gateway2_play_disarmed_sound_night_loop:
-    # alias: "NOTTE: Loop suono 'Disarmato'"
-    # sequence:
-      # # - condition: time
-        # # after: '21:00:00'
-        # # before: '7:00:00'
-      # - condition: state
-        # entity_id: binary_sensor.dss_mode_giorno
-        # state: 'off'
-      # - condition: state
-        # entity_id: input_boolean.dss_mute_gateway_sounds
-        # state: 'off'
-      # - delay:
-          # seconds: 1
-      # - service: script.dss_alarm_gateway2_play_disarmed_sound_night
 
   dss_alarm_gateway2_light_on:
     sequence:
@@ -485,13 +355,13 @@ script:
     sequence:
       - service: script.dss_alarm_gateway2_light_on
         data:
-          color_name: red
+          color_name: "red"
 
   dss_alarm_gateway2_light_flash_away:
     sequence:
       - service: script.dss_alarm_gateway2_light_on
         data:
-          color_name: red
+          color_name: "red"
       
   dss_alarm_gateway2_script_giorno_riproduci_promemoria_allarme_away:
     alias: "Script GIORNO: Riproduci 'Promemoria Allarme AWAY'"
@@ -618,7 +488,7 @@ script:
         entity_id: alarm_control_panel.home_alarm 
 
 
-### per aggiungere altri gateway, duplicare questo file e sostituire gateway2 con gateway3 ecc ecc
+### per aggiungere altri gateway, duplicare questo file e sostituire gateway2 con gateway2 ecc ecc
 #Queste le secrets richieste:
 # xiaomi_gateway2_mac: 34xx008xx1xx
 # entity_light_gateway2: light.gateway_light_34xx008xx1xx

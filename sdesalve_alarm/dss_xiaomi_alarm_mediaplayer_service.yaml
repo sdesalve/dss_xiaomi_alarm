@@ -1,0 +1,106 @@
+group:
+  stato_mediaplayer_service:
+    name: "Stato Media Players"
+    entities:
+      - group.stato_mediaplayer1
+
+script:
+  dss_alarm_mediaplayer_service_ferma_riproduzione_suoni:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_ferma_riproduzione_suono
+      # - service: script.dss_alarm_mediaplayer2_script_ferma_riproduzione_suono
+
+  dss_alarm_mediaplayer_service_play_triggered_sound_day:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_triggered_sound_day
+      # - service: script.dss_alarm_mediaplayer2_play_triggered_sound_day
+
+  dss_alarm_mediaplayer_service_play_pending_sound_day:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_pending_sound_day
+      # - service: script.dss_alarm_mediaplayer2_play_pending_sound_day
+
+  dss_alarm_mediaplayer_service_play_disarmed_sound_day:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_disarmed_sound_day
+      # - service: script.dss_alarm_mediaplayer2_play_disarmed_sound_day
+
+  dss_alarm_mediaplayer_service_play_triggered_sound_night:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_triggered_sound_night
+      # - service: script.dss_alarm_mediaplayer2_play_triggered_sound_night
+
+  dss_alarm_mediaplayer_service_play_pending_sound_night:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_pending_sound_night
+      # - service: script.dss_alarm_mediaplayer2_play_pending_sound_night
+
+  dss_alarm_mediaplayer_service_play_disarmed_sound_night:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_play_disarmed_sound_night
+      # - service: script.dss_alarm_mediaplayer2_play_disarmed_sound_night
+
+  dss_alarm_mediaplayer_service_light_on:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_light_on
+      #  data_template:
+      #    color_name: "{{ color_name }}"
+      # - service: script.dss_alarm_mediaplayer2_light_on
+        # data_template:
+          # color_name: "{{ color_name }}"
+
+  dss_alarm_mediaplayer_service_light_off:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_light_off
+      # - service: script.dss_alarm_mediaplayer2_light_off
+
+  dss_alarm_mediaplayer_service_light_flash:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_light_flash
+      # - service: script.dss_alarm_mediaplayer2_light_flash
+
+  dss_alarm_mediaplayer_service_light_flash_away:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_light_flash_away
+      # - service: script.dss_alarm_mediaplayer2_light_flash_away
+
+  dss_alarm_mediaplayer_service_script_giorno_riproduci_promemoria_allarme_away:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_giorno_riproduci_promemoria_allarme_away
+      # - service: script.dss_alarm_mediaplayer2_script_giorno_riproduci_promemoria_allarme_away
+
+  dss_alarm_mediaplayer_service_script_giorno_riproduci_promemoria_allarme_home:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_giorno_riproduci_promemoria_allarme_home
+      # - service: script.dss_alarm_mediaplayer2_script_giorno_riproduci_promemoria_allarme_home
+
+  dss_alarm_mediaplayer_service_script_giorno_sensore_innesco_ritardato_allarme_away:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_giorno_sensore_innesco_ritardato_allarme_away
+      # - service: script.dss_alarm_mediaplayer2_script_giorno_sensore_innesco_ritardato_allarme_away
+
+  dss_alarm_mediaplayer_service_script_giorno_sensore_innesco_ritardato_allarme_home:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_giorno_sensore_innesco_ritardato_allarme_home
+      # - service: script.dss_alarm_mediaplayer2_script_giorno_sensore_innesco_ritardato_allarme_home
+
+  dss_alarm_mediaplayer_service_script_notte_riproduci_promemoria_allarme_away:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_notte_riproduci_promemoria_allarme_away
+      # - service: script.dss_alarm_mediaplayer2_script_notte_riproduci_promemoria_allarme_away
+
+  dss_alarm_mediaplayer_service_script_notte_riproduci_promemoria_allarme_home:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_notte_riproduci_promemoria_allarme_home
+      # - service: script.dss_alarm_mediaplayer2_script_notte_riproduci_promemoria_allarme_home
+
+  dss_alarm_mediaplayer_service_script_notte_sensore_innesco_ritardato_allarme_away:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_notte_sensore_innesco_ritardato_allarme_away
+      # - service: script.dss_alarm_mediaplayer2_script_notte_sensore_innesco_ritardato_allarme_away
+
+  dss_alarm_mediaplayer_service_script_notte_sensore_innesco_ritardato_allarme_home:
+    sequence:
+      # - service: script.dss_alarm_mediaplayer1_script_notte_sensore_innesco_ritardato_allarme_home
+      # - service: script.dss_alarm_mediaplayer2_script_notte_sensore_innesco_ritardato_allarme_home
+

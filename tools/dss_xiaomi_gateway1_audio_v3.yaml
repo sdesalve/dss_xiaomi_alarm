@@ -3,7 +3,6 @@ group:
     - input_number.dss_gateway1_loop_delay
     - script.dss_gateway1_play_sel_sound
     - input_boolean.dss_gateway1_mute_gateway_sounds
-    - script.dss_gateway1_play_sel_sound_loop
     - script.dss_gateway1_play_sel_sound_single
     - input_number.dss_gateway1_gateway_volume
     - input_select.dss_gateway1_gateway_sound
@@ -18,25 +17,19 @@ script:
   dss_gateway1_play_sel_sound:
     alias: "Loop Play Sound"
     sequence:
-      - condition: state
-        entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
-        state: 'off'
-      - service: xiaomi_aqara.play_ringtone
-        data_template:
-          gw_mac: !secret xiaomi_gateway1_mac
-          ringtone_id: "{{ states('input_select.dss_gateway1_gateway_sound').split('-')[0] }}"
-          ringtone_vol: "{{ states('input_number.dss_gateway1_gateway_volume')|int }}"
-      - delay: "00:00:{{ states('input_number.dss_gateway1_loop_delay') | int }}"
-      - service: script.dss_gateway1_play_sel_sound_loop
-
-  dss_gateway1_play_sel_sound_loop:
-    alias: "Play selected sound in Loop"
-    sequence:
-      - condition: state
-        entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
-        state: 'off'
-      - delay: "00:00:{{ states('input_number.dss_gateway1_loop_delay') | int }}"
-      - service: script.dss_gateway1_play_sel_sound
+      - alias: dss_light_flash_loop_away
+        repeat:
+          while:
+            - condition: state
+              entity_id: input_boolean.dss_gateway1_mute_gateway_sounds
+              state: 'off'
+          sequence:
+            - service: xiaomi_aqara.play_ringtone
+              data_template:
+                gw_mac: !secret xiaomi_gateway1_mac
+                ringtone_id: "{{ states('input_select.dss_gateway1_gateway_sound').split('-')[0] }}"
+                ringtone_vol: "{{ states('input_number.dss_gateway1_gateway_volume')|int }}"
+            - delay: "00:00:{{ states('input_number.dss_gateway1_loop_delay') | int }}"
 
   dss_gateway1_play_sel_sound_single:
     alias: "Single Play Sound"

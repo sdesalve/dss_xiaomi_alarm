@@ -1,22 +1,3 @@
-homeassistant: 
-  customize:
-    script.dss_alarm_script_esegui_chiamata_voip:
-      hidden: true
-    script.dss_alarm_script_invia_notifiche:
-      hidden: true
-    script.orla_telegram_spegni_luci_rimaste_accese:
-      hidden: true
-    script.orla_telegram_spegni_clima_rimasti_accesi:
-      hidden: true
-    automation.orla_telegram_chk_luci_spegni:
-      hidden: true
-    automation.orla_telegram_chk_clima_luci_spegni:
-      hidden: true
-    # automation.orla_html5_chk_clima_luci_spegni:
-      # hidden: true
-    # automation.orla_html5_chk_remove_keyboard:
-      # hidden: true
-
 script:
 ### 12.0.0 aggiunte chiamate VoIP in caso di Allarme.
 ### questo l'add-on da installare https://github.com/sdesalve/hassio-addons/tree/master/dss_voip
@@ -330,7 +311,7 @@ automation:
     action:
       - service: script.dss_alarm_script_invia_notifiche
         data:
-          message: "DISATTIVATO Allarme!"
+          message: "Allarme DISINSERITO!"
           
   - alias: "NOTIFICA che qualcuno è rientrato"
     initial_state: true

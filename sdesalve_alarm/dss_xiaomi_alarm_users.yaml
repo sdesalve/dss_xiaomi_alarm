@@ -4,10 +4,6 @@ homeassistant:
       entity_picture: !secret url_immagine_profilo_user1 
     group.dss_dispositivi_user2:
       entity_picture: !secret url_immagine_profilo_user2
-    group.dss_dispositivi_user1_original:
-      hidden: true
-    group.dss_dispositivi_user2_original:
-      hidden: true
     device_tracker.pocophone_user1_ip:
       entity_picture: !secret url_immagine_profilo_user1
     device_tracker.pocophone_user1_bt:
@@ -16,24 +12,6 @@ homeassistant:
       entity_picture: !secret url_immagine_profilo_user2
     device_tracker.mi_note_10_vale_bt:
       entity_picture: !secret url_immagine_profilo_user2
-    automation.imposta_gruppo_dispositivi_tracciati:
-      hidden: true
-    automation.controlla_dispositivi_rimasti_a_casa_allarme_attivo_away:
-      hidden: true
-    automation.imposta_away_i_dispositivi_tracciati_startup:
-      hidden: true
-    automation.dss_alarm_automation_reimposta_gruppo_dispositivi_user1_al_rientro:
-      hidden: true
-    automation.dss_alarm_automation_reimposta_gruppo_dispositivi_user2_al_rientro:
-      hidden: true
-    script.dss_alarm_script_reimposta_gruppo_dispositivi_tracciati:
-      hidden: true
-    script.dss_alarm_script_rimuovi_da_gruppo_dispositivi_tracciati_rimasti_casa:
-      hidden: true
-    script.dss_alarm_script_attiva_reimpostazione_gruppo_dispositivi_user1_al_rientro:
-      hidden: true
-    script.dss_alarm_script_attiva_reimpostazione_gruppo_dispositivi_user2_al_rientro:
-      hidden: true
 #test di ESPHome per ESP32
     sensor.template_tracker_nut_user1:
       friendly_name: !secret nome_dispositivo_nut_tracker_user1

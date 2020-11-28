@@ -26,9 +26,9 @@ camera:
     stream_source: !secret dss_dahua_camera_fronte_cam_rtsp_url
     verify_ssl: false
     
-  - name: dahua_camera_cancello_giardino
-    platform: ffmpeg
-    input: !secret dss_dahua_camera_cancello_giardino_cam_rtsp_url
+  # - name: dahua_camera_cancello_giardino
+    # platform: ffmpeg
+    # input: !secret dss_dahua_camera_cancello_giardino_cam_rtsp_url
     
   - name: imou_camera_polpetta
     platform: ffmpeg

@@ -295,21 +295,19 @@ script:
   dss_voice_script_mostra_videocitofono:
     alias: "Mostra Videocitofono"
     sequence:
-      - service: broadlink.send
+      - service: remote.send_command
         data:
-          host: !secret broadlink_rm_cucina_ip
-          packet:
-            - "JgBGAJKVETkRORE5ERQQFRAVERQQFRE5ETkROREUERQRFBEUERQRORAVERUPOxAVDzsQOhA6EBUQOhA6EBUQOhAVEBUPFhAADQUAAA=="
+          entity_id: !secret broadlink_rm_cucina_controller_data
+          command: "b64:JgBGAJKVETkRORE5ERQQFRAVERQQFRE5ETkROREUERQRFBEUERQRORAVERUPOxAVDzsQOhA6EBUQOhA6EBUQOhAVEBUPFhAADQUAAA=="
       - service: camera.play_stream
         data:
           entity_id: camera.dahua_vto2101e_p
           media_player: media_player.cucina
       - delay: '00:02:00'
-      - service: broadlink.send
+      - service: remote.send_command
         data:
-          host: !secret broadlink_rm_cucina_ip
-          packet:
-            - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
+          entity_id: !secret broadlink_rm_cucina_controller_data
+          command: "b64:JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
       - service: media_player.media_stop
         data:
           entity_id: media_player.cucina
@@ -317,11 +315,10 @@ script:
   dss_voice_script_mostra_dtv:
     alias: "Mostra DTV"
     sequence:
-      - service: broadlink.send
+      - service: remote.send_command
         data:
-          host: !secret broadlink_rm_cucina_ip
-          packet:
-            - "JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
+          entity_id: !secret broadlink_rm_cucina_controller_data
+          command: "b64:JgBGAJSTEjgSOBI4EhMSExITEhMSExI4EjgSNxMTEhQRFBEUERQRORE4EhQSExITEhMSOBITEhMSExI4EjgSOBI4EhMSOBIADQUAAA=="
       - service: media_player.media_stop
         data:
           entity_id: media_player.cucina

@@ -899,7 +899,7 @@ automation:
         entity_id: alarm_control_panel.home_alarm 
 
   - alias: "Attivazione automatica se Dispositivi non in Casa"
-    initial_state: true
+    initial_state: false
     trigger:
       - platform: state
         entity_id: group.dss_dispositivi_tracciati

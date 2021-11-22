@@ -409,7 +409,7 @@ group:
 
   dss_automazioni_allarme:
     name: "Automazioni globali Allarme"
-    icon: mdi:settings
+    icon: mdi:cog
     entities:
       # - automation.accendi_lampeggiante_ad_attivazione_away_avvenuta
       # - automation.spegni_lampeggiante_ad_attivazione_avvenuta
@@ -423,17 +423,17 @@ group:
 
   dss_stato_sensori_immediati_home:
     name: "Sensori immediati"
-    icon: mdi:settings
+    icon: mdi:cog
     entities: !secret sensori_che_fanno_scattare_allarme_home_mode
 
   dss_stato_sensori_immediati_away:
     name: "Sensori immediati"
-    icon: mdi:settings
+    icon: mdi:cog
     entities: !secret sensori_che_fanno_scattare_allarme_away_mode
 
   dss_stato_sensori_ritardati_home:
     name: "Sensori ritardati"
-    icon: mdi:settings
+    icon: mdi:cog
     entities: !secret entity_sensore_innesco_ritardato_allarme_away
 
   dss_stato_sensori_ritardati_away:

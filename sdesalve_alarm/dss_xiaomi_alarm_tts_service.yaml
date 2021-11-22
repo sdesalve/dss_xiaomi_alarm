@@ -33,7 +33,7 @@ input_number:
 group:
   dss_avvisi_tts:
     name: "Avvisi TTS Allarme"
-    icon: mdi:settings
+    icon: mdi:cog
     entities:
       - automation.avviso_tts_allarme_disarmato
       - automation.avviso_tts_allarme_home_attivato

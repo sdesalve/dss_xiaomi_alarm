@@ -351,39 +351,40 @@ input_select:
   dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home:
     options: !secret dss_binary_sensor_secrets_ignora_controllo_clima_acceso_home
 
-binary_sensor:
-  - platform: template
-    sensors:
-      dss_people_home:
-        friendly_name: "Rilevati dispositivi tracciati in casa"
+template:
+  - binary_sensor:
+      - name:  dss_people_home
+        unique_id: dss_people_home
           #inserire qui i gruppi di dispositivi o i dispositivi singoli tracciati che fanno scattare l'inserimento automatico
-        value_template: >-
+        state: >-
           {{ is_state('group.dss_dispositivi_user1', 'home') or is_state('group.dss_dispositivi_user2', 'home') or is_state('group.dss_dispositivi_user4', 'home') or is_state('group.dss_dispositivi_user4', 'home') }}
+        attributes:
+          friendly_name: "Rilevati dispositivi tracciati in casa"
+  #################SOSTITUIRE SENSORE DSS_MODE_GIORNO###############
 
-  - platform: template
-    sensors:
-      dss_mode_giorno:
-        friendly_name: "Modalità di funzionamento Giorno"
+      - name: dss_mode_giorno
+        unique_id: dss_mode_giorno
         #inserire qui l'ora di inizio e di fine della modalità giorno
-        value_template: >-
-          {{ states('sensor.time') > '07:00' and states('sensor.time') < '21:00' }}
+        state: >-
+          {{ states('sensor.time') > '07:00' and states('sensor.time') < '21:00' }}   
+        attributes:
+          friendly_name: "Modalità di funzionamento Giorno"
 
-  - platform: template
-    sensors:
-      dss_alarm_giorno_attivo:
-        friendly_name: "Allarme diurno attivato"
-        value_template: >-
+      - name: dss_alarm_giorno_attivo
+        unique_id: dss_alarm_giorno_attivo
+        state: >-
           {{ is_state('binary_sensor.dss_mode_giorno', 'on') and not is_state('alarm_control_panel.home_alarm', 'disarmed') }}
-        icon_template: mdi:alarm-light
+        icon: mdi:alarm-light
+        attributes:
+          friendly_name: "Allarme diurno attivato"
 
-
-  - platform: template
-    sensors:
-      dss_alarm_notte_attivo:
-        friendly_name: "Allarme nottuno attivato"
-        icon_template: mdi:alarm-light
-        value_template: >-
+      - name: dss_alarm_notte_attivo
+        unique_id: dss_alarm_notte_attivo
+        icon: mdi:alarm-light
+        state: >-
           {{ is_state('binary_sensor.dss_mode_giorno', 'off') and not is_state('alarm_control_panel.home_alarm', 'disarmed') }}
+        attributes:
+          friendly_name: "Allarme nottuno attivato"
 
 group:
   allarme:

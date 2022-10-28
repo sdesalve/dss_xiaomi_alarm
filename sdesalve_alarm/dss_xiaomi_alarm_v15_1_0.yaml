@@ -357,7 +357,7 @@ template:
         unique_id: dss_people_home
           #inserire qui i gruppi di dispositivi o i dispositivi singoli tracciati che fanno scattare l'inserimento automatico
         state: >-
-          {{ is_state('group.dss_dispositivi_user1', 'home') or is_state('group.dss_dispositivi_user2', 'home') or is_state('group.dss_dispositivi_user4', 'home') or is_state('group.dss_dispositivi_user4', 'home') }}
+          {{ is_state('group.dss_dispositivi_user1', 'home') or is_state('group.dss_dispositivi_user2', 'home') }}
         attributes:
           friendly_name: "Rilevati dispositivi tracciati in casa"
   #################SOSTITUIRE SENSORE DSS_MODE_GIORNO###############

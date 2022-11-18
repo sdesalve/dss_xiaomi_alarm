@@ -2,7 +2,7 @@ homeassistant:
   customize:
     lock.ok_google_attiva_allarme:
       friendly_name: "Allarme"
-      icon_template: mdi:google-home
+      icon_template: mdi:speaker-message
         
 lock:
   ### lock per attivare/disattivare l'allarme HOME con Google Assistant
